@@ -1,1 +1,1 @@
-console.log("eCommerce app works!");
+console.log('eCommerce app works!');
