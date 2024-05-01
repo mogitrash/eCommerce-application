@@ -5,47 +5,47 @@ const devConfig = require('./webpack.dev.config');
 const { merge } = require('webpack-merge');
 
 const baseConfig = {
-    entry: path.resolve(__dirname, './src/index.ts'),
-    devtool: 'inline-source-map',
-    mode: 'development',
-    module: {
-        rules: [
-            {
-                test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
-            },
-            {
-                test: /\.css$/i,
-                use: ['style-loader', 'css-loader'],
-            },
-            {
-                test: /\.(jpg|png|svg|gif|mp3)$/,
-                type: 'asset/resource',
-            },
-        ],
-    },
-    resolve: {
-        extensions: ['.ts', '.js'],
-    },
-    output: {
-        filename: 'main.js',
-        path: path.resolve(__dirname, 'dist'),
-    },
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, './src/index.html'),
-            filename: 'index.html',
-        }),
+  entry: path.resolve(__dirname, './src/index.ts'),
+  devtool: 'inline-source-map',
+  mode: 'development',
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(jpg|png|svg|gif|mp3)$/,
+        type: 'asset/resource',
+      },
     ],
-    devServer: {
-        static: path.resolve(__dirname, './dist'),
-    },
+  },
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
+  output: {
+    filename: 'main.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, './src/index.html'),
+      filename: 'index.html',
+    }),
+  ],
+  devServer: {
+    static: path.resolve(__dirname, './dist'),
+  },
 };
 
 module.exports = ({ mode }) => {
-    const isProductionMode = mode === 'prod';
-    const envConfig = isProductionMode ? prodConfig : devConfig;
+  const isProductionMode = mode === 'prod';
+  const envConfig = isProductionMode ? prodConfig : devConfig;
 
-    return merge(baseConfig, envConfig);
+  return merge(baseConfig, envConfig);
 };
