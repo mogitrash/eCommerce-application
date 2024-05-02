@@ -5,6 +5,7 @@ This is the final project of the [RS School](https://rs.school/) JavaScript/Fron
 **Technology stack:**
 
 - TypeScript
+- SCSS
 - Webpack
 - Jest
 
@@ -26,4 +27,3 @@ This is the final project of the [RS School](https://rs.school/) JavaScript/Fron
 - To check code using a prettier: `$ npm run prettier`.
 - To fix prettier errors: `$ npm run prettier:write`.
 - To run tests: `$ npm run test`.
-- To prepare a commit for pushing: `$ npm run prepare`.
