@@ -1,5 +1,8 @@
-function sum(a: number, b: number) {
-  return a + b;
-}
+import './app/sass/reset.scss';
+import './app/sass/style.scss';
 
-export default sum;
+import App from './app/app';
+
+const app = new App(document.body);
+
+app.start();
