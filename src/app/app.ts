@@ -1,4 +1,4 @@
-import BaseComponent from './components/base/base';
+import BaseComponent from './components/base/base.component';
 
 export default class App extends BaseComponent<'div'> {
   constructor(private root: HTMLElement) {
