@@ -10,4 +10,12 @@ export default class BaseComponent<T extends keyof HTMLElementTagNameMap> {
   getElement(): HTMLElementTagNameMap[T] {
     return this.element;
   }
+
+  append(components: BaseComponent<T>[]) {
+    components.forEach((component) => {
+      this.element.append(component.getElement());
+    });
+
+    return this;
+  }
 }
