@@ -1,8 +1,8 @@
 import BaseComponent from './components/base/base';
 
-export default class App extends BaseComponent<'main'> {
+export default class App extends BaseComponent<'div'> {
   constructor(private root: HTMLElement) {
-    super('main', ['app']);
+    super('div', ['app']);
   }
 
   start() {
