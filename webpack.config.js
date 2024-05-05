@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 const prodConfig = require('./webpack.prod.config');
 const devConfig = require('./webpack.dev.config');
 const { merge } = require('webpack-merge');
@@ -37,6 +38,7 @@ const baseConfig = {
       template: path.resolve(__dirname, 'src/index.html'),
       filename: 'index.html',
     }),
+    new Dotenv(),
   ],
   devServer: {
     static: path.resolve(__dirname, './dist'),
