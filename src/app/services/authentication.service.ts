@@ -2,7 +2,7 @@
 import CustomerDraft from '../models/customer-draft.model';
 import CustomerSignIn from '../models/customer-sign-in.model';
 import ErrorResponse from '../models/error-response.model';
-import SignInResponse from '../models/sign-in-response.model';
+import SignInResult from '../models/sign-in-result.model';
 import AuthorizationService from './authorization.service';
 
 export default class AuthenticationService {
@@ -12,23 +12,36 @@ export default class AuthenticationService {
 
   private authorizationService = new AuthorizationService();
 
-  async signUpCustomer(customerDraft: CustomerDraft): Promise<SignInResponse | ErrorResponse> {
+  async signUpCustomer(customerDraft: CustomerDraft): Promise<SignInResult | ErrorResponse> {
     return this.makeAuthRequest(customerDraft, 'signup');
   }
 
-  async signInCustomer(customerSignIn: CustomerSignIn): Promise<SignInResponse | ErrorResponse> {
-    return this.makeAuthRequest(customerSignIn, 'login');
+  async signInCustomer(customerSignIn: CustomerSignIn): Promise<SignInResult | ErrorResponse> {
+    const authenticationResponse = await this.makeAuthRequest(customerSignIn, 'login');
+    if ('customer' in authenticationResponse) {
+      const authorizationResponse = await this.authorizationService.getPasswordFlowToken(
+        customerSignIn.email,
+        customerSignIn.password,
+      );
+
+      if ('access_token' in authorizationResponse) {
+        // NOTE: according to SCRUM-42 we passing auth token to signInResult interface object
+        authenticationResponse.accessToken = authorizationResponse.access_token;
+      }
+    }
+
+    return authenticationResponse;
   }
 
   private async makeAuthRequest(
     data: CustomerSignIn | CustomerDraft,
     endPoint: 'login' | 'signup',
-  ): Promise<SignInResponse | ErrorResponse> {
-    const response = await this.authorizationService.getAnonymousSessionToken();
+  ): Promise<SignInResult | ErrorResponse> {
+    const authenticationResponse = await this.authorizationService.getAnonymousSessionToken();
 
-    if ('access_token' in response) {
+    if ('access_token' in authenticationResponse) {
       const headers = new Headers({
-        Authorization: `Bearer ${response.access_token}`,
+        Authorization: `Bearer ${authenticationResponse.access_token}`,
         'Content-type': 'application/json',
       });
 
@@ -41,6 +54,6 @@ export default class AuthenticationService {
       }).then((res) => res.json());
     }
 
-    return response;
+    return authenticationResponse;
   }
 }
