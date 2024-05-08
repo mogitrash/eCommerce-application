@@ -14,7 +14,7 @@ export default interface Cart {
     clientId: string;
     isPlatformClient: boolean;
   };
-  lineItems: [];
+  lineItems: string[]; // NOTE: need interface
   cartState: string;
   totalPrice: {
     type: string;
@@ -23,16 +23,16 @@ export default interface Cart {
     fractionDigits: number;
   };
   shippingMode: string;
-  shipping: [];
-  customLineItems: [];
-  discountCodes: [];
-  directDiscounts: [];
+  shipping: string[]; // NOTE: need interface
+  customLineItems: string[]; // NOTE: need interface
+  discountCodes: string[]; // NOTE: need interface
+  directDiscounts: string[]; // NOTE: need interface
   inventoryMode: string;
   taxMode: string;
   taxRoundingMode: string;
   taxCalculationMode: string;
   deleteDaysAfterLastModification: number;
-  refusedGifts: [];
+  refusedGifts: string[]; // NOTE: need interface
   origin: string;
-  itemShippingAddresses: [];
+  itemShippingAddresses: string[]; // NOTE: need interface
 }

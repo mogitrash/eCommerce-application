@@ -1,6 +1,6 @@
 // NOTE: We use anonymous session token to authenticate(sign in/ sign up) user
 import ErrorResponse from '../models/errorResponse.model';
-import AuthenticationResponse from '../models/sign-in-response.model';
+import SignInResponse from '../models/sign-in-response.model';
 import AuthorizationService from './authorization.service';
 
 export default class AuthenticationService {
@@ -15,7 +15,7 @@ export default class AuthenticationService {
     firstName: string,
     lastName: string,
     password: string,
-  ): Promise<AuthenticationResponse | ErrorResponse> {
+  ): Promise<SignInResponse | ErrorResponse> {
     const response = await this.authorizationService.getAnonymousSessionToken();
 
     if ('access_token' in response) {
@@ -41,10 +41,7 @@ export default class AuthenticationService {
     return response;
   }
 
-  async signInCustomer(
-    email: string,
-    password: string,
-  ): Promise<AuthenticationResponse | ErrorResponse> {
+  async signInCustomer(email: string, password: string): Promise<SignInResponse | ErrorResponse> {
     const response = await this.authorizationService.getAnonymousSessionToken();
 
     if ('access_token' in response) {
