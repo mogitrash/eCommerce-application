@@ -11,6 +11,19 @@ export default class App extends BaseComponent<'div'> {
   async start() {
     this.root.append(this.element);
 
-    await this.authenticationService.signUpCustomer('test@gmail.com', 'Name', 'Lastname', '12345');
+    // NOTE: examples of signup and login
+
+    // const addresses: BaseAddress[] = [{ country: Country.BY }];
+
+    // await this.authenticationService.signUpCustomer({
+    //   email: 'yourMail@gmail.com',
+    //   password: '12345',
+    //   addresses,
+    // });
+
+    // await this.authenticationService.signInCustomer({
+    //   email: 'hermao@gmail.com',
+    //   password: '12345',
+    // });
   }
 }

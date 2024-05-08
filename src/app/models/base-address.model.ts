@@ -1,8 +1,10 @@
+import Country from './country.model';
+
 export default interface BaseAddress {
   id?: string;
   key?: string;
   externalId?: string;
-  country: string;
+  country: Country;
   title?: string;
   salutation?: string;
   firstName?: string;

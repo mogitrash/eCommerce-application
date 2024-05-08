@@ -1,4 +1,4 @@
-import ErrorResponse from '../models/errorResponse.model';
+import ErrorResponse from '../models/error-response.model';
 import TokenResponse from '../models/tokenResponse.model';
 
 export default class AuthorizationService {
