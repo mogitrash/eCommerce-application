@@ -8,22 +8,28 @@ export default class App extends BaseComponent<'div'> {
     super('div', ['app']);
   }
 
-  async start() {
+  start() {
     this.root.append(this.element);
 
     // NOTE: examples of signup and login
 
     // const addresses: BaseAddress[] = [{ country: Country.BY }];
 
-    // await this.authenticationService.signUpCustomer({
-    //   email: 'yourMail@gmail.com',
-    //   password: '12345',
-    //   addresses,
-    // });
+    // this.authenticationService
+    //   .signUpCustomer({
+    //     email: 'addressTest2@gmail.com',
+    //     password: '12345',
+    //     addresses,
+    //     defaultBillingAddress: 0,
+    //     defaultShippingAddress: 0,
+    //   })
+    //   .then((res) => console.log(res));
 
-    // await this.authenticationService.signInCustomer({
-    //   email: 'hermao@gmail.com',
-    //   password: '12345',
-    // });
+    // this.authenticationService
+    //   .signInCustomer({
+    //     email: 'hermao@gmail.com',
+    //     password: '12345',
+    //   })
+    //   .then((res) => console.log(res));
   }
 }
