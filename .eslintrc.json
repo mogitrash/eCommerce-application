@@ -10,5 +10,5 @@
     "project": "./tsconfig.json"
   },
   "noInlineConfig": true,
-  "ignorePatterns": ["*.config.js"]
+  "ignorePatterns": ["*.config.js", "*.d.ts"]
 }
