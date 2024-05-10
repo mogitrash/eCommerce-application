@@ -15,8 +15,24 @@ export default class BaseComponent<T extends keyof HTMLElementTagNameMap> {
     this.element.setAttribute(attribute, value);
   }
 
+  getAttribute(attribute: string): string | null {
+    return this.element.getAttribute(attribute);
+  }
+
   addListener(event: string, listener: (event: Event) => void, options: boolean = false) {
     this.element.addEventListener(event, listener, options);
+  }
+
+  addClass(className: string) {
+    this.element.classList.add(className);
+  }
+
+  removeClass(className: string) {
+    this.element.classList.remove(className);
+  }
+
+  setTextContent(content: string) {
+    this.element.textContent = content;
   }
 
   append(components: BaseComponent<keyof HTMLElementTagNameMap>[]) {

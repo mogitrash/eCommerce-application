@@ -13,7 +13,6 @@
   gap: 15px;
 }
 
-
 .modal_form {
   display: flex;
   flex-direction: column;
@@ -28,16 +27,41 @@
 .modal_name {
   font-size: 20px;
   letter-spacing: 1px;
+  font-weight: 600;
 }
 
 .modal_input {
-  width: 200px;
+  width: 100%;
   height: 25px;
 }
 
 .modal_input-label {
   font-family: $font-primary;
   font-size: 15px;
+}
+
+.modal_visibility {
+  font-size: 12px;
+}
+
+.modal_error {
+  display: none;
+  width: 100%;
+  padding: 5px;
+  font-size: 60%;
+  color: white;
+  background-color: #900;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.modal_error--shown {
+  display: block;
+}
+
+.visibility_wrapper {
+  display: flex;
+  align-items: center;
 }
 
 .modal_hint {
