@@ -48,6 +48,8 @@ export default class LoginModal extends BaseComponent<'div'> {
 
   loginButton: Button;
 
+  registrationButton: Button;
+
   constructor() {
     super('div', ['login_modal']);
     this.modalHeader = new BaseComponent('div', ['modal_header']);
@@ -71,6 +73,12 @@ export default class LoginModal extends BaseComponent<'div'> {
     this.loginButton = new Button({
       text: 'Log In',
       onClick: LoginModal.handleFormSubmit.bind(this),
+    });
+    this.registrationButton = new Button({
+      text: 'Registration',
+      onClick: () => {
+        // TODO: add routing here
+      },
     });
     this.loginButton.disable();
     this.setupAttributes();
@@ -195,6 +203,7 @@ export default class LoginModal extends BaseComponent<'div'> {
       this.passwordInput,
       this.visibilityWrapper,
       this.loginButton,
+      this.registrationButton,
     ]);
     this.append([this.modalHint, this.modalForm]);
   }
