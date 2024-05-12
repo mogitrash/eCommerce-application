@@ -72,7 +72,7 @@ export default class LoginModal extends BaseComponent<'div'> {
       text: 'Log In',
       onClick: LoginModal.handleFormSubmit.bind(this),
     });
-
+    this.loginButton.disable();
     this.setupAttributes();
     this.setupElements();
     this.setupListeners();
@@ -84,16 +84,22 @@ export default class LoginModal extends BaseComponent<'div'> {
   }
 
   validateForm() {
-    const emailErrorText = LoginModal.validateInputEmail(this.emailInput);
-    const passwordErrorText = LoginModal.validateInputPassword(this.passwordInput);
+    const emailErrorText = LoginModal.validateInputEmail(this.emailInput.getElement().validity);
+    const passwordErrorText = LoginModal.validateInputPassword(
+      this.passwordInput.getElement().validity,
+    );
 
     if (emailErrorText) {
       LoginModal.showInputError(emailErrorText, this.emailError);
+      this.loginButton.disable();
       return;
     }
     if (passwordErrorText) {
       LoginModal.showInputError(passwordErrorText, this.passwordError);
+      this.loginButton.disable();
+      return;
     }
+    this.loginButton.enable();
   }
 
   togglePasswordVisibility() {
@@ -104,24 +110,24 @@ export default class LoginModal extends BaseComponent<'div'> {
     }
   }
 
-  static validateInputPassword(input: BaseComponent<'input'>): string {
-    if (input.getElement().validity.tooShort) {
+  static validateInputPassword(validity: ValidityState): string {
+    if (validity.tooShort) {
       return 'The password should be a minimum of 8 characters in length.';
     }
-    if (input.getElement().validity.patternMismatch) {
+    if (validity.patternMismatch) {
       return 'Password must contain at least one uppercase letter, one lowercase letter, one digit. Whitespaces are not allowed.';
     }
-    if (input.getElement().validity.valueMissing) {
+    if (validity.valueMissing) {
       return 'Please enter value.';
     }
     return '';
   }
 
-  static validateInputEmail(input: BaseComponent<'input'>): string {
-    if (input.getElement().validity.patternMismatch) {
+  static validateInputEmail(validity: ValidityState): string {
+    if (validity.patternMismatch) {
       return 'Email address must be properly formatted (e.g., user@example.com). Whitespaces are not allowed.';
     }
-    if (input.getElement().validity.valueMissing) {
+    if (validity.valueMissing) {
       return 'Please enter value.';
     }
     return '';

@@ -9,4 +9,12 @@ export default class Button extends BaseComponent<'button'> {
     super('button', ['button'], text);
     this.addListener('click', onClick);
   }
+
+  disable() {
+    this.getElement().setAttribute('disabled', '');
+  }
+
+  enable() {
+    this.getElement().removeAttribute('disabled');
+  }
 }
