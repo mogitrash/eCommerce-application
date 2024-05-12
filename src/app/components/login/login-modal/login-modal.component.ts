@@ -1,19 +1,12 @@
 import './login-modal.scss';
 import BaseComponent from '../../base/base.component';
 import Button from '../../button/button.component';
-import Image from '../../../assets/images/main-logo.png';
 
 const EMAIL_REGEX = '^[^\\s@]+@[^\\s@]+.[^\\s@]+$';
 const PASSWORD_REGEX = '^[^\\s]*(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)[^\\s]*$';
 const PASSWORD_MINLENGTH = '8';
 
 export default class LoginModal extends BaseComponent<'div'> {
-  modalHeader: BaseComponent<'div'>;
-
-  modalLogo: BaseComponent<'img'>;
-
-  modalName: BaseComponent<'p'>;
-
   modalHint: BaseComponent<'p'>;
 
   modalForm: BaseComponent<'form'>;
@@ -52,9 +45,6 @@ export default class LoginModal extends BaseComponent<'div'> {
 
   constructor() {
     super('div', ['login_modal']);
-    this.modalHeader = new BaseComponent('div', ['modal_header']);
-    this.modalLogo = new BaseComponent('img', ['modal_logo']);
-    this.modalName = new BaseComponent('p', ['modal_name'], 'Paws & Tails');
     this.modalHint = new BaseComponent('p', ['modal_hint'], 'Sign In');
     this.modalForm = new BaseComponent('form', ['modal_form']);
     this.emailInputLabel = new BaseComponent('label', ['modal_input-label'], 'Email');
@@ -81,7 +71,6 @@ export default class LoginModal extends BaseComponent<'div'> {
       },
     });
     this.loginButton.disable();
-    this.setupAttributes();
     this.setupElements();
     this.setupListeners();
     this.render();
@@ -149,10 +138,6 @@ export default class LoginModal extends BaseComponent<'div'> {
   static hideInputError(errorComponent: BaseComponent<'span'>) {
     errorComponent.removeClass('modal_error--shown');
     errorComponent.setTextContent('');
-  }
-
-  setupAttributes() {
-    this.modalLogo.setAttribute('src', Image);
   }
 
   setupElements() {
