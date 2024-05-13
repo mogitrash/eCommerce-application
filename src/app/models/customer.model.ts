@@ -7,16 +7,6 @@ export default interface Customer {
   lastMessageSequenceNumber?: number;
   createdAt: string;
   lastModifiedAt: string;
-  lastModifiedBy?: {
-    clientId: string;
-    isPlatformClient: boolean;
-    anonymousId: string;
-  };
-  createdBy?: {
-    clientId: string;
-    isPlatformClient: boolean;
-    anonymousId: string;
-  };
   email: string;
   firstName?: string;
   lastName?: string;
