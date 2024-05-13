@@ -4,7 +4,7 @@ describe('BaseComponent', () => {
   let component: BaseComponent<keyof HTMLElementTagNameMap>;
 
   beforeEach(() => {
-    component = new BaseComponent('p');
+    component = new BaseComponent({ tag: 'p' });
   });
 
   test('should create', () => {
@@ -12,14 +12,14 @@ describe('BaseComponent', () => {
   });
 
   test('should add class on creation', () => {
-    component = new BaseComponent('p', ['test', 'test1']);
+    component = new BaseComponent({ tag: 'p', classes: ['test', 'test1'] });
     expect(component.getElement().classList.contains('test')).toBe(true);
     expect(component.getElement().classList.contains('test1')).toBe(true);
   });
 
   test('should add text content on creation', () => {
     const textToCheck = 'test text';
-    component = new BaseComponent('p', ['test'], textToCheck);
+    component = new BaseComponent({ tag: 'p', classes: ['test'], textContent: textToCheck });
     expect(component.getElement().textContent).toBe(textToCheck);
   });
 
@@ -62,7 +62,7 @@ describe('BaseComponent', () => {
   });
 
   test('append() should append children', () => {
-    component.append([new BaseComponent('span')]);
+    component.append([new BaseComponent({ tag: 'span' })]);
     expect(component.getElement().children[0].tagName).toBe('SPAN');
   });
 });

@@ -8,7 +8,7 @@ export default class App extends BaseComponent<'div'> {
   login: Login;
 
   constructor(private root: HTMLElement) {
-    super('div', ['app']);
+    super({ tag: 'div', classes: ['app'] });
     this.login = new Login();
     this.render();
   }

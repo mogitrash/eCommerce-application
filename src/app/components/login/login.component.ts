@@ -2,7 +2,7 @@ import './login.scss';
 import BaseComponent from '../base/base.component';
 import Button from '../button/button.component';
 
-const EMAIL_REGEX = '^[^\\s@]+@[^\\s@]+.[^\\s@]+$';
+const EMAIL_REGEX = '^\\S+@\\S+\\.\\S+$';
 const PASSWORD_REGEX = '^[^\\s]*(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)[^\\s]*$';
 const PASSWORD_MINLENGTH = '8';
 
@@ -44,22 +44,34 @@ export default class Login extends BaseComponent<'div'> {
   registrationButton: Button;
 
   constructor() {
-    super('div', ['login_modal']);
-    this.loginHint = new BaseComponent('p', ['modal_hint'], 'Sign In');
-    this.loginForm = new BaseComponent('form', ['modal_form']);
-    this.emailInputLabel = new BaseComponent('label', ['modal_input-label'], 'Email');
-    this.emailInput = new BaseComponent('input', ['modal_input']);
-    this.emailError = new BaseComponent('span', ['modal_error']);
-    this.passwordInputLabel = new BaseComponent('label', ['modal_input-label'], 'Password');
-    this.passwordInput = new BaseComponent('input', ['modal_input']);
-    this.passwordError = new BaseComponent('span', ['modal_error']);
-    this.passwordVisibility = new BaseComponent('input');
-    this.passwordVisibilityLabel = new BaseComponent(
-      'label',
-      ['modal_visibility'],
-      'Show Password',
-    );
-    this.visibilityWrapper = new BaseComponent('div', ['visibility_wrapper']);
+    super({ tag: 'div', classes: ['login_modal'] });
+    this.loginHint = new BaseComponent({
+      tag: 'p',
+      classes: ['modal_hint'],
+      textContent: 'Sign In',
+    });
+    this.loginForm = new BaseComponent({ tag: 'form', classes: ['modal_form'] });
+    this.emailInputLabel = new BaseComponent({
+      tag: 'label',
+      classes: ['modal_input-label'],
+      textContent: 'Email',
+    });
+    this.emailInput = new BaseComponent({ tag: 'input', classes: ['modal_input'] });
+    this.emailError = new BaseComponent({ tag: 'span', classes: ['modal_error'] });
+    this.passwordInputLabel = new BaseComponent({
+      tag: 'label',
+      classes: ['modal_input-label'],
+      textContent: 'Password',
+    });
+    this.passwordInput = new BaseComponent({ tag: 'input', classes: ['modal_input'] });
+    this.passwordError = new BaseComponent({ tag: 'span', classes: ['modal_error'] });
+    this.passwordVisibility = new BaseComponent({ tag: 'input' });
+    this.passwordVisibilityLabel = new BaseComponent({
+      tag: 'label',
+      classes: ['modal_visibility'],
+      textContent: 'Show Password',
+    });
+    this.visibilityWrapper = new BaseComponent({ tag: 'div', classes: ['visibility_wrapper'] });
     this.loginButton = new Button({
       text: 'Log In',
       onClick: Login.handleFormSubmit.bind(this),

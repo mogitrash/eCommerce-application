@@ -1,10 +1,14 @@
+type BaseComponentConfig<T> = { tag: T; classes?: string[]; textContent?: string };
 export default class BaseComponent<T extends keyof HTMLElementTagNameMap> {
   protected element: HTMLElementTagNameMap[T];
 
-  constructor(tag: T, classes: string[] = [], text: string = '') {
+  constructor(config: BaseComponentConfig<T>) {
+    const { tag, classes, textContent } = config;
     this.element = document.createElement(tag);
-    this.element.classList.add(...classes);
-    this.element.textContent = text;
+    if (classes) {
+      this.element.classList.add(...classes);
+    }
+    this.element.textContent = textContent || '';
   }
 
   getElement(): HTMLElementTagNameMap[T] {

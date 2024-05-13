@@ -6,7 +6,7 @@ type ButtonConfig = { text: string; onClick: (event: Event) => void };
 export default class Button extends BaseComponent<'button'> {
   constructor(config: ButtonConfig) {
     const { text, onClick } = config;
-    super('button', ['button'], text);
+    super({ tag: 'button', classes: ['button'], textContent: text });
     this.addListener('click', onClick);
   }
 
