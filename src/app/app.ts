@@ -17,7 +17,7 @@ export default class App extends BaseComponent<'div'> {
 
     // this.authenticationService
     //   .signUpCustomer({
-    //     email: 'addressTest2@gmail.com',
+    //     email: 'aaddressTest2@gmail.com',
     //     password: '12345',
     //     addresses,
     //     defaultBillingAddress: 0,

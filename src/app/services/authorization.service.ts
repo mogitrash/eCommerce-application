@@ -1,5 +1,5 @@
 import ErrorResponse from '../models/error-response.model';
-import TokenResponse from '../models/tokenResponse.model';
+import TokenResponse from '../models/token-response.model';
 
 export default class AuthorizationService {
   private projectKey = process.env.CTP_PROJECT_KEY;
@@ -12,15 +12,17 @@ export default class AuthorizationService {
 
   private clientAuthUrl = process.env.CTP_AUTH_URL;
 
+  private basicToken = `Basic ${btoa(`${this.clientID}:${this.clientSecret}`)}`;
+
+  private headers = new Headers({
+    Authorization: this.basicToken,
+    'Content-Type': 'application/x-www-form-urlencoded',
+  });
+
   async getPasswordFlowToken(
     email: string,
     password: string,
   ): Promise<TokenResponse | ErrorResponse> {
-    const headers = new Headers({
-      Authorization: `Basic ${btoa(`${this.clientID}:${this.clientSecret}`)}`,
-      'Content-type': 'application/x-www-form-urlencoded',
-    });
-
     const body = new URLSearchParams();
 
     body.append('grant_type', 'password');
@@ -32,14 +34,14 @@ export default class AuthorizationService {
 
     return fetch(`${this.clientAuthUrl}/oauth/${this.projectKey}/customers/token`, {
       method: 'POST',
-      headers,
+      headers: this.headers,
       body,
     }).then((res) => res.json());
   }
 
   async getClientCredentialsFlowToken(): Promise<TokenResponse | ErrorResponse> {
     const headers = new Headers({
-      Authorization: `Basic ${btoa(`${this.clientID}:${this.clientSecret}`)}`,
+      Authorization: this.basicToken,
     });
 
     const body = new URLSearchParams();
@@ -57,11 +59,6 @@ export default class AuthorizationService {
   }
 
   async getAnonymousSessionToken(): Promise<TokenResponse | ErrorResponse> {
-    const headers = new Headers({
-      Authorization: `Basic ${btoa(`${this.clientID}:${this.clientSecret}`)}`,
-      'Content-type': 'application/x-www-form-urlencoded',
-    });
-
     const body = new URLSearchParams();
 
     body.append('grant_type', 'client_credentials');
@@ -71,17 +68,12 @@ export default class AuthorizationService {
 
     return fetch(`${this.clientAuthUrl}/oauth/${this.projectKey}/anonymous/token`, {
       method: 'POST',
-      headers,
+      headers: this.headers,
       body,
     }).then((res) => res.json());
   }
 
   async getRefreshTokenFlowToken(refreshToken: string): Promise<TokenResponse> {
-    const headers = new Headers({
-      Authorization: `Basic ${btoa(`${this.clientID}:${this.clientSecret}`)}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    });
-
     const body = new URLSearchParams();
 
     body.append('grant_type', 'refresh_token');
@@ -92,7 +84,7 @@ export default class AuthorizationService {
 
     return fetch(`${this.clientAuthUrl}/oauth/token`, {
       method: 'POST',
-      headers,
+      headers: this.headers,
       body,
     }).then((res) => res.json());
   }
