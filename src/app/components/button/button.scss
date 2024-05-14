@@ -1,0 +1,30 @@
+@import './../../sass/variables.scss';
+
+.button {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: $color-primary;
+  font-family: $font-primary;
+  font-weight: 500;
+  color: black;
+  letter-spacing: 1px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  transition: all 235ms ease-in-out;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: #e1dfdd;
+  }
+
+  &:focus {
+    box-shadow: rgba(0, 0, 0, 0.3) 2px 8px 4px -6px;
+  }
+
+  &:not(:disabled):hover {
+    box-shadow: rgba(0, 0, 0, 0.3) 2px 8px 8px -5px;
+    transform: translate3d(0, 2px, 0);
+  }
+}

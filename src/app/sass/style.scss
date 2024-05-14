@@ -5,5 +5,18 @@
 }
 
 .app {
-  background-color: $color-light; // SCSS test
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: $color-light;
+  font-family: $font-primary;
+  color: $color-dark;
+  width: 100vw;
+  height: 100vh;
+}
+
+@font-face {
+  font-family: 'manrope';
+  src: url(./../assets/font/manrope-regular.ttf);
 }
