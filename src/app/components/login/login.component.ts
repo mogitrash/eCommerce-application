@@ -1,47 +1,48 @@
 import './login.scss';
 import BaseComponent from '../base/base.component';
 import Button from '../button/button.component';
+import {
+  EMAIL_REGEX,
+  PASSWORD_REGEX,
+  PASSWORD_MINLENGTH,
+} from '../../models/constants/login-registration.constants';
 
-const EMAIL_REGEX = '^\\S+@\\S+\\.\\S+$';
-const PASSWORD_REGEX = '^[^\\s]*(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)[^\\s]*$';
-const PASSWORD_MINLENGTH = '8';
+export default class LoginComponent extends BaseComponent<'div'> {
+  private loginHint: BaseComponent<'p'>;
 
-export default class Login extends BaseComponent<'div'> {
-  loginHint: BaseComponent<'p'>;
+  public loginForm: BaseComponent<'form'>;
 
-  loginForm: BaseComponent<'form'>;
+  private emailInput: BaseComponent<'input'>;
 
-  emailInput: BaseComponent<'input'>;
+  private emailInputLabel: BaseComponent<'label'>;
 
-  emailInputLabel: BaseComponent<'label'>;
+  private emailInputId: string = 'emailId';
 
-  emailInputId: string = 'emailId';
+  public emailError: BaseComponent<'span'>;
 
-  emailError: BaseComponent<'span'>;
+  private passwordInput: BaseComponent<'input'>;
 
-  passwordInput: BaseComponent<'input'>;
+  private passwordInputLabel: BaseComponent<'label'>;
 
-  passwordInputLabel: BaseComponent<'label'>;
+  private emailInputName: string = 'email';
 
-  emailInputName: string = 'email';
+  private passwordInputName: string = 'password';
 
-  passwordInputName: string = 'password';
+  private passwordInputId: string = 'passwordId';
 
-  passwordInputId: string = 'passwordId';
+  public passwordError: BaseComponent<'span'>;
 
-  passwordError: BaseComponent<'span'>;
+  private passwordVisibility: BaseComponent<'input'>;
 
-  passwordVisibility: BaseComponent<'input'>;
+  private passwordVisibilityLabel: BaseComponent<'label'>;
 
-  passwordVisibilityLabel: BaseComponent<'label'>;
+  private passwordVisibilityId: string = 'visibilityId';
 
-  passwordVisibilityId: string = 'visibilityId';
+  private visibilityWrapper: BaseComponent<'div'>;
 
-  visibilityWrapper: BaseComponent<'div'>;
+  public loginButton: Button;
 
-  loginButton: Button;
-
-  registrationButton: Button;
+  private registrationButton: Button;
 
   constructor() {
     super({ tag: 'div', classes: ['login_modal'] });
@@ -74,7 +75,7 @@ export default class Login extends BaseComponent<'div'> {
     this.visibilityWrapper = new BaseComponent({ tag: 'div', classes: ['visibility_wrapper'] });
     this.loginButton = new Button({
       text: 'Log In',
-      onClick: Login.handleFormSubmit.bind(this),
+      onClick: LoginComponent.handleFormSubmit.bind(this),
     });
     this.registrationButton = new Button({
       text: 'Registration',
@@ -88,28 +89,30 @@ export default class Login extends BaseComponent<'div'> {
     this.render();
   }
 
-  static handleFormSubmit(event: Event) {
+  public static handleFormSubmit(event: Event) {
     event?.preventDefault();
   }
 
-  validateForm() {
-    const emailErrorText = Login.validateInputEmail(this.emailInput.getElement().validity);
-    const passwordErrorText = Login.validateInputPassword(this.passwordInput.getElement().validity);
+  public validateForm() {
+    const emailErrorText = LoginComponent.validateInputEmail(this.emailInput.getElement().validity);
+    const passwordErrorText = LoginComponent.validateInputPassword(
+      this.passwordInput.getElement().validity,
+    );
 
     if (emailErrorText) {
-      Login.showInputError(emailErrorText, this.emailError);
+      LoginComponent.showInputError(emailErrorText, this.emailError);
       this.loginButton.disable();
       return;
     }
     if (passwordErrorText) {
-      Login.showInputError(passwordErrorText, this.passwordError);
+      LoginComponent.showInputError(passwordErrorText, this.passwordError);
       this.loginButton.disable();
       return;
     }
     this.loginButton.enable();
   }
 
-  togglePasswordVisibility() {
+  private togglePasswordVisibility() {
     if (this.passwordInput.getAttribute('type') === 'password') {
       this.passwordInput.setAttribute('type', 'text');
     } else {
@@ -117,7 +120,7 @@ export default class Login extends BaseComponent<'div'> {
     }
   }
 
-  static validateInputPassword(validity: ValidityState): string {
+  public static validateInputPassword(validity: ValidityState): string {
     if (validity.tooShort) {
       return 'The password should be a minimum of 8 characters in length.';
     }
@@ -130,7 +133,7 @@ export default class Login extends BaseComponent<'div'> {
     return '';
   }
 
-  static validateInputEmail(validity: ValidityState): string {
+  public static validateInputEmail(validity: ValidityState): string {
     if (validity.patternMismatch) {
       return 'Email address must be properly formatted (e.g., user@example.com). Whitespaces are not allowed.';
     }
@@ -140,17 +143,17 @@ export default class Login extends BaseComponent<'div'> {
     return '';
   }
 
-  static showInputError(errorText: string, errorComponent: BaseComponent<'span'>) {
+  public static showInputError(errorText: string, errorComponent: BaseComponent<'span'>) {
     errorComponent.addClass('modal_error--shown');
     errorComponent.setTextContent(errorText);
   }
 
-  static hideInputError(errorComponent: BaseComponent<'span'>) {
+  private static hideInputError(errorComponent: BaseComponent<'span'>) {
     errorComponent.removeClass('modal_error--shown');
     errorComponent.setTextContent('');
   }
 
-  setupElements() {
+  private setupElements() {
     this.loginForm.setAttribute('novalidate', '');
 
     this.emailInput.setAttribute('type', 'text');
@@ -175,19 +178,19 @@ export default class Login extends BaseComponent<'div'> {
     this.loginButton.setAttribute('type', 'submit');
   }
 
-  setupListeners() {
-    this.loginForm.addListener('submit', Login.handleFormSubmit.bind(this));
+  private setupListeners() {
+    this.loginForm.addListener('submit', LoginComponent.handleFormSubmit.bind(this));
     this.loginForm.addListener('input', this.validateForm.bind(this));
     this.passwordVisibility.addListener('input', this.togglePasswordVisibility.bind(this));
     this.emailInput.addListener('input', () => {
-      Login.hideInputError(this.emailError);
+      LoginComponent.hideInputError(this.emailError);
     });
     this.passwordInput.addListener('input', () => {
-      Login.hideInputError(this.passwordError);
+      LoginComponent.hideInputError(this.passwordError);
     });
   }
 
-  render() {
+  private render() {
     this.visibilityWrapper.append([this.passwordVisibility, this.passwordVisibilityLabel]);
     this.loginForm.append([
       this.emailInputLabel,

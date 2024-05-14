@@ -10,11 +10,11 @@ export default class Button extends BaseComponent<'button'> {
     this.addListener('click', onClick);
   }
 
-  disable() {
+  public disable() {
     this.getElement().setAttribute('disabled', '');
   }
 
-  enable() {
+  public enable() {
     this.getElement().removeAttribute('disabled');
   }
 }
