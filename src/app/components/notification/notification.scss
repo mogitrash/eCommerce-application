@@ -1,0 +1,33 @@
+.notification {
+  font-family: 'manrope';
+  animation: SlideIn 5s;
+
+  background: #ffffff;
+  border-radius: 10px;
+  letter-spacing: 0.6px;
+  text-align: center;
+  width: 300px;
+  padding: 15px;
+  position: absolute;
+  opacity: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@keyframes SlideIn {
+  0% {
+    opacity: 0;
+    top: 0px;
+  }
+
+  25%,
+  75% {
+    opacity: 1;
+    top: 20px;
+  }
+
+  100% {
+    opacity: 0;
+    top: -0px;
+  }
+}

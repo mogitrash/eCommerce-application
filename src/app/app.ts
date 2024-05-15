@@ -13,7 +13,7 @@ export default class App extends BaseComponent<'div'> {
     this.render();
   }
 
-  render() {
+  private render() {
     this.append([this.loginComponent]);
   }
 
