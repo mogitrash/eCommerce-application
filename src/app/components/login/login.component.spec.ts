@@ -16,7 +16,7 @@ const validityMock: ValidityState = {
 
 describe('Login', () => {
   let component: Login;
-  const handleFormSubmitSpy = jest.spyOn(Login, 'handleFormSubmit');
+
   const showInputErrorSpy = jest.spyOn(Login, 'showInputError');
 
   beforeEach(() => {
@@ -71,18 +71,6 @@ describe('Login', () => {
     jest.spyOn(Login, 'validateInputPassword').mockReturnValueOnce('');
     component.validateForm();
     expect(component.loginButton.getElement().disabled).toBe(false);
-  });
-
-  test('handleFormSubmit() should be called on form submit', () => {
-    const event = new Event('submit');
-    component.loginForm.getElement().dispatchEvent(event);
-    expect(handleFormSubmitSpy).toHaveBeenCalled();
-  });
-
-  test('handleFormSubmit() should be called on login button click', () => {
-    const event = new Event('click');
-    component.loginButton.getElement().dispatchEvent(event);
-    expect(handleFormSubmitSpy).toHaveBeenCalled();
   });
 
   test('validateInputPassword() should return correct message in case of too short input', () => {

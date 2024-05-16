@@ -6,6 +6,9 @@ import {
   PASSWORD_REGEX,
   PASSWORD_MINLENGTH,
 } from '../../models/constants/login-registration.constants';
+import AuthenticationService from '../../services/authentication.service';
+import CustomerSignIn from '../../models/customer-sign-in.model';
+import NotificationService from '../../services/notification.service';
 
 export default class LoginComponent extends BaseComponent<'div'> {
   private loginHint: BaseComponent<'p'>;
@@ -43,6 +46,10 @@ export default class LoginComponent extends BaseComponent<'div'> {
   public loginButton: Button;
 
   private registrationButton: Button;
+
+  private authenticationService = new AuthenticationService();
+
+  private notificationService = new NotificationService();
 
   constructor() {
     super({ tag: 'div', classes: ['login_modal'] });
@@ -86,13 +93,6 @@ export default class LoginComponent extends BaseComponent<'div'> {
     this.setupElements();
     this.setupListeners();
     this.render();
-  }
-
-  public static handleFormSubmit(event: Event) {
-    event?.preventDefault();
-    if (event.target instanceof HTMLFormElement) {
-      event.target?.reset();
-    }
   }
 
   public validateForm() {
@@ -180,8 +180,28 @@ export default class LoginComponent extends BaseComponent<'div'> {
     this.loginButton.setAttribute('type', 'submit');
   }
 
+  private async handleFormSubmit(event: Event) {
+    event?.preventDefault();
+    if (event.target instanceof HTMLFormElement) {
+      const customerSignIn: CustomerSignIn = {
+        email: this.emailInput.getElement().value,
+        password: this.passwordInput.getElement().value,
+      };
+
+      const response = await this.authenticationService.signInCustomer(customerSignIn);
+
+      if ('customer' in response) {
+        // TODO: add routing to main page here
+        event.target.reset();
+        this.notificationService.notify('You logged in');
+      } else {
+        this.notificationService.notify('Incorrect email or password. Please try again.');
+      }
+    }
+  }
+
   private setupListeners() {
-    this.loginForm.addListener('submit', LoginComponent.handleFormSubmit.bind(this));
+    this.loginForm.addListener('submit', this.handleFormSubmit.bind(this));
     this.loginForm.addListener('input', this.validateForm.bind(this));
     this.passwordVisibility.addListener('input', this.togglePasswordVisibility.bind(this));
     this.emailInput.addListener('input', () => {
