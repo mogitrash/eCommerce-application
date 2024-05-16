@@ -20,8 +20,8 @@
     background-color: #e1dfdd;
   }
 
-  &:focus {
-    box-shadow: rgba(0, 0, 0, 0.3) 2px 8px 4px -6px;
+  &:active {
+    scale: 0.99;
   }
 
   &:not(:disabled):hover {
