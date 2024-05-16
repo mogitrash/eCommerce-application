@@ -75,7 +75,6 @@ export default class LoginComponent extends BaseComponent<'div'> {
     this.visibilityWrapper = new BaseComponent({ tag: 'div', classes: ['visibility_wrapper'] });
     this.loginButton = new Button({
       text: 'Log In',
-      onClick: LoginComponent.handleFormSubmit.bind(this),
     });
     this.registrationButton = new Button({
       text: 'Registration',
@@ -91,6 +90,9 @@ export default class LoginComponent extends BaseComponent<'div'> {
 
   public static handleFormSubmit(event: Event) {
     event?.preventDefault();
+    if (event.target instanceof HTMLFormElement) {
+      event.target?.reset();
+    }
   }
 
   public validateForm() {
