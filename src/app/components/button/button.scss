@@ -6,7 +6,7 @@
   background-color: $color-primary;
   font-family: $font-primary;
   font-weight: 500;
-  color: black;
+  color: white;
   letter-spacing: 1px;
   font-size: 16px;
   border: none;
@@ -15,6 +15,7 @@
   cursor: pointer;
 
   &:disabled {
+    color: black;
     cursor: not-allowed;
     background-color: #e1dfdd;
   }

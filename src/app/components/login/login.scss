@@ -40,7 +40,6 @@
 }
 
 .modal_input-label {
-  font-family: $font-primary;
   font-size: 15px;
 }
 
@@ -51,10 +50,8 @@
 .modal_error {
   display: none;
   width: 100%;
-  padding: 5px;
-  font-size: 60%;
-  color: white;
-  background-color: #900;
+  font-size: 65%;
+  color: #900;
   border-radius: 5px;
   box-sizing: border-box;
 }
