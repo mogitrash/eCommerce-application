@@ -1,0 +1,33 @@
+@import './../../sass/variables.scss';
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  letter-spacing: 0.6px;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  min-width: 300px;
+}
+
+.modal_form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hint {
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.input_wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-column-gap: 30px;
+  grid-row-gap: 10px;
+}

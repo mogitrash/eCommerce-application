@@ -9,6 +9,9 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
+  "rules": {
+    "object-curly-newline": ["error", { "consistent": true }]
+  },
   "noInlineConfig": true,
   "ignorePatterns": ["*.config.js", "*.d.ts"]
 }

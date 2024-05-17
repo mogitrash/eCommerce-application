@@ -1,15 +1,19 @@
 import BaseComponent from './components/base/base.component';
 import AuthenticationService from './services/authentication.service';
 import LoginComponent from './components/login/login.component';
+import RegistrationComponent from './components/registration/registation.component';
 
 export default class App extends BaseComponent<'div'> {
   private authenticationService = new AuthenticationService();
 
   loginComponent: LoginComponent;
 
+  registrationComponent: RegistrationComponent;
+
   constructor(private root: HTMLElement) {
     super({ tag: 'div', classes: ['app'] });
     this.loginComponent = new LoginComponent();
+    this.registrationComponent = new RegistrationComponent();
     this.render();
   }
 
