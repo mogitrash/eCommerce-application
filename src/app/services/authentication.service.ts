@@ -26,6 +26,7 @@ export default class AuthenticationService {
 
       if ('access_token' in authorizationResponse) {
         // NOTE: according to SCRUM-42 we passing auth token to signInResult interface object
+        localStorage.setItem('userToken', authorizationResponse.access_token);
         authenticationResponse.accessToken = authorizationResponse.access_token;
       }
     }
