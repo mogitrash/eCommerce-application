@@ -8,13 +8,11 @@
 .app {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   background-color: $color-light;
   font-family: $font-primary;
   color: $color-dark;
-  width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 @font-face {
