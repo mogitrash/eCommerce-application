@@ -86,7 +86,7 @@ export default class LoginComponent extends BaseComponent<'div'> {
     this.registrationButton = new Button({
       text: 'Registration',
       onClick: () => {
-        // TODO: add routing here
+        // TODO routinghere
       },
     });
     this.loginButton.disable();
