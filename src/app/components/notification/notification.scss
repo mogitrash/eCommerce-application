@@ -1,5 +1,7 @@
+@import '../../sass/variables.scss';
+
 .notification {
-  font-family: 'manrope';
+  font-family: $font-primary;
   animation: SlideIn 5s;
 
   background: #ffffff;
