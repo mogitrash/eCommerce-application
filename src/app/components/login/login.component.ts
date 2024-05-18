@@ -216,11 +216,11 @@ export default class LoginComponent extends BaseComponent<'div'> {
     this.visibilityWrapper.append([this.passwordVisibility, this.passwordVisibilityLabel]);
     this.loginForm.append([
       this.emailInputLabel,
-      this.emailError,
       this.emailInput,
+      this.emailError,
       this.passwordInputLabel,
-      this.passwordError,
       this.passwordInput,
+      this.passwordError,
       this.visibilityWrapper,
       this.loginButton,
       this.registrationButton,

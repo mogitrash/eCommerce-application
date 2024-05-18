@@ -4,6 +4,7 @@ const Dotenv = require('dotenv-webpack');
 const prodConfig = require('./webpack.prod.config');
 const devConfig = require('./webpack.dev.config');
 const { merge } = require('webpack-merge');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 const baseConfig = {
   entry: path.resolve(__dirname, './src/index.ts'),
@@ -43,6 +44,7 @@ const baseConfig = {
       filename: 'index.html',
     }),
     new Dotenv(),
+    new FaviconsWebpackPlugin('./src/app/assets/images/favicon.png'),
   ],
   devServer: {
     static: path.resolve(__dirname, './dist'),

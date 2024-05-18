@@ -1,0 +1,34 @@
+@import './../../sass/variables.scss';
+
+.input {
+  margin-bottom: 5px;
+  width: 100%;
+  height: 25px;
+}
+
+.label {
+  font-family: $font-primary;
+  font-size: 15px;
+}
+
+.error {
+  display: none;
+  width: 100%;
+  font-size: 65%;
+  color: #900;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.error--shown {
+  display: block;
+}
+
+.visibility_wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.visibility_label {
+ font-size: 12px;
+}
