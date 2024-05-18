@@ -4,6 +4,7 @@ import LoginComponent from './components/login/login.component';
 import Renderer from './models/renderer.model';
 import RouterService from './services/router/router.service';
 import Routes from './models/routes.model';
+import HeaderComponent from './components/header/header.component';
 
 export default class App extends BaseComponent<'div'> implements Renderer {
   private authenticationService = new AuthenticationService();
@@ -12,11 +13,7 @@ export default class App extends BaseComponent<'div'> implements Renderer {
 
   private loginComponent = new LoginComponent();
 
-  private headerComponent = new BaseComponent({
-    tag: 'header',
-    classes: ['app_header'],
-    textContent: 'this is HEADER',
-  });
+  private headerComponent = new HeaderComponent(this.routerService);
 
   private registrationComponent = new BaseComponent({
     tag: 'div',
@@ -38,7 +35,7 @@ export default class App extends BaseComponent<'div'> implements Renderer {
 
   private contentWrapper = new BaseComponent({
     tag: 'main',
-    classes: ['app_main'],
+    classes: ['app_content'],
   });
 
   constructor(private root: HTMLElement) {

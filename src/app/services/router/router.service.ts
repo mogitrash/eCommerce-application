@@ -6,20 +6,20 @@ export default class RouterService {
 
   constructor(private app: Renderer) {
     window.addEventListener('popstate', () => {
-      this.navigateTo(window.location.pathname);
+      this.handleLocation(window.location.pathname);
     });
   }
 
   init() {
-    this.navigate(window.location.pathname);
+    this.handleLocation(window.location.pathname);
   }
 
   navigate(path: Routes | string) {
     window.history.pushState({}, '', path);
-    this.navigateTo(path);
+    this.handleLocation(path);
   }
 
-  private navigateTo(path: Routes | string) {
+  private handleLocation(path: Routes | string) {
     if (this.routes.includes(path)) {
       this.app.render(path as Routes);
     } else {

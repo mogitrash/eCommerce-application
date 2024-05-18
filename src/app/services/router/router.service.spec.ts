@@ -57,6 +57,20 @@ describe('RouterService', () => {
     });
   });
 
+  describe('on navigate by pushing buttons provided URL', () => {
+    const renderSpy = jest.spyOn(mokedApp, 'render');
+
+    test('valid should navigate on provided URL', () => {
+      service.navigate(Routes.Login);
+      expect(renderSpy).toHaveBeenCalledWith(Routes.Login);
+    });
+
+    test('not valid should navigate on 404 page', () => {
+      service.navigate('test');
+      expect(renderSpy).toHaveBeenCalledWith(Routes.NotFound);
+    });
+  });
+
   test('should navigate on back URL on going back', () => {
     const event = new Event('popstate');
     const renderSpy = jest.spyOn(mokedApp, 'render');
