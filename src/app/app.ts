@@ -18,7 +18,7 @@ export default class App extends BaseComponent<'div'> {
   }
 
   render() {
-    this.append([this.loginComponent]);
+    this.append([this.registrationComponent]);
   }
 
   start() {

@@ -66,7 +66,7 @@ export default class InputPasswordComponent extends BaseComponent<'div'> {
   }
 
   hideError() {
-    this.error.removeClass('modal_error--shown');
+    this.error.removeClass('error--shown');
     this.error.setTextContent('');
   }
 
