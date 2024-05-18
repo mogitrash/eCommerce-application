@@ -6,18 +6,14 @@ import {
   PASSWORD_REGEX,
   PASSWORD_MINLENGTH,
   NAME_REGEX,
-  STREET_REGEX,
-  CITY_REGEX,
-  POSTAL_CODE_BELARUS_REGEX,
-  POSTAL_CODE_GERMANY_REGEX,
-  POSTAL_CODE_SPAIN_REGEX,
 } from '../../models/constants/login-registration.constants';
 import InputTextComponent from '../input/input-text.component';
 import InputPasswordComponent from '../input/input-password.component';
 import InputDateComponent from '../input/input-date.component';
-import SelectComponent from '../select/select.component';
 import CustomerDraft from '../../models/customer-draft.model';
 import Country from '../../models/country.model';
+import AddressFormComponent from '../address-form/address-form.component';
+import InputCheckboxComponent from '../input/input-checkbox.component';
 
 export default class RegistrationComponent extends BaseComponent<'div'> {
   personalDetails: BaseComponent<'p'>;
@@ -34,23 +30,19 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
 
   lastNameInput: InputTextComponent;
 
-  shippingAddress: BaseComponent<'p'>;
-
-  shippingAddressWrapper: BaseComponent<'div'>;
-
-  streetInput: InputTextComponent;
-
-  cityInput: InputTextComponent;
-
-  postalCodeInput: InputTextComponent;
-
   dateInput: InputDateComponent;
 
-  countryInput: SelectComponent;
+  shippingAddressForm: AddressFormComponent;
+
+  defaultBillingCheckbox: InputCheckboxComponent;
+
+  billingAddressForm: AddressFormComponent;
 
   loginButton: Button;
 
   registrationButton: Button;
+
+  isShippingAddressUsedAsBilling: boolean = false;
 
   constructor() {
     super({ tag: 'div', classes: ['modal'] });
@@ -93,36 +85,6 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       labelText: 'Last Name',
       pattern: NAME_REGEX,
     });
-    this.shippingAddress = new BaseComponent({
-      tag: 'p',
-      classes: ['hint'],
-      textContent: 'Shipping Address',
-    });
-    this.shippingAddressWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['input_wrapper'],
-    });
-    this.streetInput = new InputTextComponent({
-      id: 'streetId',
-      name: 'street',
-      required: true,
-      labelText: 'Street',
-      pattern: STREET_REGEX,
-    });
-    this.cityInput = new InputTextComponent({
-      id: 'cityId',
-      name: 'city',
-      required: true,
-      labelText: 'City',
-      pattern: CITY_REGEX,
-    });
-    this.postalCodeInput = new InputTextComponent({
-      id: 'postalCodeId',
-      name: 'postalCode',
-      required: true,
-      labelText: 'Postal Code',
-      pattern: CITY_REGEX,
-    });
     this.dateInput = new InputDateComponent({
       id: 'dateOfBirthId',
       name: 'dateOfBirth',
@@ -130,17 +92,19 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       labelText: 'Date of Birth',
       minYearDelta: 13,
     });
-    this.countryInput = new SelectComponent({
-      id: 'countryId',
-      name: 'country',
-      labelText: 'Country',
-      required: true,
-      options: [
-        { label: 'Please choose an option', value: '' },
-        { label: 'Belarus', value: Country.BY },
-        { label: 'Germany', value: Country.DE },
-        { label: 'Spain', value: Country.ES },
-      ],
+    this.shippingAddressForm = new AddressFormComponent({
+      formName: 'Shipping Address',
+      inputPrefix: 'shipping',
+    });
+    this.defaultBillingCheckbox = new InputCheckboxComponent({
+      id: 'defaultBillingId',
+      name: 'defaultBilling',
+      labelText: 'Use as default billing address',
+      onSelect: this.handleDefaultBillingCheckboxClick.bind(this),
+    });
+    this.billingAddressForm = new AddressFormComponent({
+      formName: 'Billing Address',
+      inputPrefix: 'billing',
     });
     this.loginButton = new Button({
       text: 'Log In',
@@ -168,13 +132,27 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       dateOfBirth: formData.get('dateOfBirth') as string,
       addresses: [
         {
-          streetName: formData.get('street') as string,
-          city: formData.get('city') as string,
-          postalCode: formData.get('postalCode') as string,
-          country: formData.get('country') as Country,
+          streetName: formData.get('shippingStreet') as string,
+          city: formData.get('shippingCity') as string,
+          postalCode: formData.get('shippingPostalCode') as string,
+          country: formData.get('shippingCountry') as Country,
         },
       ],
+      defaultShippingAddress: 0,
     };
+
+    if (this.isShippingAddressUsedAsBilling) {
+      customerDraft.defaultBillingAddress = 0;
+    } else {
+      customerDraft.addresses.push({
+        streetName: formData.get('billingStreet') as string,
+        city: formData.get('billingCity') as string,
+        postalCode: formData.get('billingPostalCode') as string,
+        country: formData.get('billingCountry') as Country,
+      });
+      customerDraft.defaultBillingAddress = 1;
+    }
+    // TODO: use service call with customerDraft
     console.log(customerDraft);
   }
 
@@ -184,14 +162,6 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       this.passwordInput.getValidity(),
     );
     const dateErrorText = this.validateInputDate();
-    const countryErrorText = RegistrationComponent.validateInputCountry(
-      this.countryInput.getValidity(),
-    );
-    const streetErrorText = RegistrationComponent.validateInputStreet(
-      this.streetInput.getValidity(),
-    );
-    const cityErrorText = RegistrationComponent.validateInputCity(this.cityInput.getValidity());
-    const postalCodeErrorText = this.validateInputPostalCode(this.postalCodeInput.getValidity());
 
     if (emailErrorText) {
       this.emailInput.showError(emailErrorText);
@@ -208,23 +178,15 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       this.registrationButton.disable();
       return;
     }
-    if (streetErrorText) {
-      this.streetInput.showError(streetErrorText);
+
+    const isShippingAddressFormValid = this.shippingAddressForm.validateForm();
+    const isBillingAddressFormValid = this.billingAddressForm.validateForm();
+
+    if (!isShippingAddressFormValid) {
       this.registrationButton.disable();
       return;
     }
-    if (cityErrorText) {
-      this.cityInput.showError(cityErrorText);
-      this.registrationButton.disable();
-      return;
-    }
-    if (countryErrorText) {
-      this.countryInput.showError(countryErrorText);
-      this.registrationButton.disable();
-      return;
-    }
-    if (postalCodeErrorText) {
-      this.postalCodeInput.showError(postalCodeErrorText);
+    if (!this.isShippingAddressUsedAsBilling && !isBillingAddressFormValid) {
       this.registrationButton.disable();
       return;
     }
@@ -261,59 +223,15 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     return '';
   }
 
-  static validateInputCountry(validity: ValidityState): string {
-    if (validity.valueMissing) {
-      return 'Please select country.';
+  handleDefaultBillingCheckboxClick(isChecked: boolean) {
+    if (isChecked) {
+      this.isShippingAddressUsedAsBilling = true;
+      this.billingAddressForm.hideForm();
+    } else {
+      this.isShippingAddressUsedAsBilling = false;
+      this.billingAddressForm.showForm();
     }
-    return '';
-  }
-
-  static validateInputStreet(validity: ValidityState): string {
-    if (validity.valueMissing) {
-      return 'Please enter value.';
-    }
-    return '';
-  }
-
-  static validateInputCity(validity: ValidityState): string {
-    if (validity.valueMissing) {
-      return 'Please enter value.';
-    }
-    if (validity.patternMismatch) {
-      return 'Must contain at least one character and no special characters or numbers.';
-    }
-    return '';
-  }
-
-  validateInputPostalCode(validity: ValidityState): string {
-    if (validity.valueMissing) {
-      return 'Please enter value.';
-    }
-
-    const postalCode = this.postalCodeInput.input.getElement().value;
-    const country = this.countryInput.select.getElement().value as Country;
-
-    switch (country) {
-      case Country.BY:
-        if (!new RegExp(POSTAL_CODE_BELARUS_REGEX).test(postalCode)) {
-          return 'Must contain 6 digits';
-        }
-        break;
-      case Country.DE:
-        if (!new RegExp(POSTAL_CODE_GERMANY_REGEX).test(postalCode)) {
-          return 'Must contain 5 digits';
-        }
-        break;
-      case Country.ES:
-        if (!new RegExp(POSTAL_CODE_SPAIN_REGEX).test(postalCode)) {
-          return 'Must be five-digit number ranging from 01000 to 52999';
-        }
-        break;
-      default:
-        break;
-    }
-
-    return '';
+    this.validateForm();
   }
 
   setupElements() {
@@ -334,17 +252,12 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       this.lastNameInput,
       this.dateInput,
     ]);
-    this.shippingAddressWrapper.append([
-      this.streetInput,
-      this.cityInput,
-      this.countryInput,
-      this.postalCodeInput,
-    ]);
     this.registrationForm.append([
       this.personalDetails,
       this.personalDetailsWrapper,
-      this.shippingAddress,
-      this.shippingAddressWrapper,
+      this.shippingAddressForm,
+      this.defaultBillingCheckbox,
+      this.billingAddressForm,
       this.registrationButton,
       this.loginButton,
     ]);

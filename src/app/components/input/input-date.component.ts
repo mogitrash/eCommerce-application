@@ -31,27 +31,14 @@ export default class InputDateComponent extends BaseComponent<'div'> {
   }
 
   handleDateValidity() {
-    // const currentDate = new Date();
-    // const date = new Date(this.input.getElement().value);
-    // const month = date.getMonth() + 1;
-    // const day = date.getDate();
-    // const year = date.getFullYear();
-
-    // Parse the input date string
     const inputDate = new Date(this.input.getElement().value);
-
-    // Get the current date
     const currentDate = new Date();
-
-    // Calculate the difference in years
     const yearDifference = currentDate.getFullYear() - inputDate.getFullYear();
 
-    // If the year difference is more than 13, it's valid
     if (yearDifference > this.minYearDelta) {
       return true;
     }
 
-    // If the year difference is exactly 13, we need to check the month and day
     if (yearDifference === this.minYearDelta) {
       const monthDifference = currentDate.getMonth() - inputDate.getMonth();
       if (monthDifference > 0) {

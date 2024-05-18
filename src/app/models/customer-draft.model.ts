@@ -7,7 +7,7 @@ export default interface CustomerDraft {
   lastName?: string;
   middleName?: string;
   dateOfBirth?: string;
-  addresses?: BaseAddress[];
+  addresses: BaseAddress[];
   defaultShippingAddress?: number; // NOTE: Index of the address in the addresses array
   defaultBillingAddress?: number; // NOTE: Index of the address in the addresses array
 }
