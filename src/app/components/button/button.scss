@@ -6,7 +6,7 @@
   background-color: $color-primary;
   font-family: $font-primary;
   font-weight: 500;
-  color: black;
+  color: white;
   letter-spacing: 1px;
   font-size: 16px;
   border: none;
@@ -15,12 +15,13 @@
   cursor: pointer;
 
   &:disabled {
+    color: black;
     cursor: not-allowed;
     background-color: #e1dfdd;
   }
 
-  &:focus {
-    box-shadow: rgba(0, 0, 0, 0.3) 2px 8px 4px -6px;
+  &:active {
+    scale: 0.99;
   }
 
   &:not(:disabled):hover {
