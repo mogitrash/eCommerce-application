@@ -6,6 +6,7 @@ import RouterService from './services/router/router.service';
 import Routes from './models/routes.model';
 import HeaderComponent from './components/header/header.component';
 import NotFoundComponent from './components/not-found-page/not-found.component';
+import MainComponent from './components/main/main.component';
 
 export default class App extends BaseComponent<'div'> implements Renderer {
   private routerService = new RouterService(this);
@@ -16,11 +17,7 @@ export default class App extends BaseComponent<'div'> implements Renderer {
 
   private registrationComponent = new RegistrationComponent();
 
-  private mainComponent = new BaseComponent({
-    tag: 'div',
-    classes: ['app_main'],
-    textContent: 'this is MAIN page',
-  });
+  private mainComponent = new MainComponent(this.routerService);
 
   private notFoundComponent = new NotFoundComponent(this.routerService);
 
@@ -31,6 +28,8 @@ export default class App extends BaseComponent<'div'> implements Renderer {
 
   constructor(private root: HTMLElement) {
     super({ tag: 'div', classes: ['app'] });
+    // TODO link to login logic
+    this.headerComponent.changeDisplay(false);
   }
 
   render(path: Routes): void {

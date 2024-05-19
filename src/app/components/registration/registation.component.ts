@@ -147,9 +147,6 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       defaultShippingAddress: 0,
     };
 
-
-
-
     if (this.isShippingAddressUsedAsBilling) {
       customerDraft.defaultBillingAddress = 0;
     } else {
@@ -178,7 +175,6 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       this.notificationService.notify(errorMessage);
     }
     console.log(customerDraft);
-
   }
 
   private validateForm() {
@@ -289,7 +285,6 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     this.registrationForm.setAttribute('novalidate', '');
     this.registrationButton.setAttribute('type', 'submit');
   }
-
 
   private setupListeners() {
     this.registrationForm.addListener('submit', this.handleFormSubmit.bind(this));
