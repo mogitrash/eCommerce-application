@@ -17,34 +17,34 @@ export default class AuthenticationService {
   }
 
   async signInCustomer(customerSignIn: CustomerSignIn): Promise<SignInResult | ErrorResponse> {
-    const authenticationResponse = await this.makeAuthRequest(customerSignIn, 'login');
-    if ('customer' in authenticationResponse) {
-      const authorizationResponse = await this.authorizationService.getPasswordFlowToken(
-        customerSignIn.email,
-        customerSignIn.password,
-      );
-
-      if ('access_token' in authorizationResponse) {
-        // NOTE: according to SCRUM-42 we passing auth token to signInResult interface object
-        localStorage.setItem('userToken', authorizationResponse.access_token);
-        authenticationResponse.accessToken = authorizationResponse.access_token;
-      }
-    }
-
-    return authenticationResponse;
+    return this.makeAuthRequest(customerSignIn, 'login');
   }
 
   private async makeAuthRequest(
     data: CustomerSignIn | CustomerDraft,
     endPoint: 'login' | 'signup',
   ): Promise<SignInResult | ErrorResponse> {
-    const authenticationResponse = await this.authorizationService.getAnonymousSessionToken();
+    let authorizationResponse;
+    const isLogin = endPoint === 'login';
 
-    if ('access_token' in authenticationResponse) {
+    if (isLogin) {
+      authorizationResponse = await this.authorizationService.getAnonymousSessionToken();
+    } else {
+      authorizationResponse = await this.authorizationService.getPasswordFlowToken(
+        data.email,
+        data.password,
+      );
+    }
+
+    if ('access_token' in authorizationResponse) {
       const headers = new Headers({
-        Authorization: `Bearer ${authenticationResponse.access_token}`,
+        Authorization: `Bearer ${authorizationResponse.access_token}`,
         'Content-type': 'application/json',
       });
+
+      if (isLogin) {
+        localStorage.setItem('userToken', authorizationResponse.access_token);
+      }
 
       const body = JSON.stringify(data);
 
@@ -55,6 +55,6 @@ export default class AuthenticationService {
       }).then((res) => res.json());
     }
 
-    return authenticationResponse;
+    return authorizationResponse;
   }
 }
