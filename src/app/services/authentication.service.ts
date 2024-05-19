@@ -28,12 +28,12 @@ export default class AuthenticationService {
     const isLogin = endPoint === 'login';
 
     if (isLogin) {
-      authorizationResponse = await this.authorizationService.getAnonymousSessionToken();
-    } else {
       authorizationResponse = await this.authorizationService.getPasswordFlowToken(
         data.email,
         data.password,
       );
+    } else {
+      authorizationResponse = await this.authorizationService.getAnonymousSessionToken();
     }
 
     if ('access_token' in authorizationResponse) {

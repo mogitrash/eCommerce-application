@@ -174,8 +174,6 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
 
       this.notificationService.notify(errorMessage);
     }
-    console.log(customerDraft);
-  }
 
   private validateForm() {
     const emailErrorText = RegistrationComponent.validateInputEmail(this.emailInput.getValidity());
