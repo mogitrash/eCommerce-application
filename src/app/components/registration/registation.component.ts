@@ -10,6 +10,9 @@ import {
 import InputTextComponent from '../input/input-text.component';
 import InputPasswordComponent from '../input/input-password.component';
 import InputDateComponent from '../input/input-date.component';
+
+import AuthenticationService from '../../services/authentication.service';
+import NotificationService from '../../services/notification.service';
 import CustomerDraft from '../../models/customer-draft.model';
 import Country from '../../models/country.model';
 import AddressFormComponent from '../address-form/address-form.component';
@@ -43,6 +46,10 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
   private registrationButton: Button;
 
   private isShippingAddressUsedAsBilling: boolean = false;
+
+  private authenticationService = new AuthenticationService();
+
+  private notificationService = new NotificationService();
 
   constructor() {
     super({ tag: 'div', classes: ['modal'] });
@@ -120,7 +127,7 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     this.render();
   }
 
-  private handleFormSubmit(event: Event) {
+  private async handleFormSubmit(event: Event) {
     event?.preventDefault();
     const formData = new FormData(this.registrationForm.getElement());
     const customerDraft: CustomerDraft = {
@@ -140,6 +147,9 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       defaultShippingAddress: 0,
     };
 
+
+
+
     if (this.isShippingAddressUsedAsBilling) {
       customerDraft.defaultBillingAddress = 0;
     } else {
@@ -151,8 +161,24 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       });
       customerDraft.defaultBillingAddress = 1;
     }
-    // TODO: use service call with customerDraft
+    const response = await this.authenticationService.signUpCustomer(customerDraft);
+
+    if ('customer' in response) {
+      this.notificationService.notify('You have created an account');
+      this.registrationForm.getElement().reset();
+      // TODO: add routing here
+    } else {
+      let errorMessage;
+      if (response.message === 'There is already an existing customer with the provided email.') {
+        errorMessage = 'Email already in use. Log in or use a different email.';
+      } else {
+        errorMessage = 'Oops! Something went wrong. Please try again later.';
+      }
+
+      this.notificationService.notify(errorMessage);
+    }
     console.log(customerDraft);
+
   }
 
   private validateForm() {
@@ -263,6 +289,7 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     this.registrationForm.setAttribute('novalidate', '');
     this.registrationButton.setAttribute('type', 'submit');
   }
+
 
   private setupListeners() {
     this.registrationForm.addListener('submit', this.handleFormSubmit.bind(this));

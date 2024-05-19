@@ -3,6 +3,7 @@
 .notification {
   font-family: $font-primary;
   animation: SlideIn 5s;
+  line-height: 120%;
 
   background: #ffffff;
   border-radius: 10px;
@@ -10,7 +11,7 @@
   text-align: center;
   width: 300px;
   padding: 15px;
-  position: absolute;
+  position: fixed;
   opacity: 0;
   left: 50%;
   transform: translateX(-50%);
