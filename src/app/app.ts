@@ -5,6 +5,7 @@ import Renderer from './models/renderer.model';
 import RouterService from './services/router/router.service';
 import Routes from './models/routes.model';
 import HeaderComponent from './components/header/header.component';
+import NotFoundComponent from './components/not-found-page/not-found.component';
 
 export default class App extends BaseComponent<'div'> implements Renderer {
   private routerService = new RouterService(this);
@@ -21,11 +22,7 @@ export default class App extends BaseComponent<'div'> implements Renderer {
     textContent: 'this is MAIN page',
   });
 
-  private notFoundComponent = new BaseComponent({
-    tag: 'div',
-    classes: ['app_not-found'],
-    textContent: 'this is NOT FOUND page',
-  });
+  private notFoundComponent = new NotFoundComponent(this.routerService);
 
   private contentWrapper = new BaseComponent({
     tag: 'main',
