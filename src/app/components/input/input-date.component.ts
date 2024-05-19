@@ -6,7 +6,7 @@ type InputDateComponentConfig = {
   name: string;
   required: boolean;
   labelText: string;
-  pattern: string;
+  minYearDelta: number;
 };
 
 export default class InputDateComponent extends BaseComponent<'div'> {
@@ -16,25 +16,51 @@ export default class InputDateComponent extends BaseComponent<'div'> {
 
   error: BaseComponent<'span'>;
 
+  minYearDelta: number;
+
   constructor(config: InputDateComponentConfig) {
     super({ tag: 'div' });
     this.label = new BaseComponent({ tag: 'label', classes: ['label'] });
     this.input = new BaseComponent({ tag: 'input', classes: ['input'] });
     this.error = new BaseComponent({ tag: 'span', classes: ['error'] });
 
+    this.minYearDelta = config.minYearDelta;
     this.setupElements(config);
     this.setupListeners();
     this.render();
   }
 
+  handleDateValidity() {
+    const inputDate = new Date(this.input.getElement().value);
+    const currentDate = new Date();
+    const yearDifference = currentDate.getFullYear() - inputDate.getFullYear();
+
+    if (yearDifference > this.minYearDelta) {
+      return true;
+    }
+
+    if (yearDifference === this.minYearDelta) {
+      const monthDifference = currentDate.getMonth() - inputDate.getMonth();
+      if (monthDifference > 0) {
+        return true;
+      }
+      if (monthDifference === 0) {
+        const dayDifference = currentDate.getDate() - inputDate.getDate();
+        if (dayDifference >= 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   setupElements(config: InputDateComponentConfig) {
-    const { id, name, required, labelText, pattern } = config;
+    const { id, name, required, labelText } = config;
     this.input.setAttribute('type', 'date');
     this.input.setAttribute('id', id);
     if (required) {
       this.input.setAttribute('required', '');
     }
-    this.input.setAttribute('pattern', pattern);
     this.input.setAttribute('name', name);
     this.label.setAttribute('for', id);
     this.label.setTextContent(labelText);
@@ -50,7 +76,7 @@ export default class InputDateComponent extends BaseComponent<'div'> {
   }
 
   hideError() {
-    this.error.removeClass('modal_error--shown');
+    this.error.removeClass('error--shown');
     this.error.setTextContent('');
   }
 

@@ -1,7 +1,6 @@
 @import './../../sass/variables.scss';
 
 .input {
-  margin-bottom: 5px;
   width: 100%;
   height: 25px;
 }
@@ -15,9 +14,28 @@
   display: none;
   width: 100%;
   font-size: 65%;
-  color: #900;
   border-radius: 5px;
   box-sizing: border-box;
+  position: absolute;
+  top: 48px;
+  background: #c51244;
+  padding: 5px;
+  box-shadow: 1px 1px 1px #aaaaaa;
+  margin-top: 10px;
+  color: #fff;
+  z-index: 1;
+}
+
+.error:before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #c51244;
+  position: absolute;
+  top: -9px;
+  right: 20%;
 }
 
 .error--shown {
@@ -30,5 +48,14 @@
 }
 
 .visibility_label {
- font-size: 12px;
+  font-size: 12px;
+}
+
+.input_checkbox {
+  display: flex;
+  align-items: center;
+
+  .input {
+    width: auto;
+  }
 }

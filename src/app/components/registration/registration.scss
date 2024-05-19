@@ -9,6 +9,7 @@
   background-color: white;
   border-radius: 10px;
   min-width: 300px;
+  margin: auto 0;
 }
 
 .modal_form {
@@ -29,5 +30,29 @@
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(3, 1fr);
   grid-column-gap: 30px;
-  grid-row-gap: 10px;
+  grid-row-gap: 15px;
+  width: 500px;
+}
+
+.input_wrapper > div {
+  position: relative;
+  min-height: 40px;
+}
+
+@media screen and (max-width: 600px) {
+  .modal {
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .input_wrapper {
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-column-gap: 10px;
+    width: 300px;
+  }
+
+  .hint {
+    margin-top: 10px;
+  }
 }

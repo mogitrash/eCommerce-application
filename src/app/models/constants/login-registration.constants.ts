@@ -9,4 +9,8 @@ export const STREET_REGEX = '^.{1,}$';
 
 export const CITY_REGEX = '^[A-Za-z]+$';
 
-export const DATE_REGEX = '';
+export const POSTAL_CODE_BELARUS_REGEX = '^\\d{6}$';
+
+export const POSTAL_CODE_GERMANY_REGEX = '^\\d{5}$';
+
+export const POSTAL_CODE_SPAIN_REGEX = '^(?:0[1-9]\\d{3}|[1-4]\\d{4}|5[0-2]\\d{3})$';
