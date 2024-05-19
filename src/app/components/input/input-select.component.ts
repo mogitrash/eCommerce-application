@@ -1,7 +1,7 @@
 import './input.scss';
 import BaseComponent from '../base/base.component';
 
-type InputTextComponentConfig = {
+type InputSelectComponentConfig = {
   id: string;
   name: string;
   required: boolean;
@@ -9,14 +9,14 @@ type InputTextComponentConfig = {
   pattern: string;
 };
 
-export default class InputTextComponent extends BaseComponent<'div'> {
+export default class InputSelectComponent extends BaseComponent<'div'> {
   label: BaseComponent<'label'>;
 
   input: BaseComponent<'input'>;
 
   error: BaseComponent<'span'>;
 
-  constructor(config: InputTextComponentConfig) {
+  constructor(config: InputSelectComponentConfig) {
     super({ tag: 'div' });
     this.label = new BaseComponent({ tag: 'label', classes: ['label'] });
     this.input = new BaseComponent({ tag: 'input', classes: ['input'] });
@@ -27,9 +27,9 @@ export default class InputTextComponent extends BaseComponent<'div'> {
     this.render();
   }
 
-  setupElements(config: InputTextComponentConfig) {
+  setupElements(config: InputSelectComponentConfig) {
     const { id, name, required, labelText, pattern } = config;
-    this.input.setAttribute('type', 'text');
+    this.input.setAttribute('type', 'select');
     this.input.setAttribute('id', id);
     if (required) {
       this.input.setAttribute('required', '');
