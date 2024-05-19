@@ -16,33 +16,33 @@ import AddressFormComponent from '../address-form/address-form.component';
 import InputCheckboxComponent from '../input/input-checkbox.component';
 
 export default class RegistrationComponent extends BaseComponent<'div'> {
-  personalDetails: BaseComponent<'p'>;
+  private personalDetails: BaseComponent<'p'>;
 
-  personalDetailsWrapper: BaseComponent<'div'>;
+  private personalDetailsWrapper: BaseComponent<'div'>;
 
-  registrationForm: BaseComponent<'form'>;
+  private registrationForm: BaseComponent<'form'>;
 
-  emailInput: InputTextComponent;
+  private emailInput: InputTextComponent;
 
-  passwordInput: InputPasswordComponent;
+  private passwordInput: InputPasswordComponent;
 
-  firstNameInput: InputTextComponent;
+  private firstNameInput: InputTextComponent;
 
-  lastNameInput: InputTextComponent;
+  private lastNameInput: InputTextComponent;
 
-  dateInput: InputDateComponent;
+  private dateInput: InputDateComponent;
 
-  shippingAddressForm: AddressFormComponent;
+  private shippingAddressForm: AddressFormComponent;
 
-  defaultBillingCheckbox: InputCheckboxComponent;
+  private defaultBillingCheckbox: InputCheckboxComponent;
 
-  billingAddressForm: AddressFormComponent;
+  private billingAddressForm: AddressFormComponent;
 
-  loginButton: Button;
+  private loginButton: Button;
 
-  registrationButton: Button;
+  private registrationButton: Button;
 
-  isShippingAddressUsedAsBilling: boolean = false;
+  private isShippingAddressUsedAsBilling: boolean = false;
 
   constructor() {
     super({ tag: 'div', classes: ['modal'] });
@@ -113,7 +113,6 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     });
     this.registrationButton = new Button({
       text: 'Create account',
-      onClick: this.handleFormSubmit.bind(this),
     });
     this.registrationButton.disable();
     this.setupElements();
@@ -121,7 +120,7 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     this.render();
   }
 
-  handleFormSubmit(event: Event) {
+  private handleFormSubmit(event: Event) {
     event?.preventDefault();
     const formData = new FormData(this.registrationForm.getElement());
     const customerDraft: CustomerDraft = {
@@ -156,10 +155,16 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     console.log(customerDraft);
   }
 
-  validateForm() {
+  private validateForm() {
     const emailErrorText = RegistrationComponent.validateInputEmail(this.emailInput.getValidity());
     const passwordErrorText = RegistrationComponent.validateInputPassword(
       this.passwordInput.getValidity(),
+    );
+    const firstNameErrorText = RegistrationComponent.validateInputName(
+      this.firstNameInput.getValidity(),
+    );
+    const lastNameErrorText = RegistrationComponent.validateInputName(
+      this.lastNameInput.getValidity(),
     );
     const dateErrorText = this.validateInputDate();
 
@@ -170,6 +175,16 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     }
     if (passwordErrorText) {
       this.passwordInput.showError(passwordErrorText);
+      this.registrationButton.disable();
+      return;
+    }
+    if (firstNameErrorText) {
+      this.firstNameInput.showError(firstNameErrorText);
+      this.registrationButton.disable();
+      return;
+    }
+    if (lastNameErrorText) {
+      this.lastNameInput.showError(lastNameErrorText);
       this.registrationButton.disable();
       return;
     }
@@ -193,14 +208,14 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     this.registrationButton.enable();
   }
 
-  validateInputDate(): string {
+  private validateInputDate(): string {
     if (this.dateInput.handleDateValidity()) {
       return '';
     }
     return 'Minors need parential guidance to use this website.';
   }
 
-  static validateInputPassword(validity: ValidityState): string {
+  private static validateInputPassword(validity: ValidityState): string {
     if (validity.tooShort) {
       return 'The password should be a minimum of 8 characters in length.';
     }
@@ -213,7 +228,7 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     return '';
   }
 
-  static validateInputEmail(validity: ValidityState): string {
+  private static validateInputEmail(validity: ValidityState): string {
     if (validity.patternMismatch) {
       return 'Email address must be properly formatted (e.g., user@example.com). Whitespaces are not allowed.';
     }
@@ -223,7 +238,17 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     return '';
   }
 
-  handleDefaultBillingCheckboxClick(isChecked: boolean) {
+  private static validateInputName(validity: ValidityState): string {
+    if (validity.patternMismatch) {
+      return 'Must contain at least one character and no special characters or numbers.';
+    }
+    if (validity.valueMissing) {
+      return 'Please enter value.';
+    }
+    return '';
+  }
+
+  private handleDefaultBillingCheckboxClick(isChecked: boolean) {
     if (isChecked) {
       this.isShippingAddressUsedAsBilling = true;
       this.billingAddressForm.hideForm();
@@ -234,17 +259,17 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     this.validateForm();
   }
 
-  setupElements() {
+  private setupElements() {
     this.registrationForm.setAttribute('novalidate', '');
     this.registrationButton.setAttribute('type', 'submit');
   }
 
-  setupListeners() {
+  private setupListeners() {
     this.registrationForm.addListener('submit', this.handleFormSubmit.bind(this));
     this.registrationForm.addListener('input', this.validateForm.bind(this));
   }
 
-  render() {
+  private render() {
     this.personalDetailsWrapper.append([
       this.emailInput,
       this.passwordInput,

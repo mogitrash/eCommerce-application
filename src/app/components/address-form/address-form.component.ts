@@ -12,17 +12,17 @@ import SelectComponent from '../select/select.component';
 import Country from '../../models/country.model';
 
 export default class AddressFormComponent extends BaseComponent<'div'> {
-  formName: BaseComponent<'p'>;
+  private formName: BaseComponent<'p'>;
 
-  inputWrapper: BaseComponent<'div'>;
+  private inputWrapper: BaseComponent<'div'>;
 
-  streetInput: InputTextComponent;
+  private streetInput: InputTextComponent;
 
-  cityInput: InputTextComponent;
+  private cityInput: InputTextComponent;
 
-  postalCodeInput: InputTextComponent;
+  private postalCodeInput: InputTextComponent;
 
-  countryInput: SelectComponent;
+  private countryInput: SelectComponent;
 
   constructor(config: { inputPrefix: string; formName: string }) {
     const { inputPrefix, formName } = config;
@@ -72,7 +72,7 @@ export default class AddressFormComponent extends BaseComponent<'div'> {
     this.render();
   }
 
-  validateForm(): boolean {
+  public validateForm(): boolean {
     const countryErrorText = AddressFormComponent.validateInputCountry(
       this.countryInput.getValidity(),
     );
@@ -101,21 +101,21 @@ export default class AddressFormComponent extends BaseComponent<'div'> {
     return true;
   }
 
-  static validateInputCountry(validity: ValidityState): string {
+  private static validateInputCountry(validity: ValidityState): string {
     if (validity.valueMissing) {
       return 'Please select country.';
     }
     return '';
   }
 
-  static validateInputStreet(validity: ValidityState): string {
+  private static validateInputStreet(validity: ValidityState): string {
     if (validity.valueMissing) {
       return 'Please enter value.';
     }
     return '';
   }
 
-  static validateInputCity(validity: ValidityState): string {
+  private static validateInputCity(validity: ValidityState): string {
     if (validity.valueMissing) {
       return 'Please enter value.';
     }
@@ -125,7 +125,7 @@ export default class AddressFormComponent extends BaseComponent<'div'> {
     return '';
   }
 
-  validateInputPostalCode(validity: ValidityState): string {
+  private validateInputPostalCode(validity: ValidityState): string {
     if (validity.valueMissing) {
       return 'Please enter value.';
     }
@@ -156,15 +156,15 @@ export default class AddressFormComponent extends BaseComponent<'div'> {
     return '';
   }
 
-  showForm(): void {
+  public showForm(): void {
     this.removeClass('address_form--hidden');
   }
 
-  hideForm(): void {
+  public hideForm(): void {
     this.addClass('address_form--hidden');
   }
 
-  render() {
+  private render() {
     this.inputWrapper.append([
       this.streetInput,
       this.cityInput,
