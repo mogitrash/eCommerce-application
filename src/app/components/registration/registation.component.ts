@@ -14,6 +14,10 @@ import InputTextComponent from '../input/input-text.component';
 import InputPasswordComponent from '../input/input-password.component';
 import InputDateComponent from '../input/input-date.component';
 import SelectComponent from '../select/select.component';
+import AuthenticationService from '../../services/authentication.service';
+import NotificationService from '../../services/notification.service';
+import CustomerDraft from '../../models/customer-draft.model';
+import Country from '../../models/country.model';
 
 export default class RegistrationComponent extends BaseComponent<'div'> {
   personalDetails: BaseComponent<'p'>;
@@ -47,6 +51,10 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
   loginButton: Button;
 
   registrationButton: Button;
+
+  private authenticationService = new AuthenticationService();
+
+  private notificationService = new NotificationService();
 
   constructor() {
     super({ tag: 'div', classes: ['modal'] });
@@ -139,7 +147,6 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     });
     this.registrationButton = new Button({
       text: 'Create account',
-      onClick: RegistrationComponent.handleFormSubmit.bind(this),
     });
     this.registrationButton.disable();
     this.setupElements();
@@ -147,8 +154,42 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     this.render();
   }
 
-  static handleFormSubmit(event: Event) {
+  private async handleFormSubmit(event: Event) {
     event?.preventDefault();
+    // Customer mock
+    const customerDraft: CustomerDraft = {
+      email: 'qwerty@gmail.com',
+      password: 'Ws12345678',
+      firstName: 'Herman',
+      lastName: 'Vas',
+      dateOfBirth: '2018-10-10',
+      addresses: [
+        {
+          streetName: 'Street',
+          city: 'City',
+          postalCode: '12356',
+          country: Country.BY,
+        },
+      ],
+      defaultShippingAddress: 0,
+    };
+
+    const response = await this.authenticationService.signUpCustomer(customerDraft);
+
+    if ('customer' in response) {
+      this.notificationService.notify('You have created an account');
+      this.registrationForm.getElement().reset();
+      // TODO: add routing here
+    } else {
+      let errorMessage;
+      if (response.message === 'There is already an existing customer with the provided email.') {
+        errorMessage = 'Email already in use. Log in or use a different email.';
+      } else {
+        errorMessage = 'Oops! Something went wrong. Please try again later.';
+      }
+
+      this.notificationService.notify(errorMessage);
+    }
   }
 
   validateForm() {
@@ -199,7 +240,7 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
   }
 
   setupListeners() {
-    this.registrationForm.addListener('submit', RegistrationComponent.handleFormSubmit.bind(this));
+    this.registrationForm.addListener('submit', this.handleFormSubmit.bind(this));
     this.registrationForm.addListener('input', this.validateForm.bind(this));
   }
 
