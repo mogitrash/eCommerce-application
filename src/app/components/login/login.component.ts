@@ -43,6 +43,10 @@ export default class LoginComponent extends BaseComponent<'div'> {
 
   private visibilityWrapper: BaseComponent<'div'>;
 
+  private emailInputWrapper: BaseComponent<'div'>;
+
+  private passwordInputWrapper: BaseComponent<'div'>;
+
   public loginButton: Button;
 
   private registrationButton: Button;
@@ -59,6 +63,7 @@ export default class LoginComponent extends BaseComponent<'div'> {
       textContent: 'Sign In',
     });
     this.loginForm = new BaseComponent({ tag: 'form', classes: ['modal_form'] });
+    this.emailInputWrapper = new BaseComponent({ tag: 'div', classes: ['modal_input-wrapper'] });
     this.emailInputLabel = new BaseComponent({
       tag: 'label',
       classes: ['modal_input-label'],
@@ -66,6 +71,7 @@ export default class LoginComponent extends BaseComponent<'div'> {
     });
     this.emailInput = new BaseComponent({ tag: 'input', classes: ['modal_input'] });
     this.emailError = new BaseComponent({ tag: 'span', classes: ['modal_error'] });
+    this.passwordInputWrapper = new BaseComponent({ tag: 'div', classes: ['modal_input-wrapper'] });
     this.passwordInputLabel = new BaseComponent({
       tag: 'label',
       classes: ['modal_input-label'],
@@ -214,14 +220,16 @@ export default class LoginComponent extends BaseComponent<'div'> {
 
   private render() {
     this.visibilityWrapper.append([this.passwordVisibility, this.passwordVisibilityLabel]);
-    this.loginForm.append([
-      this.emailInputLabel,
-      this.emailInput,
-      this.emailError,
+    this.emailInputWrapper.append([this.emailInputLabel, this.emailInput, this.emailError]);
+    this.passwordInputWrapper.append([
       this.passwordInputLabel,
       this.passwordInput,
       this.passwordError,
       this.visibilityWrapper,
+    ]);
+    this.loginForm.append([
+      this.emailInputWrapper,
+      this.passwordInputWrapper,
       this.loginButton,
       this.registrationButton,
     ]);
