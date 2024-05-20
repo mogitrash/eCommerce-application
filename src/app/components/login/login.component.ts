@@ -9,6 +9,8 @@ import {
 import AuthenticationService from '../../services/authentication.service';
 import CustomerSignIn from '../../models/customer-sign-in.model';
 import NotificationService from '../../services/notification.service';
+import RouterService from '../../services/router/router.service';
+import Routes from '../../models/routes.model';
 
 export default class LoginComponent extends BaseComponent<'div'> {
   private loginHint: BaseComponent<'p'>;
@@ -51,7 +53,7 @@ export default class LoginComponent extends BaseComponent<'div'> {
 
   private notificationService = new NotificationService();
 
-  constructor() {
+  constructor(private router: RouterService) {
     super({ tag: 'div', classes: ['login_modal'] });
     this.loginHint = new BaseComponent({
       tag: 'p',
@@ -85,8 +87,9 @@ export default class LoginComponent extends BaseComponent<'div'> {
     });
     this.registrationButton = new Button({
       text: 'Registration',
-      onClick: () => {
-        // TODO routinghere
+      onClick: (event: Event) => {
+        event.preventDefault();
+        this.router.navigate('/registration');
       },
     });
     this.loginButton.disable();
@@ -191,7 +194,7 @@ export default class LoginComponent extends BaseComponent<'div'> {
       const response = await this.authenticationService.signInCustomer(customerSignIn);
 
       if ('customer' in response) {
-        // TODO: add routing to main page here
+        this.router.redirect(Routes.Main);
         event.target.reset();
         this.notificationService.notify('You logged in');
       } else {

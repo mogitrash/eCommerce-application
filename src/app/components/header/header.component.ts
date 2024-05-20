@@ -3,6 +3,7 @@ import BaseComponent from '../base/base.component';
 import RouterService from '../../services/router/router.service';
 import logoSrc from '../../assets/images/main-logo.png';
 import Button from '../button/button.component';
+import Routes from '../../models/routes.model';
 
 class HeaderComponent extends BaseComponent<'header'> {
   private loginButton!: Button;
@@ -30,7 +31,11 @@ class HeaderComponent extends BaseComponent<'header'> {
   }
 
   private createLogo(): void {
-    const logoWrapper = new BaseComponent({ tag: 'div', classes: ['logo-wrapper'] });
+    const logoWrapper = new BaseComponent({
+      tag: 'div',
+      classes: ['logo-wrapper'],
+      textContent: 'Pawsitively the Best for Your Pets!',
+    });
     logoWrapper.addListener('click', () => {
       this.router.navigate('/');
     });
@@ -56,7 +61,8 @@ class HeaderComponent extends BaseComponent<'header'> {
     this.logoutButton = new Button({
       text: 'Log Out',
       onClick: () => {
-        // TODO add logic for log out
+        localStorage.removeItem('userToken');
+        this.router.redirect(Routes.Login);
       },
     });
     wrapper.append([this.loginButton, this.registrationButton, this.logoutButton]);
