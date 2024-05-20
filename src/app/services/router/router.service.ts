@@ -14,6 +14,11 @@ export default class RouterService {
     this.handleLocation(window.location.pathname);
   }
 
+  redirect(path: Routes) {
+    window.history.replaceState({}, '', path);
+    this.handleLocation(path);
+  }
+
   navigate(path: Routes | string) {
     window.history.pushState({}, '', path);
     this.handleLocation(path);

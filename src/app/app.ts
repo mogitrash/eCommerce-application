@@ -11,11 +11,11 @@ import MainComponent from './components/main/main.component';
 export default class App extends BaseComponent<'div'> implements Renderer {
   private routerService = new RouterService(this);
 
-  private loginComponent = new LoginComponent();
+  private loginComponent = new LoginComponent(this.routerService);
 
   private headerComponent = new HeaderComponent(this.routerService);
 
-  private registrationComponent = new RegistrationComponent();
+  private registrationComponent = new RegistrationComponent(this.routerService);
 
   private mainComponent = new MainComponent(this.routerService);
 
@@ -28,18 +28,26 @@ export default class App extends BaseComponent<'div'> implements Renderer {
 
   constructor(private root: HTMLElement) {
     super({ tag: 'div', classes: ['app'] });
-    // TODO link to login logic
-    this.headerComponent.changeDisplay(false);
   }
 
   render(path: Routes): void {
+    const isLogined = localStorage.getItem('userToken');
+    this.headerComponent.changeDisplay(Boolean(isLogined));
     this.contentWrapper.getElement().innerHTML = '';
     switch (path) {
       case Routes.Login:
-        this.contentWrapper.append([this.loginComponent]);
+        if (isLogined) {
+          this.routerService.redirect(Routes.Main);
+        } else {
+          this.contentWrapper.append([this.loginComponent]);
+        }
         break;
       case Routes.Registration:
-        this.contentWrapper.append([this.registrationComponent]);
+        if (isLogined) {
+          this.routerService.redirect(Routes.Main);
+        } else {
+          this.contentWrapper.append([this.registrationComponent]);
+        }
         break;
       case Routes.Main:
         this.contentWrapper.append([this.mainComponent]);

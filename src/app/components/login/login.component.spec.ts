@@ -1,3 +1,4 @@
+import RouterService from '../../services/router/router.service';
 import Login from './login.component';
 
 const validityMock: ValidityState = {
@@ -16,11 +17,15 @@ const validityMock: ValidityState = {
 
 describe('Login', () => {
   let component: Login;
+  const mokedApp = {
+    render: () => {},
+  };
+  const router = new RouterService(mokedApp);
 
   const showInputErrorSpy = jest.spyOn(Login, 'showInputError');
 
   beforeEach(() => {
-    component = new Login();
+    component = new Login(router);
   });
 
   afterEach(() => {

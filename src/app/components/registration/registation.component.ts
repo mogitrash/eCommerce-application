@@ -17,6 +17,9 @@ import CustomerDraft from '../../models/customer-draft.model';
 import Country from '../../models/country.model';
 import AddressFormComponent from '../address-form/address-form.component';
 import InputCheckboxComponent from '../input/input-checkbox.component';
+import RouterService from '../../services/router/router.service';
+import CustomerSignIn from '../../models/customer-sign-in.model';
+import Routes from '../../models/routes.model';
 
 export default class RegistrationComponent extends BaseComponent<'div'> {
   private personalDetails: BaseComponent<'p'>;
@@ -51,7 +54,7 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
 
   private notificationService = new NotificationService();
 
-  constructor() {
+  constructor(private router: RouterService) {
     super({ tag: 'div', classes: ['modal'] });
     this.personalDetails = new BaseComponent({
       tag: 'p',
@@ -115,8 +118,10 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     });
     this.loginButton = new Button({
       text: 'Log In',
-      onClick: () => {},
-      // TODO: add routing here,
+      onClick: (event: Event) => {
+        event.preventDefault();
+        this.router.navigate('/login');
+      },
     });
     this.registrationButton = new Button({
       text: 'Create account',
@@ -130,6 +135,10 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
   private async handleFormSubmit(event: Event) {
     event?.preventDefault();
     const formData = new FormData(this.registrationForm.getElement());
+    const customerSignIn: CustomerSignIn = {
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+    };
     const customerDraft: CustomerDraft = {
       email: formData.get('email') as string,
       password: formData.get('password') as string,
@@ -162,8 +171,15 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
 
     if ('customer' in response) {
       this.notificationService.notify('You have created an account');
+      const responseLogIn = await this.authenticationService.signInCustomer(customerSignIn);
+      if ('customer' in responseLogIn) {
+        this.router.redirect(Routes.Main);
+        this.notificationService.notify('You logged in');
+      } else {
+        this.notificationService.notify('Try to log in later');
+        this.router.redirect(Routes.Main);
+      }
       this.registrationForm.getElement().reset();
-      // TODO: add routing here
     } else {
       let errorMessage;
       if (response.message === 'There is already an existing customer with the provided email.') {
