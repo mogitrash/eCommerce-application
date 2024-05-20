@@ -34,7 +34,6 @@ class HeaderComponent extends BaseComponent<'header'> {
     const logoWrapper = new BaseComponent({
       tag: 'div',
       classes: ['logo-wrapper'],
-      textContent: 'Pawsitively the Best for Your Pets!',
     });
     logoWrapper.addListener('click', () => {
       this.router.navigate('/');
