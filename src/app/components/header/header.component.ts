@@ -75,18 +75,6 @@ class HeaderComponent extends BaseComponent<'header'> {
         this.router.navigate('/registration');
       },
     });
-    this.registrationButton = new Button({
-      text: 'Registration',
-      onClick: () => {
-        this.router.navigate('/registration');
-      },
-    });
-    this.registrationButton = new Button({
-      text: 'Registration',
-      onClick: () => {
-        this.router.navigate('/registration');
-      },
-    });
     this.logoutButton = new Button({
       text: 'Log Out',
       onClick: () => {
