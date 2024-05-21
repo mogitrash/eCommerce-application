@@ -45,10 +45,40 @@ class HeaderComponent extends BaseComponent<'header'> {
 
   private createControlPanel(): void {
     const wrapper = new BaseComponent({ tag: 'nav', classes: ['control-wrapper'] });
+    const product = new Button({
+      text: 'Product',
+      onClick: () => {
+        this.router.navigate('/product');
+      },
+    });
+    const catalog = new Button({
+      text: 'Catalog',
+      onClick: () => {
+        this.router.navigate('/catalog');
+      },
+    });
+    const profile = new Button({
+      text: 'Profile',
+      onClick: () => {
+        this.router.navigate('/profile');
+      },
+    });
     this.loginButton = new Button({
       text: 'Log In',
       onClick: () => {
         this.router.navigate('/login');
+      },
+    });
+    this.registrationButton = new Button({
+      text: 'Registration',
+      onClick: () => {
+        this.router.navigate('/registration');
+      },
+    });
+    this.registrationButton = new Button({
+      text: 'Registration',
+      onClick: () => {
+        this.router.navigate('/registration');
       },
     });
     this.registrationButton = new Button({
@@ -64,7 +94,14 @@ class HeaderComponent extends BaseComponent<'header'> {
         this.router.redirect(Routes.Login);
       },
     });
-    wrapper.append([this.loginButton, this.registrationButton, this.logoutButton]);
+    wrapper.append([
+      product,
+      catalog,
+      profile,
+      this.loginButton,
+      this.registrationButton,
+      this.logoutButton,
+    ]);
     this.append([wrapper]);
   }
 }

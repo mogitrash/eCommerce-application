@@ -7,6 +7,9 @@ import Routes from './models/routes.model';
 import HeaderComponent from './components/header/header.component';
 import NotFoundComponent from './components/not-found-page/not-found.component';
 import MainComponent from './components/main/main.component';
+import CatalogComponent from './components/catalog/catalog.component';
+import ProductComponent from './components/product/product.component';
+import ProfileComponent from './components/profile/profile.component';
 
 export default class App extends BaseComponent<'div'> implements Renderer {
   private routerService = new RouterService(this);
@@ -20,6 +23,12 @@ export default class App extends BaseComponent<'div'> implements Renderer {
   private mainComponent = new MainComponent(this.routerService);
 
   private notFoundComponent = new NotFoundComponent(this.routerService);
+
+  private catalogComponent = new CatalogComponent();
+
+  private productComponent = new ProductComponent();
+
+  private profileComponent = new ProfileComponent();
 
   private contentWrapper = new BaseComponent({
     tag: 'main',
@@ -51,6 +60,15 @@ export default class App extends BaseComponent<'div'> implements Renderer {
         break;
       case Routes.Main:
         this.contentWrapper.append([this.mainComponent]);
+        break;
+      case Routes.Catalog:
+        this.contentWrapper.append([this.catalogComponent]);
+        break;
+      case Routes.Profile:
+        this.contentWrapper.append([this.profileComponent]);
+        break;
+      case Routes.Product:
+        this.contentWrapper.append([this.productComponent]);
         break;
       case Routes.NotFound:
       default:
