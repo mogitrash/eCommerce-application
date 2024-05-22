@@ -48,15 +48,15 @@
   z-index: 1;
 
   &:before {
-  content: '';
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid $color-red;
-  position: absolute;
-  top: -9px;
-  right: 20%;
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid $color-red;
+    position: absolute;
+    top: -9px;
+    right: 20%;
   }
 }
 
