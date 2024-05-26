@@ -23,7 +23,7 @@ export default class InputCheckboxComponent extends BaseComponent<'div'> {
     this.render();
   }
 
-  setupElements(config: InputCheckboxComponentConfig) {
+  private setupElements(config: InputCheckboxComponentConfig) {
     const { id, name, labelText } = config;
     this.input.setAttribute('type', 'checkbox');
     this.input.setAttribute('id', id);
@@ -32,9 +32,17 @@ export default class InputCheckboxComponent extends BaseComponent<'div'> {
     this.label.setTextContent(labelText);
   }
 
-  setupListeners(config: InputCheckboxComponentConfig) {
+  private setupListeners(config: InputCheckboxComponentConfig) {
     const { onSelect } = config;
     this.input.addListener('change', () => onSelect(this.input.getElement().checked));
+  }
+
+  public show(): void {
+    this.removeClass('input_checkbox--hidden');
+  }
+
+  public hide(): void {
+    this.addClass('input_checkbox--hidden');
   }
 
   render() {
