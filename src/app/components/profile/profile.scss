@@ -1,1 +1,46 @@
 @import './../../sass/variables.scss';
+
+.profile {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.profile_heading {
+  align-self: center;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.profile_item-wrapper {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-bottom: 1px solid $color-gray;
+  width: 300px;
+}
+
+.profile_item-title {
+  color: $color-gray;
+}
+
+.profile_item-value {
+  color: black;
+}
+
+.profile_address {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile_address--default {
+  background-color: #f0f3ff;
+  border-radius: 10px;
+  border: 1px solid $color-gray;
+}

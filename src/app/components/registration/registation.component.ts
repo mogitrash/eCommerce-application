@@ -172,6 +172,7 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       lastName: formData.get('lastName') as string,
       dateOfBirth: formData.get('dateOfBirth') as string,
       addresses: [customerShippingAddress],
+      shippingAddresses: [0],
     };
 
     if (this.isShippingAddressUsedAsDefault) {
@@ -188,6 +189,7 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
         country: formData.get('billingCountry') as Country,
       };
       customerDraft.addresses.push(customerBillingAddress);
+      customerDraft.billingAddresses = [1];
       if (this.isBillingAddressUsedAsDefault) {
         customerDraft.defaultBillingAddress = 1;
       }

@@ -28,8 +28,6 @@ export default class App extends BaseComponent<'div'> implements Renderer {
 
   private productComponent = new ProductComponent();
 
-  private profileComponent = new ProfileComponent();
-
   private contentWrapper = new BaseComponent({
     tag: 'main',
     classes: ['app_content'],
@@ -65,7 +63,7 @@ export default class App extends BaseComponent<'div'> implements Renderer {
         this.contentWrapper.append([this.catalogComponent]);
         break;
       case Routes.Profile:
-        this.contentWrapper.append([this.profileComponent]);
+        this.renderProfile();
         break;
       case Routes.Product:
         this.contentWrapper.append([this.productComponent]);
@@ -74,6 +72,10 @@ export default class App extends BaseComponent<'div'> implements Renderer {
       default:
         this.contentWrapper.append([this.notFoundComponent]);
     }
+  }
+
+  renderProfile() {
+    this.contentWrapper.append([new ProfileComponent()]);
   }
 
   start(): void {
