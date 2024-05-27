@@ -40,7 +40,11 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
 
   private shippingAddressForm: AddressFormComponent;
 
+  private defaultShippingCheckbox: InputCheckboxComponent;
+
   private defaultBillingCheckbox: InputCheckboxComponent;
+
+  private defaultShippingAsBillingCheckbox: InputCheckboxComponent;
 
   private billingAddressForm: AddressFormComponent;
 
@@ -48,7 +52,11 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
 
   private registrationButton: Button;
 
-  private isShippingAddressUsedAsBilling: boolean = false;
+  private isBillingAddressUsedAsDefault: boolean = false;
+
+  private isShippingAddressUsedAsDefault: boolean = false;
+
+  private isShippingUsedAsDefaultBilling: boolean = false;
 
   private authenticationService = new AuthenticationService();
 
@@ -106,15 +114,27 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       formName: 'Shipping Address',
       inputPrefix: 'shipping',
     });
+    this.defaultShippingCheckbox = new InputCheckboxComponent({
+      id: 'defaultShippingId',
+      name: 'defaultShipping',
+      labelText: 'Use as default shipping address',
+      onSelect: this.handleDefaultShippingCheckboxClick.bind(this),
+    });
+    this.billingAddressForm = new AddressFormComponent({
+      formName: 'Billing Address',
+      inputPrefix: 'billing',
+    });
     this.defaultBillingCheckbox = new InputCheckboxComponent({
       id: 'defaultBillingId',
       name: 'defaultBilling',
       labelText: 'Use as default billing address',
       onSelect: this.handleDefaultBillingCheckboxClick.bind(this),
     });
-    this.billingAddressForm = new AddressFormComponent({
-      formName: 'Billing Address',
-      inputPrefix: 'billing',
+    this.defaultShippingAsBillingCheckbox = new InputCheckboxComponent({
+      id: 'defaultShippingAsBillingId',
+      name: 'defaultShippingAsBilling',
+      labelText: 'Use shipping address as default billing address',
+      onSelect: this.handleDefaultShippingAsBillingCheckboxClick.bind(this),
     });
     this.loginButton = new Button({
       text: 'Log In',
@@ -139,33 +159,40 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       email: formData.get('email') as string,
       password: formData.get('password') as string,
     };
+    const customerShippingAddress = {
+      streetName: formData.get('shippingStreet') as string,
+      city: formData.get('shippingCity') as string,
+      postalCode: formData.get('shippingPostalCode') as string,
+      country: formData.get('shippingCountry') as Country,
+    };
     const customerDraft: CustomerDraft = {
       email: formData.get('email') as string,
       password: formData.get('password') as string,
       firstName: formData.get('firstName') as string,
       lastName: formData.get('lastName') as string,
       dateOfBirth: formData.get('dateOfBirth') as string,
-      addresses: [
-        {
-          streetName: formData.get('shippingStreet') as string,
-          city: formData.get('shippingCity') as string,
-          postalCode: formData.get('shippingPostalCode') as string,
-          country: formData.get('shippingCountry') as Country,
-        },
-      ],
-      defaultShippingAddress: 0,
+      addresses: [customerShippingAddress],
+      shippingAddresses: [0],
     };
 
-    if (this.isShippingAddressUsedAsBilling) {
+    if (this.isShippingAddressUsedAsDefault) {
+      customerDraft.defaultShippingAddress = 0;
+    }
+
+    if (this.isShippingUsedAsDefaultBilling) {
       customerDraft.defaultBillingAddress = 0;
     } else {
-      customerDraft.addresses.push({
+      const customerBillingAddress = {
         streetName: formData.get('billingStreet') as string,
         city: formData.get('billingCity') as string,
         postalCode: formData.get('billingPostalCode') as string,
         country: formData.get('billingCountry') as Country,
-      });
-      customerDraft.defaultBillingAddress = 1;
+      };
+      customerDraft.addresses.push(customerBillingAddress);
+      customerDraft.billingAddresses = [1];
+      if (this.isBillingAddressUsedAsDefault) {
+        customerDraft.defaultBillingAddress = 1;
+      }
     }
     const response = await this.authenticationService.signUpCustomer(customerDraft);
 
@@ -238,7 +265,7 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       this.registrationButton.disable();
       return;
     }
-    if (!this.isShippingAddressUsedAsBilling && !isBillingAddressFormValid) {
+    if (!this.isShippingUsedAsDefaultBilling && !isBillingAddressFormValid) {
       this.registrationButton.disable();
       return;
     }
@@ -285,13 +312,33 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
     return '';
   }
 
+  private handleDefaultShippingCheckboxClick(isChecked: boolean) {
+    if (isChecked) {
+      this.isShippingAddressUsedAsDefault = true;
+    } else {
+      this.isShippingAddressUsedAsDefault = false;
+    }
+    this.validateForm();
+  }
+
   private handleDefaultBillingCheckboxClick(isChecked: boolean) {
     if (isChecked) {
-      this.isShippingAddressUsedAsBilling = true;
-      this.billingAddressForm.hideForm();
+      this.isBillingAddressUsedAsDefault = true;
     } else {
-      this.isShippingAddressUsedAsBilling = false;
+      this.isBillingAddressUsedAsDefault = false;
+    }
+    this.validateForm();
+  }
+
+  private handleDefaultShippingAsBillingCheckboxClick(isChecked: boolean) {
+    if (isChecked) {
+      this.isShippingUsedAsDefaultBilling = true;
+      this.billingAddressForm.hideForm();
+      this.defaultBillingCheckbox.hide();
+    } else {
+      this.isShippingUsedAsDefaultBilling = false;
       this.billingAddressForm.showForm();
+      this.defaultBillingCheckbox.show();
     }
     this.validateForm();
   }
@@ -318,8 +365,10 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       this.personalDetails,
       this.personalDetailsWrapper,
       this.shippingAddressForm,
-      this.defaultBillingCheckbox,
+      this.defaultShippingCheckbox,
       this.billingAddressForm,
+      this.defaultBillingCheckbox,
+      this.defaultShippingAsBillingCheckbox,
       this.registrationButton,
       this.loginButton,
     ]);

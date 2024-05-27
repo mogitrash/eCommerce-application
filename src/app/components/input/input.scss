@@ -5,6 +5,7 @@
   height: 25px;
 }
 
+
 .label {
   font-family: $font-primary;
   font-size: 15px;
@@ -58,4 +59,8 @@
   .input {
     width: auto;
   }
+}
+
+.input_checkbox--hidden {
+  display: none;
 }

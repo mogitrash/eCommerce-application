@@ -10,4 +10,6 @@ export default interface CustomerDraft {
   addresses: BaseAddress[];
   defaultShippingAddress?: number; // NOTE: Index of the address in the addresses array
   defaultBillingAddress?: number; // NOTE: Index of the address in the addresses array
+  shippingAddresses?: [number]; // NOTE: Indices of the address in the addresses array
+  billingAddresses?: [number]; // NOTE: Indices of the address in the addresses array
 }
