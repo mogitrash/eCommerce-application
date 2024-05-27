@@ -26,8 +26,13 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     } = customer;
 
     this.createPersonalDetails(firstName, lastName, dateOfBirth);
-    this.createShippingAddresses(addresses, shippingAddressIds, defaultShippingAddressId);
-    this.createBillingAddresses(addresses, billingAddressIds, defaultBillingAddressId);
+    this.createAddresses(
+      'Shipping Address',
+      addresses,
+      shippingAddressIds,
+      defaultShippingAddressId,
+    );
+    this.createAddresses('Billing Address', addresses, billingAddressIds, defaultBillingAddressId);
   }
 
   createPersonalDetails(firstName: string, lastName: string, dateOfBirth: Date): void {
@@ -95,54 +100,28 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     this.append([personalDetailsContainer]);
   }
 
-  createShippingAddresses(
+  createAddresses(
+    headingText: string,
     addresses: BaseAddress[],
-    shippingAddressIds?: string[],
-    defaultShippingAddressId?: string,
+    addressIds?: string[],
+    defaultAddressId?: string,
   ) {
-    if (!shippingAddressIds) return;
-    const shippingAddressContainer = new BaseComponent({
+    if (!addressIds) return;
+    const addressContainer = new BaseComponent({
       tag: 'div',
       classes: ['profile_container'],
     });
-    const shippingAddressHeading = new BaseComponent({
+    const addressHeading = new BaseComponent({
       tag: 'h2',
       classes: ['profile_heading'],
-      textContent: 'Shipping Address',
+      textContent: headingText,
     });
-    const shippingAddresses = shippingAddressIds.map((shippingAddressId) => {
-      const shippingAddress = addresses.find(
-        (address) => address.id === shippingAddressId,
-      ) as BaseAddress;
-      return ProfileComponent.createAddress(shippingAddress, defaultShippingAddressId);
+    const profileAddresses = addressIds.map((addressId) => {
+      const profileAddress = addresses.find((address) => address.id === addressId) as BaseAddress;
+      return ProfileComponent.createAddress(profileAddress, defaultAddressId);
     });
-    shippingAddressContainer.append([shippingAddressHeading, ...shippingAddresses]);
-    this.append([shippingAddressContainer]);
-  }
-
-  createBillingAddresses(
-    addresses: BaseAddress[],
-    billingAddressIds?: string[],
-    defaultBillingAddressId?: string,
-  ) {
-    if (!billingAddressIds) return;
-    const shippingAddressContainer = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_container'],
-    });
-    const shippingAddressHeading = new BaseComponent({
-      tag: 'h2',
-      classes: ['profile_heading'],
-      textContent: 'Billing Address',
-    });
-    const billingAddresses = billingAddressIds.map((billingAddressId) => {
-      const billingAddress = addresses.find(
-        (address) => address.id === billingAddressId,
-      ) as BaseAddress;
-      return ProfileComponent.createAddress(billingAddress, defaultBillingAddressId);
-    });
-    shippingAddressContainer.append([shippingAddressHeading, ...billingAddresses]);
-    this.append([shippingAddressContainer]);
+    addressContainer.append([addressHeading, ...profileAddresses]);
+    this.append([addressContainer]);
   }
 
   static createAddress(address: BaseAddress, defaultAddressId?: string): BaseComponent<'div'> {
