@@ -7,10 +7,10 @@ export default interface BaseAddress {
   title?: string;
   firstName?: string;
   lastName?: string;
-  streetName?: string;
+  streetName: string;
   streetNumber?: string;
-  postalCode?: string;
-  city?: string;
+  postalCode: string;
+  city: string;
   region?: string;
   state?: string;
   company?: string;

@@ -3,6 +3,7 @@ import BaseComponent from '../base/base.component';
 import ProfileService from '../../services/profile.service';
 import BaseAddress from '../../models/base-address.model';
 import InputCheckboxComponent from '../input/input-checkbox.component';
+import EditableItemComponent from '../editable-item/editable-item.component';
 
 export default class ProfileComponent extends BaseComponent<'div'> {
   private profileService = new ProfileService();
@@ -12,7 +13,7 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     this.createCustomerProfile();
   }
 
-  async createCustomerProfile(): Promise<void> {
+  private async createCustomerProfile(): Promise<void> {
     const customer = await this.profileService.getUserProfile();
     const {
       firstName,
@@ -35,7 +36,7 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     this.createAddresses('Billing Address', addresses, billingAddressIds, defaultBillingAddressId);
   }
 
-  createPersonalDetails(firstName: string, lastName: string, dateOfBirth: Date): void {
+  private createPersonalDetails(firstName: string, lastName: string, dateOfBirth: string): void {
     const personalDetailsContainer = new BaseComponent({
       tag: 'div',
       classes: ['profile_container'],
@@ -45,67 +46,27 @@ export default class ProfileComponent extends BaseComponent<'div'> {
       classes: ['profile_heading'],
       textContent: 'Personal Details',
     });
-    const firstNameWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
+    const firstNameItem = new EditableItemComponent({ title: 'First Name', value: firstName });
+    const lastNameItem = new EditableItemComponent({ title: 'Last Name', value: lastName });
+    const dateOfBirthItem = new EditableItemComponent({
+      title: 'Date of Birth',
+      value: dateOfBirth,
     });
-    const firstNameTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'First name',
-    });
-    const firstNameValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: firstName,
-    });
-    const lastNameWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
-    });
-    const lastNameTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'Last name',
-    });
-    const lastNameValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: lastName,
-    });
-    const dateOfBirthWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
-    });
-    const dateOfBirthTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'Date of Birth',
-    });
-    const dateOfBirthValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: dateOfBirth.toString(),
-    });
-
-    firstNameWrapper.append([firstNameTitle, firstNameValue]);
-    lastNameWrapper.append([lastNameTitle, lastNameValue]);
-    dateOfBirthWrapper.append([dateOfBirthTitle, dateOfBirthValue]);
     personalDetailsContainer.append([
       personalDetailsHeading,
-      firstNameWrapper,
-      lastNameWrapper,
-      dateOfBirthWrapper,
+      firstNameItem,
+      lastNameItem,
+      dateOfBirthItem,
     ]);
     this.append([personalDetailsContainer]);
   }
 
-  createAddresses(
+  private createAddresses(
     headingText: string,
     addresses: BaseAddress[],
     addressIds?: string[],
     defaultAddressId?: string,
-  ) {
+  ): void {
     if (!addressIds) return;
     const addressContainer = new BaseComponent({
       tag: 'div',
@@ -124,7 +85,10 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     this.append([addressContainer]);
   }
 
-  static createAddress(address: BaseAddress, defaultAddressId?: string): BaseComponent<'div'> {
+  private static createAddress(
+    address: BaseAddress,
+    defaultAddressId?: string,
+  ): BaseComponent<'div'> {
     const isUsedAsDefault = defaultAddressId === address.id;
     const addressWrapper = new BaseComponent({
       tag: 'div',
@@ -132,61 +96,12 @@ export default class ProfileComponent extends BaseComponent<'div'> {
         ? ['profile_address', 'profile_address--default']
         : ['profile_address'],
     });
-    const streetWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
-    });
-    const streetTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'Street',
-    });
-    const streetValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: address.streetName,
-    });
-    const cityWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
-    });
-    const cityTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'City',
-    });
-    const cityValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: address.city,
-    });
-    const countryWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
-    });
-    const countryTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'Country',
-    });
-    const countryValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: address.country,
-    });
-    const postalCodeWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
-    });
-    const postalCodeTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'Postal Code',
-    });
-    const postalCodeValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: address.postalCode,
+    const street = new EditableItemComponent({ title: 'Street', value: address.streetName });
+    const city = new EditableItemComponent({ title: 'City', value: address.city });
+    const country = new EditableItemComponent({ title: 'Country', value: address.country });
+    const postalCode = new EditableItemComponent({
+      title: 'Postal Code',
+      value: address.postalCode,
     });
     const defaultCheckbox = new InputCheckboxComponent({
       id: address.id as string,
@@ -195,17 +110,7 @@ export default class ProfileComponent extends BaseComponent<'div'> {
       isChecked: isUsedAsDefault,
       onSelect: () => {},
     });
-    streetWrapper.append([streetTitle, streetValue]);
-    cityWrapper.append([cityTitle, cityValue]);
-    countryWrapper.append([countryTitle, countryValue]);
-    postalCodeWrapper.append([postalCodeTitle, postalCodeValue]);
-    addressWrapper.append([
-      streetWrapper,
-      cityWrapper,
-      countryWrapper,
-      postalCodeWrapper,
-      defaultCheckbox,
-    ]);
+    addressWrapper.append([street, city, country, postalCode, defaultCheckbox]);
     return addressWrapper;
   }
 }

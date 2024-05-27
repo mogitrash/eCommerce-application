@@ -10,7 +10,7 @@ export default interface Customer {
   email: string;
   firstName: string;
   lastName: string;
-  dateOfBirth: Date;
+  dateOfBirth: string;
   password?: string;
   addresses: BaseAddress[];
   shippingAddressIds?: string[];
