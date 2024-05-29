@@ -1,7 +1,10 @@
-import ProductImageDTO from './product-DTO/product-image-DTO.model';
-
-export default interface Product {
+export interface Product {
   name: string;
   description: string;
-  images: ProductImageDTO[];
+  images: ProductImage[];
+}
+
+export interface ProductImage {
+  url: string;
+  label: string;
 }

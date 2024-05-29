@@ -1,6 +1,7 @@
-import GetAllPublishedProductsRequest from '../models/product/get-all-published-products-request.model';
-import GetAllPublishedProductsResponse from '../models/product/get-all-published-products-response.model';
-import Product from '../models/product/product.model';
+import GetAllPublishedProductsResponse, {
+  GetAllPublishedProductsRequest,
+} from '../models/product/product-DTO.model';
+import { Product } from '../models/product/product.model';
 import productConverterDTO from '../utilities/product-DTO-converter';
 import AuthorizationService from './authorization.service';
 

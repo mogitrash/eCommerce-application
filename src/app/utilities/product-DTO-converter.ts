@@ -1,5 +1,5 @@
-import { ProductDTO } from '../models/product/product-DTO/product-DTO.model';
-import Product from '../models/product/product.model';
+import { ProductDTO } from '../models/product/product-DTO.model';
+import { Product } from '../models/product/product.model';
 import productImageDTOConverter from './product-image-DTO-converter';
 
 const productDTOConverter = (productDTO: ProductDTO): Product => ({
