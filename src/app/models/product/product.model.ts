@@ -15,3 +15,19 @@ export interface ProductPrice {
   centAmount: number;
   currencyCode: string;
 }
+
+export interface GetAllPublishedProductsRequest {
+  limit?: number;
+  offset?: number;
+  sort?: ProductSort;
+}
+
+export interface GetAllPublishedProductsResponse {
+  limit: number;
+  offset: number;
+  count: number;
+  total: number;
+  results: Product[];
+}
+
+export type ProductSort = 'nameAsc' | 'nameDesc' | 'priceAsc' | 'priceDesc';
