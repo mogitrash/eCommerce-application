@@ -1,9 +1,17 @@
-import ProductImageDTO from './product-DTO/product-image-DTO.model';
-import ProductPrice from './product-price.model';
-
-export default interface Product {
+export interface Product {
   name: string;
   description: string;
-  images: ProductImageDTO[];
+  images: ProductImage[];
   prices: ProductPrice[];
+}
+
+export interface ProductImage {
+  url: string;
+  label: string;
+}
+
+export interface ProductPrice {
+  id: string;
+  centAmount: number;
+  currencyCode: string;
 }
