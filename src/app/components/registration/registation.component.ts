@@ -11,7 +11,6 @@ import InputTextComponent from '../input/input-text.component';
 import InputPasswordComponent from '../input/input-password.component';
 import InputDateComponent from '../input/input-date.component';
 
-import AuthenticationService from '../../services/authentication.service';
 import NotificationService from '../../services/notification.service';
 import CustomerDraft from '../../models/customer-draft.model';
 import Country from '../../models/country.model';
@@ -20,6 +19,7 @@ import InputCheckboxComponent from '../input/input-checkbox.component';
 import RouterService from '../../services/router/router.service';
 import CustomerSignIn from '../../models/customer-sign-in.model';
 import Routes from '../../models/routes.model';
+import authenticationService from '../../services/authentication.service';
 
 export default class RegistrationComponent extends BaseComponent<'div'> {
   private personalDetails: BaseComponent<'p'>;
@@ -58,7 +58,7 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
 
   private isShippingUsedAsDefaultBilling: boolean = false;
 
-  private authenticationService = new AuthenticationService();
+  private authenticationService = authenticationService;
 
   private notificationService = new NotificationService();
 
