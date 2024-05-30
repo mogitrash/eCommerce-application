@@ -27,3 +27,9 @@
   border-radius: 10px;
   border: 1px solid $color-gray;
 }
+
+@media screen and (max-width: 600px) {
+  .profile {
+    padding: 10px;
+  }
+}

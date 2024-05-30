@@ -48,3 +48,9 @@
 .editable-item_button--cancel {
   background: url('./../../assets/images/cross.svg') center no-repeat;
 }
+
+@media screen and (max-width: 600px) {
+  .editable-item {
+    width: 350px;
+  }
+}
