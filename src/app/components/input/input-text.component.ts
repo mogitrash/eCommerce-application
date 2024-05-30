@@ -2,10 +2,10 @@ import './input.scss';
 import BaseComponent from '../base/base.component';
 
 type InputTextComponentConfig = {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
   required: boolean;
-  labelText: string;
+  labelText?: string;
   pattern: string;
 };
 
@@ -17,7 +17,7 @@ export default class InputTextComponent extends BaseComponent<'div'> {
   error: BaseComponent<'span'>;
 
   constructor(config: InputTextComponentConfig) {
-    super({ tag: 'div' });
+    super({ tag: 'div', classes: ['input-container'] });
     this.label = new BaseComponent({ tag: 'label', classes: ['label'] });
     this.input = new BaseComponent({ tag: 'input', classes: ['input'] });
     this.error = new BaseComponent({ tag: 'span', classes: ['error'] });
@@ -30,14 +30,20 @@ export default class InputTextComponent extends BaseComponent<'div'> {
   setupElements(config: InputTextComponentConfig) {
     const { id, name, required, labelText, pattern } = config;
     this.input.setAttribute('type', 'text');
-    this.input.setAttribute('id', id);
+    this.input.setAttribute('pattern', pattern);
+    if (id) {
+      this.input.setAttribute('id', id);
+      this.label.setAttribute('for', id);
+    }
+    if (name) {
+      this.input.setAttribute('name', name);
+    }
     if (required) {
       this.input.setAttribute('required', '');
     }
-    this.input.setAttribute('pattern', pattern);
-    this.input.setAttribute('name', name);
-    this.label.setAttribute('for', id);
-    this.label.setTextContent(labelText);
+    if (labelText) {
+      this.label.setTextContent(labelText);
+    }
   }
 
   getValidity() {

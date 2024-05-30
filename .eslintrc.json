@@ -10,7 +10,8 @@
     "project": "./tsconfig.json"
   },
   "rules": {
-    "object-curly-newline": ["error", { "consistent": true }]
+    "object-curly-newline": ["error", { "consistent": true }],
+    "arrow-body-style": ["off"]
   },
   "noInlineConfig": true,
   "ignorePatterns": ["*.config.js", "*.d.ts"]

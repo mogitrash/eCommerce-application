@@ -10,7 +10,7 @@ export default interface Customer {
   email: string;
   firstName: string;
   lastName: string;
-  dateOfBirth: Date;
+  dateOfBirth: string;
   password?: string;
   addresses: BaseAddress[];
   shippingAddressIds?: string[];
@@ -20,3 +20,36 @@ export default interface Customer {
   isEmailVerified: boolean;
   authenticationMode: string;
 }
+
+export type UpdateFirstNameAction = {
+  action: 'setFirstName';
+  firstName: string;
+};
+
+export type UpdateLastNameAction = {
+  action: 'setLastName';
+  lastName: string;
+};
+
+export type UpdateDateOfBirthAction = {
+  action: 'setDateOfBirth';
+  dateOfBirth: string;
+};
+
+export type UpdateEmailAction = {
+  action: 'changeEmail';
+  email: string;
+};
+
+export type UpdateAddressAction = {
+  action: 'changeAddress';
+  addressId: string;
+  address: BaseAddress;
+};
+
+export type CustomerUpdateAction =
+  | UpdateFirstNameAction
+  | UpdateLastNameAction
+  | UpdateDateOfBirthAction
+  | UpdateEmailAction
+  | UpdateAddressAction;

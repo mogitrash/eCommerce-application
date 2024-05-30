@@ -19,6 +19,12 @@ import InputCheckboxComponent from '../input/input-checkbox.component';
 import RouterService from '../../services/router/router.service';
 import CustomerSignIn from '../../models/customer-sign-in.model';
 import Routes from '../../models/routes.model';
+import {
+  validateInputDate,
+  validateInputEmail,
+  validateInputName,
+  validateInputPassword,
+} from '../../utilities/input-validators';
 import authenticationService from '../../services/authentication.service';
 
 export default class RegistrationComponent extends BaseComponent<'div'> {
@@ -220,17 +226,11 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
   }
 
   private validateForm() {
-    const emailErrorText = RegistrationComponent.validateInputEmail(this.emailInput.getValidity());
-    const passwordErrorText = RegistrationComponent.validateInputPassword(
-      this.passwordInput.getValidity(),
-    );
-    const firstNameErrorText = RegistrationComponent.validateInputName(
-      this.firstNameInput.getValidity(),
-    );
-    const lastNameErrorText = RegistrationComponent.validateInputName(
-      this.lastNameInput.getValidity(),
-    );
-    const dateErrorText = this.validateInputDate();
+    const emailErrorText = validateInputEmail(this.emailInput.getValidity());
+    const passwordErrorText = validateInputPassword(this.passwordInput.getValidity());
+    const firstNameErrorText = validateInputName(this.firstNameInput.getValidity());
+    const lastNameErrorText = validateInputName(this.lastNameInput.getValidity());
+    const dateErrorText = validateInputDate(this.dateInput.getValidity());
 
     if (emailErrorText) {
       this.emailInput.showError(emailErrorText);
@@ -270,46 +270,6 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       return;
     }
     this.registrationButton.enable();
-  }
-
-  private validateInputDate(): string {
-    if (this.dateInput.handleDateValidity()) {
-      return '';
-    }
-    return 'Minors need parential guidance to use this website.';
-  }
-
-  private static validateInputPassword(validity: ValidityState): string {
-    if (validity.tooShort) {
-      return 'The password should be a minimum of 8 characters in length.';
-    }
-    if (validity.patternMismatch) {
-      return 'Enter at least one uppercase, one lowercase letter, one digit. Whitespaces are not allowed.';
-    }
-    if (validity.valueMissing) {
-      return 'Please enter value.';
-    }
-    return '';
-  }
-
-  private static validateInputEmail(validity: ValidityState): string {
-    if (validity.patternMismatch) {
-      return 'Email address must be properly formatted (e.g., user@example.com). Whitespaces are not allowed.';
-    }
-    if (validity.valueMissing) {
-      return 'Please enter value.';
-    }
-    return '';
-  }
-
-  private static validateInputName(validity: ValidityState): string {
-    if (validity.patternMismatch) {
-      return 'Must contain at least one character and no special characters or numbers.';
-    }
-    if (validity.valueMissing) {
-      return 'Please enter value.';
-    }
-    return '';
   }
 
   private handleDefaultShippingCheckboxClick(isChecked: boolean) {

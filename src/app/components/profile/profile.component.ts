@@ -1,31 +1,57 @@
 import './profile.scss';
 import BaseComponent from '../base/base.component';
 import ProfileService from '../../services/profile.service';
+import NotificationService from '../../services/notification.service';
 import BaseAddress from '../../models/base-address.model';
 import InputCheckboxComponent from '../input/input-checkbox.component';
+import EditableItemComponent from '../editable-item/editable-item.component';
+import { CustomerUpdateAction } from '../../models/customer.model';
+import Country from '../../models/country.model';
+import {
+  CITY_REGEX,
+  EMAIL_REGEX,
+  NAME_REGEX,
+  STREET_REGEX,
+} from '../../models/constants/login-registration.constants';
+import {
+  validateInputCity,
+  validateInputCountry,
+  validateInputDate,
+  validateInputName,
+  validateInputEmail,
+  validateInputPostalCode,
+  validateInputStreet,
+} from '../../utilities/input-validators';
 
 export default class ProfileComponent extends BaseComponent<'div'> {
+  private customerVersion!: number;
+
   private profileService = new ProfileService();
+
+  private notificationService = new NotificationService();
 
   constructor() {
     super({ tag: 'div', classes: ['profile'] });
     this.createCustomerProfile();
   }
 
-  async createCustomerProfile(): Promise<void> {
+  private async createCustomerProfile(): Promise<void> {
     const customer = await this.profileService.getUserProfile();
     const {
       firstName,
       lastName,
       dateOfBirth,
+      email,
       shippingAddressIds,
       addresses,
       defaultShippingAddressId,
       billingAddressIds,
       defaultBillingAddressId,
+      version,
     } = customer;
 
-    this.createPersonalDetails(firstName, lastName, dateOfBirth);
+    this.customerVersion = version;
+    this.createPersonalDetails(firstName, lastName, email, dateOfBirth);
     this.createAddresses(
       'Shipping Address',
       addresses,
@@ -35,7 +61,12 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     this.createAddresses('Billing Address', addresses, billingAddressIds, defaultBillingAddressId);
   }
 
-  createPersonalDetails(firstName: string, lastName: string, dateOfBirth: Date): void {
+  private createPersonalDetails(
+    firstName: string,
+    lastName: string,
+    email: string,
+    dateOfBirth: string,
+  ): void {
     const personalDetailsContainer = new BaseComponent({
       tag: 'div',
       classes: ['profile_container'],
@@ -45,67 +76,49 @@ export default class ProfileComponent extends BaseComponent<'div'> {
       classes: ['profile_heading'],
       textContent: 'Personal Details',
     });
-    const firstNameWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
+    const firstNameItem = new EditableItemComponent({
+      title: 'First Name',
+      value: firstName,
+      onSave: this.updateFirstName.bind(this),
+      pattern: NAME_REGEX,
+      validator: validateInputName,
     });
-    const firstNameTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'First name',
+    const lastNameItem = new EditableItemComponent({
+      title: 'Last Name',
+      value: lastName,
+      onSave: this.updateLastName.bind(this),
+      validator: validateInputName,
     });
-    const firstNameValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: firstName,
+    const dateOfBirthItem = new EditableItemComponent({
+      title: 'Date of Birth',
+      value: dateOfBirth,
+      onSave: this.updateDateOfBirth.bind(this),
+      type: 'date',
+      validator: validateInputDate,
     });
-    const lastNameWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
+    const emailItem = new EditableItemComponent({
+      title: 'Email',
+      value: email,
+      onSave: this.updateEmail.bind(this),
+      pattern: EMAIL_REGEX,
+      validator: validateInputEmail,
     });
-    const lastNameTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'Last name',
-    });
-    const lastNameValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: lastName,
-    });
-    const dateOfBirthWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
-    });
-    const dateOfBirthTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'Date of Birth',
-    });
-    const dateOfBirthValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: dateOfBirth.toString(),
-    });
-
-    firstNameWrapper.append([firstNameTitle, firstNameValue]);
-    lastNameWrapper.append([lastNameTitle, lastNameValue]);
-    dateOfBirthWrapper.append([dateOfBirthTitle, dateOfBirthValue]);
     personalDetailsContainer.append([
       personalDetailsHeading,
-      firstNameWrapper,
-      lastNameWrapper,
-      dateOfBirthWrapper,
+      firstNameItem,
+      lastNameItem,
+      emailItem,
+      dateOfBirthItem,
     ]);
     this.append([personalDetailsContainer]);
   }
 
-  createAddresses(
+  private createAddresses(
     headingText: string,
     addresses: BaseAddress[],
     addressIds?: string[],
     defaultAddressId?: string,
-  ) {
+  ): void {
     if (!addressIds) return;
     const addressContainer = new BaseComponent({
       tag: 'div',
@@ -118,13 +131,14 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     });
     const profileAddresses = addressIds.map((addressId) => {
       const profileAddress = addresses.find((address) => address.id === addressId) as BaseAddress;
-      return ProfileComponent.createAddress(profileAddress, defaultAddressId);
+      return this.createAddress(profileAddress, defaultAddressId);
     });
     addressContainer.append([addressHeading, ...profileAddresses]);
     this.append([addressContainer]);
   }
 
-  static createAddress(address: BaseAddress, defaultAddressId?: string): BaseComponent<'div'> {
+  private createAddress(address: BaseAddress, defaultAddressId?: string): BaseComponent<'div'> {
+    const addressToUse = { ...address };
     const isUsedAsDefault = defaultAddressId === address.id;
     const addressWrapper = new BaseComponent({
       tag: 'div',
@@ -132,80 +146,105 @@ export default class ProfileComponent extends BaseComponent<'div'> {
         ? ['profile_address', 'profile_address--default']
         : ['profile_address'],
     });
-    const streetWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
+    const street = new EditableItemComponent({
+      title: 'Street',
+      value: addressToUse.streetName,
+      onSave: (streetName: string) => {
+        addressToUse.streetName = streetName;
+        this.updateAddress(addressToUse);
+      },
+      pattern: STREET_REGEX,
+      validator: validateInputStreet,
     });
-    const streetTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'Street',
+    const city = new EditableItemComponent({
+      title: 'City',
+      value: addressToUse.city,
+      onSave: (cityName: string) => {
+        addressToUse.city = cityName;
+        this.updateAddress(addressToUse);
+      },
+      pattern: CITY_REGEX,
+      validator: validateInputCity,
     });
-    const streetValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: address.streetName,
+    const country = new EditableItemComponent({
+      title: 'Country',
+      value: addressToUse.country,
+      onSave: (countryName: string | Country) => {
+        addressToUse.country = countryName as Country;
+        this.updateAddress(addressToUse);
+      },
+      type: 'countrySelect',
+      validator: validateInputCountry,
     });
-    const cityWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
-    });
-    const cityTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'City',
-    });
-    const cityValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: address.city,
-    });
-    const countryWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
-    });
-    const countryTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'Country',
-    });
-    const countryValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: address.country,
-    });
-    const postalCodeWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['profile_item-wrapper'],
-    });
-    const postalCodeTitle = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-title'],
-      textContent: 'Postal Code',
-    });
-    const postalCodeValue = new BaseComponent({
-      tag: 'p',
-      classes: ['profile_item-value'],
-      textContent: address.postalCode,
+    const postalCode = new EditableItemComponent({
+      title: 'Postal Code',
+      value: addressToUse.postalCode,
+      onSave: (postalCodeNumber: string) => {
+        addressToUse.postalCode = postalCodeNumber;
+        this.updateAddress(addressToUse);
+      },
+      validator: (validity: Partial<ValidityState>, newValue) => {
+        return validateInputPostalCode(validity, newValue as string, addressToUse.country);
+      },
     });
     const defaultCheckbox = new InputCheckboxComponent({
-      id: address.id as string,
-      name: address.id as string,
+      id: addressToUse.id as string,
+      name: addressToUse.id as string,
       labelText: 'Use as default',
       isChecked: isUsedAsDefault,
       onSelect: () => {},
     });
-    streetWrapper.append([streetTitle, streetValue]);
-    cityWrapper.append([cityTitle, cityValue]);
-    countryWrapper.append([countryTitle, countryValue]);
-    postalCodeWrapper.append([postalCodeTitle, postalCodeValue]);
-    addressWrapper.append([
-      streetWrapper,
-      cityWrapper,
-      countryWrapper,
-      postalCodeWrapper,
-      defaultCheckbox,
-    ]);
+    addressWrapper.append([street, city, country, postalCode, defaultCheckbox]);
     return addressWrapper;
+  }
+
+  private updateFirstName(firstName: string): void {
+    this.updateUserProfile({
+      action: 'setFirstName',
+      firstName,
+    });
+  }
+
+  private updateLastName(lastName: string): void {
+    this.updateUserProfile({
+      action: 'setLastName',
+      lastName,
+    });
+  }
+
+  private updateDateOfBirth(dateOfBirth: string): void {
+    this.updateUserProfile({
+      action: 'setDateOfBirth',
+      dateOfBirth,
+    });
+  }
+
+  private updateEmail(email: string): void {
+    this.updateUserProfile({
+      action: 'changeEmail',
+      email,
+    });
+  }
+
+  private updateAddress(address: BaseAddress): void {
+    this.updateUserProfile({
+      action: 'changeAddress',
+      addressId: address.id as string,
+      address,
+    });
+  }
+
+  private async updateUserProfile(action: CustomerUpdateAction): Promise<void> {
+    try {
+      const { version } = await this.profileService.updateUserProfile(this.customerVersion, action);
+      if (version) {
+        this.customerVersion = version;
+        this.notificationService.notify('Changes were saved');
+      } else {
+        this.notificationService.notify('Changes were not saved');
+      }
+    } catch (error) {
+      this.notificationService.notify('Changes were not saved');
+    }
   }
 }

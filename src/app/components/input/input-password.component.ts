@@ -24,7 +24,7 @@ export default class InputPasswordComponent extends BaseComponent<'div'> {
   visibilityLabel: BaseComponent<'label'>;
 
   constructor(config: InputPasswordComponentConfig) {
-    super({ tag: 'div' });
+    super({ tag: 'div', classes: ['input-container'] });
     this.label = new BaseComponent({ tag: 'label', classes: ['label'] });
     this.input = new BaseComponent({ tag: 'input', classes: ['input'] });
     this.error = new BaseComponent({ tag: 'span', classes: ['error'] });
