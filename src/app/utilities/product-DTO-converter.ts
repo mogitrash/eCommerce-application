@@ -2,7 +2,8 @@ import { ProductDTO } from '../models/product/product-DTO.model';
 import { Product } from '../models/product/product.model';
 import productImageDTOConverter from './product-image-DTO-converter';
 
-const productDTOConverter = ({ name, description, masterVariant }: ProductDTO): Product => ({
+const productDTOConverter = ({ id, name, description, masterVariant }: ProductDTO): Product => ({
+  id,
   name: name['en-US'],
   description: description['en-US'],
   images: masterVariant.images.map(productImageDTOConverter),

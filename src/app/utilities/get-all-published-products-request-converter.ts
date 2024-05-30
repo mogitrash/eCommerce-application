@@ -6,6 +6,7 @@ const getAllPublishedProductsRequestConverter = ({
   limit,
   offset,
   sort,
+  text,
 }: GetAllPublishedProductsRequest): GetAllPublishedProductsRequestDTO => {
   const requestDTO: GetAllPublishedProductsRequestDTO = {};
 
@@ -19,6 +20,10 @@ const getAllPublishedProductsRequestConverter = ({
 
   if (sort) {
     requestDTO.sort = productSortConverter(sort);
+  }
+
+  if (text) {
+    requestDTO['text.en-US'] = text;
   }
 
   return requestDTO;

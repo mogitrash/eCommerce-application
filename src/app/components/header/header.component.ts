@@ -4,6 +4,7 @@ import RouterService from '../../services/router/router.service';
 import logoSrc from '../../assets/images/main-logo.png';
 import Button from '../button/button.component';
 import Routes from '../../models/routes.model';
+import authenticationService from '../../services/authentication.service';
 
 class HeaderComponent extends BaseComponent<'header'> {
   private loginButton!: Button;
@@ -11,6 +12,8 @@ class HeaderComponent extends BaseComponent<'header'> {
   private logoutButton!: Button;
 
   private registrationButton!: Button;
+
+  private authenticationService = authenticationService;
 
   constructor(private router: RouterService) {
     super({ tag: 'header', classes: ['header'] });
@@ -78,7 +81,7 @@ class HeaderComponent extends BaseComponent<'header'> {
     this.logoutButton = new Button({
       text: 'Log Out',
       onClick: () => {
-        localStorage.removeItem('userToken');
+        this.authenticationService.signOutCustomer();
         this.router.redirect(Routes.Login);
       },
     });

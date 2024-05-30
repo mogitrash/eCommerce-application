@@ -1,7 +1,7 @@
 import ErrorResponse from '../models/error-response.model';
 import TokenResponse from '../models/token-response.model';
 
-export default class AuthorizationService {
+class AuthorizationService {
   private projectKey = process.env.CTP_PROJECT_KEY;
 
   private clientID = process.env.CTP_CLIENT_ID;
@@ -89,3 +89,7 @@ export default class AuthorizationService {
     }).then((res) => res.json());
   }
 }
+
+const authorizationService = new AuthorizationService();
+
+export default authorizationService;

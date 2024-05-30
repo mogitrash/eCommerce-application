@@ -1,4 +1,5 @@
 export interface ProductDTO {
+  id: string;
   name: ProductLocaleInfoDTO;
   description: ProductLocaleInfoDTO;
   masterVariant: ProductMasterVariantDTO;
@@ -39,6 +40,7 @@ export interface GetAllPublishedProductsRequestDTO {
   limit?: number;
   offset?: number;
   sort?: ProductSortDTO;
+  'text.en-US'?: string;
 }
 
 export interface GetAllPublishedProductsResponseDTO {
