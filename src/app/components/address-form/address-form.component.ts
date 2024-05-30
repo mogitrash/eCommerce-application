@@ -3,13 +3,17 @@ import BaseComponent from '../base/base.component';
 import {
   STREET_REGEX,
   CITY_REGEX,
-  POSTAL_CODE_BELARUS_REGEX,
-  POSTAL_CODE_GERMANY_REGEX,
-  POSTAL_CODE_SPAIN_REGEX,
+  SUPPORTED_COUNTRIES,
 } from '../../models/constants/login-registration.constants';
 import InputTextComponent from '../input/input-text.component';
 import SelectComponent from '../select/select.component';
 import Country from '../../models/country.model';
+import {
+  validateInputCity,
+  validateInputCountry,
+  validateInputPostalCode,
+  validateInputStreet,
+} from '../../utilities/input-validators';
 
 export default class AddressFormComponent extends BaseComponent<'div'> {
   private formName: BaseComponent<'p'>;
@@ -62,25 +66,20 @@ export default class AddressFormComponent extends BaseComponent<'div'> {
       name: `${inputPrefix}Country`,
       labelText: 'Country',
       required: true,
-      options: [
-        { label: 'Please choose an option', value: '' },
-        { label: 'Belarus', value: Country.BY },
-        { label: 'Germany', value: Country.DE },
-        { label: 'Spain', value: Country.ES },
-      ],
+      options: [{ label: 'Please choose an option', value: '' }, ...SUPPORTED_COUNTRIES],
     });
     this.render();
   }
 
   public validateForm(): boolean {
-    const countryErrorText = AddressFormComponent.validateInputCountry(
-      this.countryInput.getValidity(),
+    const countryErrorText = validateInputCountry(this.countryInput.getValidity());
+    const streetErrorText = validateInputStreet(this.streetInput.getValidity());
+    const cityErrorText = validateInputCity(this.cityInput.getValidity());
+    const postalCodeErrorText = validateInputPostalCode(
+      this.postalCodeInput.getValidity(),
+      this.postalCodeInput.input.getElement().value,
+      this.countryInput.input.getElement().value as Country,
     );
-    const streetErrorText = AddressFormComponent.validateInputStreet(
-      this.streetInput.getValidity(),
-    );
-    const cityErrorText = AddressFormComponent.validateInputCity(this.cityInput.getValidity());
-    const postalCodeErrorText = this.validateInputPostalCode(this.postalCodeInput.getValidity());
 
     if (streetErrorText) {
       this.streetInput.showError(streetErrorText);
@@ -99,61 +98,6 @@ export default class AddressFormComponent extends BaseComponent<'div'> {
       return false;
     }
     return true;
-  }
-
-  private static validateInputCountry(validity: ValidityState): string {
-    if (validity.valueMissing) {
-      return 'Please select country.';
-    }
-    return '';
-  }
-
-  private static validateInputStreet(validity: ValidityState): string {
-    if (validity.valueMissing) {
-      return 'Please enter value.';
-    }
-    return '';
-  }
-
-  private static validateInputCity(validity: ValidityState): string {
-    if (validity.valueMissing) {
-      return 'Please enter value.';
-    }
-    if (validity.patternMismatch) {
-      return 'Must contain at least one character and no special characters or numbers.';
-    }
-    return '';
-  }
-
-  private validateInputPostalCode(validity: ValidityState): string {
-    if (validity.valueMissing) {
-      return 'Please enter value.';
-    }
-
-    const postalCode = this.postalCodeInput.input.getElement().value;
-    const country = this.countryInput.select.getElement().value as Country;
-
-    switch (country) {
-      case Country.BY:
-        if (!new RegExp(POSTAL_CODE_BELARUS_REGEX).test(postalCode)) {
-          return 'Must contain 6 digits';
-        }
-        break;
-      case Country.DE:
-        if (!new RegExp(POSTAL_CODE_GERMANY_REGEX).test(postalCode)) {
-          return 'Must contain 5 digits';
-        }
-        break;
-      case Country.ES:
-        if (!new RegExp(POSTAL_CODE_SPAIN_REGEX).test(postalCode)) {
-          return 'Must be five-digit number ranging from 01000 to 52999';
-        }
-        break;
-      default:
-        break;
-    }
-
-    return '';
   }
 
   public showForm(): void {

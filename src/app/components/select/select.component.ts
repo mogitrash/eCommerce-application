@@ -2,15 +2,15 @@ import './select.scss';
 import BaseComponent from '../base/base.component';
 
 type SelectComponentConfig = {
-  id: string;
-  name: string;
-  labelText: string;
+  id?: string;
+  name?: string;
+  labelText?: string;
   required: boolean;
   options: { label: string; value: string }[];
 };
 
 export default class SelectComponent extends BaseComponent<'div'> {
-  select: BaseComponent<'select'>;
+  input: BaseComponent<'select'>;
 
   label: BaseComponent<'label'>;
 
@@ -18,8 +18,8 @@ export default class SelectComponent extends BaseComponent<'div'> {
 
   constructor(config: SelectComponentConfig) {
     const { options, labelText } = config;
-    super({ tag: 'div' });
-    this.select = new BaseComponent({ tag: 'select', classes: ['select'] });
+    super({ tag: 'div', classes: ['input-container'] });
+    this.input = new BaseComponent({ tag: 'select', classes: ['select'] });
     this.label = new BaseComponent({ tag: 'label', classes: ['label'], textContent: labelText });
     this.error = new BaseComponent({ tag: 'span', classes: ['error'] });
 
@@ -31,16 +31,20 @@ export default class SelectComponent extends BaseComponent<'div'> {
 
   setupElements(config: SelectComponentConfig) {
     const { id, name, required } = config;
-    this.select.setAttribute('id', id);
-    this.select.setAttribute('name', name);
-    this.label.setAttribute('for', id);
+    if (id) {
+      this.input.setAttribute('id', id);
+      this.label.setAttribute('for', id);
+    }
+    if (name) {
+      this.input.setAttribute('name', name);
+    }
     if (required) {
-      this.select.setAttribute('required', '');
+      this.input.setAttribute('required', '');
     }
   }
 
   getValidity() {
-    return this.select.getElement().validity;
+    return this.input.getElement().validity;
   }
 
   showError(errorText: string) {
@@ -57,15 +61,15 @@ export default class SelectComponent extends BaseComponent<'div'> {
     options.forEach(({ label, value }) => {
       const optionComponent = new BaseComponent({ tag: 'option', textContent: label });
       optionComponent.setAttribute('value', value);
-      this.select.append([optionComponent]);
+      this.input.append([optionComponent]);
     });
   }
 
   setupListeners() {
-    this.select.addListener('input', this.hideError.bind(this));
+    this.input.addListener('input', this.hideError.bind(this));
   }
 
   render() {
-    this.append([this.label, this.select, this.error]);
+    this.append([this.label, this.input, this.error]);
   }
 }

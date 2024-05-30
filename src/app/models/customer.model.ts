@@ -36,6 +36,11 @@ export type UpdateDateOfBirthAction = {
   dateOfBirth: string;
 };
 
+export type UpdateEmailAction = {
+  action: 'changeEmail';
+  email: string;
+};
+
 export type UpdateAddressAction = {
   action: 'changeAddress';
   addressId: string;
@@ -46,4 +51,5 @@ export type CustomerUpdateAction =
   | UpdateFirstNameAction
   | UpdateLastNameAction
   | UpdateDateOfBirthAction
+  | UpdateEmailAction
   | UpdateAddressAction;

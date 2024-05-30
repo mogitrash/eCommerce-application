@@ -20,6 +20,11 @@ export default class BaseComponent<T extends keyof HTMLElementTagNameMap> {
     return this;
   }
 
+  removeAttribute(attribute: string) {
+    this.element.removeAttribute(attribute);
+    return this;
+  }
+
   getAttribute(attribute: string): string | null {
     return this.element.getAttribute(attribute);
   }

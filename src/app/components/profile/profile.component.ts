@@ -7,6 +7,21 @@ import InputCheckboxComponent from '../input/input-checkbox.component';
 import EditableItemComponent from '../editable-item/editable-item.component';
 import { CustomerUpdateAction } from '../../models/customer.model';
 import Country from '../../models/country.model';
+import {
+  CITY_REGEX,
+  EMAIL_REGEX,
+  NAME_REGEX,
+  STREET_REGEX,
+} from '../../models/constants/login-registration.constants';
+import {
+  validateInputCity,
+  validateInputCountry,
+  validateInputDate,
+  validateInputName,
+  validateInputEmail,
+  validateInputPostalCode,
+  validateInputStreet,
+} from '../../utilities/input-validators';
 
 export default class ProfileComponent extends BaseComponent<'div'> {
   private customerVersion!: number;
@@ -26,6 +41,7 @@ export default class ProfileComponent extends BaseComponent<'div'> {
       firstName,
       lastName,
       dateOfBirth,
+      email,
       shippingAddressIds,
       addresses,
       defaultShippingAddressId,
@@ -35,7 +51,7 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     } = customer;
 
     this.customerVersion = version;
-    this.createPersonalDetails(firstName, lastName, dateOfBirth);
+    this.createPersonalDetails(firstName, lastName, email, dateOfBirth);
     this.createAddresses(
       'Shipping Address',
       addresses,
@@ -45,7 +61,12 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     this.createAddresses('Billing Address', addresses, billingAddressIds, defaultBillingAddressId);
   }
 
-  private createPersonalDetails(firstName: string, lastName: string, dateOfBirth: string): void {
+  private createPersonalDetails(
+    firstName: string,
+    lastName: string,
+    email: string,
+    dateOfBirth: string,
+  ): void {
     const personalDetailsContainer = new BaseComponent({
       tag: 'div',
       classes: ['profile_container'],
@@ -59,21 +80,34 @@ export default class ProfileComponent extends BaseComponent<'div'> {
       title: 'First Name',
       value: firstName,
       onSave: this.updateFirstName.bind(this),
+      pattern: NAME_REGEX,
+      validator: validateInputName,
     });
     const lastNameItem = new EditableItemComponent({
       title: 'Last Name',
       value: lastName,
       onSave: this.updateLastName.bind(this),
+      validator: validateInputName,
     });
     const dateOfBirthItem = new EditableItemComponent({
       title: 'Date of Birth',
       value: dateOfBirth,
       onSave: this.updateDateOfBirth.bind(this),
+      type: 'date',
+      validator: validateInputDate,
+    });
+    const emailItem = new EditableItemComponent({
+      title: 'Email',
+      value: email,
+      onSave: this.updateEmail.bind(this),
+      pattern: EMAIL_REGEX,
+      validator: validateInputEmail,
     });
     personalDetailsContainer.append([
       personalDetailsHeading,
       firstNameItem,
       lastNameItem,
+      emailItem,
       dateOfBirthItem,
     ]);
     this.append([personalDetailsContainer]);
@@ -119,6 +153,8 @@ export default class ProfileComponent extends BaseComponent<'div'> {
         addressToUse.streetName = streetName;
         this.updateAddress(addressToUse);
       },
+      pattern: STREET_REGEX,
+      validator: validateInputStreet,
     });
     const city = new EditableItemComponent({
       title: 'City',
@@ -127,6 +163,8 @@ export default class ProfileComponent extends BaseComponent<'div'> {
         addressToUse.city = cityName;
         this.updateAddress(addressToUse);
       },
+      pattern: CITY_REGEX,
+      validator: validateInputCity,
     });
     const country = new EditableItemComponent({
       title: 'Country',
@@ -135,6 +173,8 @@ export default class ProfileComponent extends BaseComponent<'div'> {
         addressToUse.country = countryName as Country;
         this.updateAddress(addressToUse);
       },
+      type: 'countrySelect',
+      validator: validateInputCountry,
     });
     const postalCode = new EditableItemComponent({
       title: 'Postal Code',
@@ -142,6 +182,9 @@ export default class ProfileComponent extends BaseComponent<'div'> {
       onSave: (postalCodeNumber: string) => {
         addressToUse.postalCode = postalCodeNumber;
         this.updateAddress(addressToUse);
+      },
+      validator: (validity: Partial<ValidityState>, newValue) => {
+        return validateInputPostalCode(validity, newValue as string, addressToUse.country);
       },
     });
     const defaultCheckbox = new InputCheckboxComponent({
@@ -173,6 +216,13 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     this.updateUserProfile({
       action: 'setDateOfBirth',
       dateOfBirth,
+    });
+  }
+
+  private updateEmail(email: string): void {
+    this.updateUserProfile({
+      action: 'changeEmail',
+      email,
     });
   }
 
