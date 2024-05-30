@@ -10,6 +10,7 @@ import MainComponent from './components/main/main.component';
 import CatalogComponent from './components/catalog/catalog.component';
 import ProductComponent from './components/product/product.component';
 import ProfileComponent from './components/profile/profile.component';
+import LocalStorageEndpoint from './models/local-storage-endpoint.model';
 
 export default class App extends BaseComponent<'div'> implements Renderer {
   private routerService = new RouterService(this);
@@ -38,7 +39,7 @@ export default class App extends BaseComponent<'div'> implements Renderer {
   }
 
   render(path: Routes): void {
-    const isLogined = localStorage.getItem('userToken');
+    const isLogined = localStorage.getItem(LocalStorageEndpoint.userToken);
     this.headerComponent.changeDisplay(Boolean(isLogined));
     this.contentWrapper.getElement().innerHTML = '';
     switch (path) {

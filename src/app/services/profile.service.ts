@@ -1,4 +1,5 @@
 import Customer, { CustomerUpdateAction } from '../models/customer.model';
+import LocalStorageEndpoint from '../models/local-storage-endpoint.model';
 
 export default class ProfileService {
   private projectKey = process.env.CTP_PROJECT_KEY;
@@ -8,7 +9,7 @@ export default class ProfileService {
   private baseUrl: string = `${this.clientAPIUrl}/${this.projectKey}/me`;
 
   async getUserProfile(): Promise<Customer> {
-    const accessToken = localStorage.getItem('userToken');
+    const accessToken = localStorage.getItem(LocalStorageEndpoint.userToken);
     const headers = new Headers({
       Authorization: `Bearer ${accessToken}`,
       'Content-type': 'application/json',

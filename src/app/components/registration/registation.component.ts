@@ -11,7 +11,6 @@ import InputTextComponent from '../input/input-text.component';
 import InputPasswordComponent from '../input/input-password.component';
 import InputDateComponent from '../input/input-date.component';
 
-import AuthenticationService from '../../services/authentication.service';
 import NotificationService from '../../services/notification.service';
 import CustomerDraft from '../../models/customer-draft.model';
 import Country from '../../models/country.model';
@@ -26,6 +25,7 @@ import {
   validateInputName,
   validateInputPassword,
 } from '../../utilities/input-validators';
+import authenticationService from '../../services/authentication.service';
 
 export default class RegistrationComponent extends BaseComponent<'div'> {
   private personalDetails: BaseComponent<'p'>;
@@ -64,7 +64,7 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
 
   private isShippingUsedAsDefaultBilling: boolean = false;
 
-  private authenticationService = new AuthenticationService();
+  private authenticationService = authenticationService;
 
   private notificationService = new NotificationService();
 

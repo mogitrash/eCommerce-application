@@ -6,11 +6,11 @@ import {
   PASSWORD_REGEX,
   PASSWORD_MINLENGTH,
 } from '../../models/constants/login-registration.constants';
-import AuthenticationService from '../../services/authentication.service';
 import CustomerSignIn from '../../models/customer-sign-in.model';
 import NotificationService from '../../services/notification.service';
 import RouterService from '../../services/router/router.service';
 import Routes from '../../models/routes.model';
+import authenticationService from '../../services/authentication.service';
 
 export default class LoginComponent extends BaseComponent<'div'> {
   private loginHint: BaseComponent<'p'>;
@@ -53,7 +53,7 @@ export default class LoginComponent extends BaseComponent<'div'> {
 
   private registrationButton: Button;
 
-  private authenticationService = new AuthenticationService();
+  private authenticationService = authenticationService;
 
   private notificationService = new NotificationService();
 
