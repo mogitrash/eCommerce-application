@@ -1,6 +1,8 @@
-import { GetAllPublishedProductsResponseDTO } from '../models/product/product-DTO.model';
-import { GetAllPublishedProductsRequest } from '../models/product/product.model';
-import getAllPublishedProductsRequestConverter from '../utilities/get-all-published-products-request-converter';
+import GetAllPublishedProductsResponse, {
+  GetAllPublishedProductsRequest,
+} from '../models/product/product-DTO.model';
+import { Product } from '../models/product/product.model';
+import productConverterDTO from '../utilities/product-DTO-converter';
 import AuthorizationService from './authorization.service';
 
 export default class ProductService {
@@ -12,10 +14,9 @@ export default class ProductService {
 
   async getAllPublishedProducts(
     parameters: GetAllPublishedProductsRequest = {},
-  ): Promise<GetAllPublishedProductsResponseDTO> {
+  ): Promise<Product[]> {
     let token = localStorage.getItem('userToken');
 
-    // TODO: implement token refreshing
     if (!token) {
       const authorizationResponse = await this.authorizationService.getAnonymousSessionToken();
       if ('access_token' in authorizationResponse) {
@@ -23,20 +24,17 @@ export default class ProductService {
       }
     }
 
-    const queryParameters = new URLSearchParams(
-      Object.entries(getAllPublishedProductsRequestConverter(parameters)),
-    );
+    const queryParameters = new URLSearchParams(Object.entries(parameters));
 
     const headers = new Headers({
       Authorization: `Bearer ${token}`,
     });
 
-    return fetch(
-      `${this.clientAPIUrl}/${this.projectKey}/product-projections/search?${queryParameters}`,
-      {
-        method: 'GET',
-        headers,
-      },
-    ).then((res) => res.json());
+    return fetch(`${this.clientAPIUrl}/${this.projectKey}/product-projections?${queryParameters}`, {
+      method: 'GET',
+      headers,
+    })
+      .then((res) => res.json())
+      .then((json: GetAllPublishedProductsResponse) => json.results.map(productConverterDTO));
   }
 }

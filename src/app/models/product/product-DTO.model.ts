@@ -33,15 +33,13 @@ export interface ProductPriceValueDTO {
   type: string;
 }
 
-export type ProductSortDTO = 'name.en-US asc' | 'name.en-US desc' | 'price asc' | 'price desc';
-
-export interface GetAllPublishedProductsRequestDTO {
+export interface GetAllPublishedProductsRequest {
   limit?: number;
   offset?: number;
-  sort?: ProductSortDTO;
+  // TODO: add sort here
 }
 
-export interface GetAllPublishedProductsResponseDTO {
+export default interface GetAllPublishedProductsResponse {
   limit: number;
   offset: number;
   count: number;
