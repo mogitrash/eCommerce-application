@@ -5,6 +5,7 @@ import getAllPublishedProductsRequestConverter from '../utilities/get-all-publis
 import productDTOConverter from '../utilities/product-DTO-converter';
 import authorizationService from './authorization.service';
 
+
 export default class ProductService {
   private projectKey = process.env.CTP_PROJECT_KEY;
 
@@ -17,6 +18,7 @@ export default class ProductService {
   ): Promise<GetAllPublishedProductsResponseDTO> {
     let token = localStorage.getItem(LocalStorageEndpoint.userToken);
 
+    // TODO: implement token refreshing
     if (!token) {
       const authorizationResponse = await this.authorizationService.getAnonymousSessionToken();
       if ('access_token' in authorizationResponse) {
@@ -61,5 +63,6 @@ export default class ProductService {
     })
       .then((res) => res.json())
       .then(productDTOConverter);
+
   }
 }
