@@ -1,12 +1,19 @@
 import './profile.scss';
 import BaseComponent from '../base/base.component';
 import ProfileService from '../../services/profile.service';
+import NotificationService from '../../services/notification.service';
 import BaseAddress from '../../models/base-address.model';
 import InputCheckboxComponent from '../input/input-checkbox.component';
 import EditableItemComponent from '../editable-item/editable-item.component';
+import { CustomerUpdateAction } from '../../models/customer.model';
+import Country from '../../models/country.model';
 
 export default class ProfileComponent extends BaseComponent<'div'> {
+  private customerVersion!: number;
+
   private profileService = new ProfileService();
+
+  private notificationService = new NotificationService();
 
   constructor() {
     super({ tag: 'div', classes: ['profile'] });
@@ -24,8 +31,10 @@ export default class ProfileComponent extends BaseComponent<'div'> {
       defaultShippingAddressId,
       billingAddressIds,
       defaultBillingAddressId,
+      version,
     } = customer;
 
+    this.customerVersion = version;
     this.createPersonalDetails(firstName, lastName, dateOfBirth);
     this.createAddresses(
       'Shipping Address',
@@ -46,11 +55,20 @@ export default class ProfileComponent extends BaseComponent<'div'> {
       classes: ['profile_heading'],
       textContent: 'Personal Details',
     });
-    const firstNameItem = new EditableItemComponent({ title: 'First Name', value: firstName });
-    const lastNameItem = new EditableItemComponent({ title: 'Last Name', value: lastName });
+    const firstNameItem = new EditableItemComponent({
+      title: 'First Name',
+      value: firstName,
+      onSave: this.updateFirstName.bind(this),
+    });
+    const lastNameItem = new EditableItemComponent({
+      title: 'Last Name',
+      value: lastName,
+      onSave: this.updateLastName.bind(this),
+    });
     const dateOfBirthItem = new EditableItemComponent({
       title: 'Date of Birth',
       value: dateOfBirth,
+      onSave: this.updateDateOfBirth.bind(this),
     });
     personalDetailsContainer.append([
       personalDetailsHeading,
@@ -79,16 +97,14 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     });
     const profileAddresses = addressIds.map((addressId) => {
       const profileAddress = addresses.find((address) => address.id === addressId) as BaseAddress;
-      return ProfileComponent.createAddress(profileAddress, defaultAddressId);
+      return this.createAddress(profileAddress, defaultAddressId);
     });
     addressContainer.append([addressHeading, ...profileAddresses]);
     this.append([addressContainer]);
   }
 
-  private static createAddress(
-    address: BaseAddress,
-    defaultAddressId?: string,
-  ): BaseComponent<'div'> {
+  private createAddress(address: BaseAddress, defaultAddressId?: string): BaseComponent<'div'> {
+    const addressToUse = { ...address };
     const isUsedAsDefault = defaultAddressId === address.id;
     const addressWrapper = new BaseComponent({
       tag: 'div',
@@ -96,21 +112,89 @@ export default class ProfileComponent extends BaseComponent<'div'> {
         ? ['profile_address', 'profile_address--default']
         : ['profile_address'],
     });
-    const street = new EditableItemComponent({ title: 'Street', value: address.streetName });
-    const city = new EditableItemComponent({ title: 'City', value: address.city });
-    const country = new EditableItemComponent({ title: 'Country', value: address.country });
+    const street = new EditableItemComponent({
+      title: 'Street',
+      value: addressToUse.streetName,
+      onSave: (streetName: string) => {
+        addressToUse.streetName = streetName;
+        this.updateAddress(addressToUse);
+      },
+    });
+    const city = new EditableItemComponent({
+      title: 'City',
+      value: addressToUse.city,
+      onSave: (cityName: string) => {
+        addressToUse.city = cityName;
+        this.updateAddress(addressToUse);
+      },
+    });
+    const country = new EditableItemComponent({
+      title: 'Country',
+      value: addressToUse.country,
+      onSave: (countryName: string | Country) => {
+        addressToUse.country = countryName as Country;
+        this.updateAddress(addressToUse);
+      },
+    });
     const postalCode = new EditableItemComponent({
       title: 'Postal Code',
-      value: address.postalCode,
+      value: addressToUse.postalCode,
+      onSave: (postalCodeNumber: string) => {
+        addressToUse.postalCode = postalCodeNumber;
+        this.updateAddress(addressToUse);
+      },
     });
     const defaultCheckbox = new InputCheckboxComponent({
-      id: address.id as string,
-      name: address.id as string,
+      id: addressToUse.id as string,
+      name: addressToUse.id as string,
       labelText: 'Use as default',
       isChecked: isUsedAsDefault,
       onSelect: () => {},
     });
     addressWrapper.append([street, city, country, postalCode, defaultCheckbox]);
     return addressWrapper;
+  }
+
+  private updateFirstName(firstName: string): void {
+    this.updateUserProfile({
+      action: 'setFirstName',
+      firstName,
+    });
+  }
+
+  private updateLastName(lastName: string): void {
+    this.updateUserProfile({
+      action: 'setLastName',
+      lastName,
+    });
+  }
+
+  private updateDateOfBirth(dateOfBirth: string): void {
+    this.updateUserProfile({
+      action: 'setDateOfBirth',
+      dateOfBirth,
+    });
+  }
+
+  private updateAddress(address: BaseAddress): void {
+    this.updateUserProfile({
+      action: 'changeAddress',
+      addressId: address.id as string,
+      address,
+    });
+  }
+
+  private async updateUserProfile(action: CustomerUpdateAction): Promise<void> {
+    try {
+      const { version } = await this.profileService.updateUserProfile(this.customerVersion, action);
+      if (version) {
+        this.customerVersion = version;
+        this.notificationService.notify('Changes were saved');
+      } else {
+        this.notificationService.notify('Changes were not saved');
+      }
+    } catch (error) {
+      this.notificationService.notify('Changes were not saved');
+    }
   }
 }

@@ -1,19 +1,24 @@
+import Country from '../../models/country.model';
 import BaseComponent from '../base/base.component';
 import './editable-item.scss';
-import NotificationService from '../../services/notification.service';
 
-type EditableItemComponentConfig = { title: string; value: string };
+type EditableItemComponentConfig = {
+  title: string;
+  value: string;
+  onSave: (newValue: string | Country) => void;
+};
 
 export default class EditableItemComponent extends BaseComponent<'div'> {
-  private itemValue: string;
+  private itemValue: string | Country;
+
+  private onSave: (newValue: string | Country) => void;
 
   private itemWrapper!: BaseComponent<'div'>;
 
-  private notificationService = new NotificationService();
-
-  constructor({ title, value }: EditableItemComponentConfig) {
+  constructor({ title, value, onSave }: EditableItemComponentConfig) {
     super({ tag: 'div', classes: ['editable-item'] });
     this.itemValue = value;
+    this.onSave = onSave;
     this.createInitialItem(title);
   }
 
@@ -76,7 +81,7 @@ export default class EditableItemComponent extends BaseComponent<'div'> {
     this.itemValue = inputComponent.getElement().value;
     this.itemWrapper.getElement().innerHTML = '';
     this.createStaticItem();
-    this.notificationService.notify('Changes were saved');
+    this.onSave(this.itemValue);
   }
 
   private onCancelClick(): void {
