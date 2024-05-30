@@ -21,6 +21,7 @@ export interface GetAllPublishedProductsRequest {
   limit?: number;
   offset?: number;
   sort?: ProductSort;
+  text?: string; // NOTE: The text to analyze and search for
 }
 
 export interface GetAllPublishedProductsResponse {
