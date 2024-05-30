@@ -1,4 +1,5 @@
 export interface ProductDTO {
+  id: string;
   name: ProductLocaleInfoDTO;
   description: ProductLocaleInfoDTO;
   masterVariant: ProductMasterVariantDTO;
