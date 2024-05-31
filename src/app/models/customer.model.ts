@@ -11,7 +11,7 @@ export default interface Customer {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
-  password?: string;
+  password: string;
   addresses: BaseAddress[];
   shippingAddressIds?: string[];
   defaultShippingAddressId?: string;
