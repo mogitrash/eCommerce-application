@@ -7,6 +7,11 @@ const productDTOConverter = ({ id, name, description, masterVariant }: ProductDT
   name: name['en-US'],
   description: description['en-US'],
   images: masterVariant.images.map(productImageDTOConverter),
+  attributes: masterVariant.attributes.map((attributeDTO) => ({
+    name: attributeDTO.name,
+    key: attributeDTO.value.key,
+    label: attributeDTO.value.label,
+  })),
   prices: masterVariant.prices.map((priceDTO) => ({
     id: priceDTO.id,
     centAmount: priceDTO.value.centAmount,
