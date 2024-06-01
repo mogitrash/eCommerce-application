@@ -36,6 +36,11 @@ export interface ProductAttributeValueDTO {
 export interface ProductPriceDTO {
   id: string;
   value: ProductPriceValueDTO;
+  discounted?: ProductDiscountedPriceDTO;
+}
+
+export interface ProductDiscountedPriceDTO {
+  value: ProductPriceValueDTO;
 }
 
 export interface ProductPriceValueDTO {
