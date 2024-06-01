@@ -3,7 +3,7 @@ import BaseComponent from '../base/base.component';
 
 type ButtonSize = 'small';
 
-type ButtonStyle = 'green' | 'red';
+type ButtonStyle = 'positive' | 'negative';
 
 type ButtonType = 'button' | 'submit';
 

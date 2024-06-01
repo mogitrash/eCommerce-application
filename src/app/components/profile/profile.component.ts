@@ -186,14 +186,14 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     const save = new Button({
       text: 'Save',
       size: 'small',
-      style: 'green',
+      style: 'positive',
       disabled: true,
       type: 'button',
     });
     const cancel = new Button({
       text: 'Cancel',
       size: 'small',
-      style: 'red',
+      style: 'negative',
       type: 'button',
       onClick: () => {
         addNewAddress.enable();
@@ -322,7 +322,7 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     const deleteButton = new Button({
       text: 'Delete',
       size: 'small',
-      style: 'red',
+      style: 'negative',
       onClick: () => {
         addressWrapper.getElement().remove();
         this.removeAddress(addressToUse.id as string);

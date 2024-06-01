@@ -23,7 +23,7 @@
   flex-direction: column;
   margin-bottom: 10px;
 
-  &.profile_address:not(:last-child)  {
+  &.profile_address:not(:last-child) {
     margin-bottom: 30px;
   }
 }
@@ -35,11 +35,11 @@
 }
 
 .prodfile_add-address {
-    height: 30px;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    background: url('./../../assets/images/add.svg') center no-repeat;
+  height: 30px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  background: url('./../../assets/images/add.svg') center no-repeat;
 }
 
 .profile_address-controls {
