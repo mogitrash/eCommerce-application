@@ -1,4 +1,5 @@
 import {
+  GetAllProductsAttributesResponse,
   GetAllPublishedProductsRequest,
   GetAllPublishedProductsResponse,
   Product,
@@ -17,7 +18,6 @@ export default class ProductService {
   async getAllPublishedProducts(
     parameters: GetAllPublishedProductsRequest = {},
   ): Promise<GetAllPublishedProductsResponse> {
-
     const token = await getCurrentAccessToken();
 
     const queryParameters = new URLSearchParams(
