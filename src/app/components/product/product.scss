@@ -1,1 +1,63 @@
 @import './../../sass/variables.scss';
+
+.product {
+  padding: 40px 5px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.product-card {
+  display: flex;
+  gap: 50px;
+
+  .product-card_slider {
+    flex-grow: 1;
+  }
+  .product-card_info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex-grow: 1;
+    max-width: 500px;
+
+    .product-card_info-name {
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .product-card_info-descr {
+      flex-grow: 1;
+    }
+
+    .product-card_info-details_item {
+      text-transform: capitalize;
+      line-height: 120%;
+    }
+  }
+
+  .product-card_image {
+    border-radius: 8px;
+    height: 400px;
+  }
+}
+
+.bold {
+  font-weight: 800;
+}
+
+.product-price-wrapper {
+  align-items: flex-end;
+  display: flex;
+  gap: 20px;
+}
+
+.product-price {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.product-price__old {
+  font-size: 24px;
+  text-decoration: line-through;
+  color: $color-gray;
+}
