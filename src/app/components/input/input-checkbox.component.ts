@@ -7,6 +7,7 @@ type InputCheckboxComponentConfig = {
   labelText: string;
   onSelect: (isChecked: boolean) => void;
   isChecked?: boolean;
+  disabled?: boolean;
 };
 
 export default class InputCheckboxComponent extends BaseComponent<'div'> {
@@ -25,7 +26,7 @@ export default class InputCheckboxComponent extends BaseComponent<'div'> {
   }
 
   private setupElements(config: InputCheckboxComponentConfig) {
-    const { id, name, labelText, isChecked } = config;
+    const { id, name, labelText, isChecked, disabled } = config;
     this.input.setAttribute('type', 'checkbox');
     this.input.setAttribute('id', id);
     this.input.setAttribute('name', name);
@@ -33,6 +34,9 @@ export default class InputCheckboxComponent extends BaseComponent<'div'> {
     this.label.setTextContent(labelText);
     if (isChecked) {
       this.input.setAttribute('checked', '');
+    }
+    if (disabled) {
+      this.disable();
     }
   }
 
@@ -47,6 +51,14 @@ export default class InputCheckboxComponent extends BaseComponent<'div'> {
 
   public hide(): void {
     this.addClass('input_checkbox--hidden');
+  }
+
+  public disable(): void {
+    this.input.setAttribute('disabled', '');
+  }
+
+  public enable(): void {
+    this.input.removeAttribute('disabled');
   }
 
   render() {

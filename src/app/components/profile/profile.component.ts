@@ -1,4 +1,5 @@
 import './profile.scss';
+import { v4 as uuidv4 } from 'uuid';
 import BaseComponent from '../base/base.component';
 import ProfileService from '../../services/profile.service';
 import NotificationService from '../../services/notification.service';
@@ -25,6 +26,10 @@ import {
   validateInputStreet,
   validateInputPassword,
 } from '../../utilities/input-validators';
+import Button from '../button/button.component';
+import AddressFormComponent from '../address-form/address-form.component';
+
+type AddressType = 'billing' | 'shipping';
 
 export default class ProfileComponent extends BaseComponent<'div'> {
   private customerVersion!: number;
@@ -36,6 +41,8 @@ export default class ProfileComponent extends BaseComponent<'div'> {
   private notificationService = new NotificationService();
 
   private customer!: Customer;
+
+  private addressesWrappers: { [key: string]: BaseComponent<'div'> } = {};
 
   constructor() {
     super({ tag: 'div', classes: ['profile'] });
@@ -59,13 +66,8 @@ export default class ProfileComponent extends BaseComponent<'div'> {
 
     this.customerVersion = version;
     this.createPersonalDetails(firstName, lastName, email, dateOfBirth);
-    this.createAddresses(
-      'Shipping Address',
-      addresses,
-      shippingAddressIds,
-      defaultShippingAddressId,
-    );
-    this.createAddresses('Billing Address', addresses, billingAddressIds, defaultBillingAddressId);
+    this.createAddresses('shipping', addresses, shippingAddressIds, defaultShippingAddressId);
+    this.createAddresses('billing', addresses, billingAddressIds, defaultBillingAddressId);
   }
 
   private createPersonalDetails(
@@ -93,6 +95,7 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     const lastNameItem = new EditableItemComponent({
       title: 'Last Name',
       value: lastName,
+      pattern: NAME_REGEX,
       onSave: this.updateLastName.bind(this),
       validator: validateInputName,
     });
@@ -130,7 +133,7 @@ export default class ProfileComponent extends BaseComponent<'div'> {
   }
 
   private createAddresses(
-    headingText: string,
+    addressType: AddressType,
     addresses: BaseAddress[],
     addressIds?: string[],
     defaultAddressId?: string,
@@ -140,22 +143,116 @@ export default class ProfileComponent extends BaseComponent<'div'> {
       tag: 'div',
       classes: ['profile_container'],
     });
+    const addressesWrapper = new BaseComponent({
+      tag: 'div',
+    });
     const addressHeading = new BaseComponent({
       tag: 'h2',
       classes: ['profile_heading'],
-      textContent: headingText,
+      textContent: `${addressType} address`,
     });
     const profileAddresses = addressIds.map((addressId) => {
       const profileAddress = addresses.find((address) => address.id === addressId) as BaseAddress;
-      return this.createAddress(profileAddress, defaultAddressId);
+      return this.createAddress(profileAddress, addressType, defaultAddressId);
     });
-    addressContainer.append([addressHeading, ...profileAddresses]);
+    const addNewAddress: Button = new Button({
+      text: `Add new ${addressType} address`,
+      size: 'small',
+      onClick: () => this.createAddressForm(addressContainer, addressType, addNewAddress),
+    });
+    this.addressesWrappers[addressType] = addressesWrapper;
+    addressesWrapper.append(profileAddresses);
+    addressContainer.append([addressHeading, addressesWrapper, addNewAddress]);
     this.append([addressContainer]);
   }
 
-  private createAddress(address: BaseAddress, defaultAddressId?: string): BaseComponent<'div'> {
+  private createAddressForm(
+    addressContainer: BaseComponent<'div'>,
+    addressType: AddressType,
+    addNewAddress: Button,
+  ) {
+    addNewAddress.disable();
+    const newAddressForm = new BaseComponent({
+      tag: 'form',
+    });
+    const addressFormElements = new AddressFormComponent({
+      formName: `New ${addressType} address`,
+      inputPrefix: addressType,
+    });
+    const controls = new BaseComponent({
+      tag: 'div',
+      classes: ['profile_new-address-controls'],
+    });
+    const save = new Button({
+      text: 'Save',
+      size: 'small',
+      style: 'green',
+      disabled: true,
+      type: 'button',
+    });
+    const cancel = new Button({
+      text: 'Cancel',
+      size: 'small',
+      style: 'red',
+      type: 'button',
+      onClick: () => {
+        addNewAddress.enable();
+        newAddressForm.getElement().remove();
+      },
+    });
+    newAddressForm.addListener('input', () => {
+      const isFormValid = addressFormElements.validateForm();
+      if (isFormValid) {
+        save.enable();
+      } else {
+        save.disable();
+      }
+    });
+    controls.append([save, cancel]);
+    save.addListener('click', () => this.handleSaveNewAddress(newAddressForm, addressType));
+    newAddressForm.append([addressFormElements, controls]);
+    addressContainer.append([newAddressForm]);
+  }
+
+  private async handleSaveNewAddress(
+    newAddressForm: BaseComponent<'form'>,
+    addressType: AddressType,
+  ) {
+    const formData = new FormData(newAddressForm.getElement());
+    const addressKey = uuidv4();
+    const address: BaseAddress = {
+      streetName: formData.get(`${addressType}Street`) as string,
+      city: formData.get(`${addressType}City`) as string,
+      postalCode: formData.get(`${addressType}PostalCode`) as string,
+      country: formData.get(`${addressType}Country`) as Country,
+      key: addressKey,
+    };
+    await this.updateUserProfile({
+      action: 'addAddress',
+      address,
+    });
+    const updatedCustomer = await this.updateUserProfile({
+      action: addressType === 'billing' ? 'addBillingAddressId' : 'addShippingAddressId',
+      addressKey,
+    });
+    if (updatedCustomer) {
+      const customerAddress = updatedCustomer.addresses.find(
+        ({ key }) => key === addressKey,
+      ) as BaseAddress;
+      this.addressesWrappers[addressType].append([
+        this.createAddress(customerAddress, addressType),
+      ]);
+    }
+    newAddressForm.getElement().remove();
+  }
+
+  private createAddress(
+    address: BaseAddress,
+    addressType: AddressType,
+    defaultAddressId?: string,
+  ): BaseComponent<'div'> {
     const addressToUse = { ...address };
-    const isUsedAsDefault = defaultAddressId === address.id;
+    const isUsedAsDefault = defaultAddressId ? defaultAddressId === address.id : false;
     const addressWrapper = new BaseComponent({
       tag: 'div',
       classes: isUsedAsDefault
@@ -203,15 +300,64 @@ export default class ProfileComponent extends BaseComponent<'div'> {
         return validateInputPostalCode(validity, newValue as string, addressToUse.country);
       },
     });
+    const addressControls = new BaseComponent({
+      tag: 'div',
+      classes: ['profile_address-controls'],
+    });
     const defaultCheckbox = new InputCheckboxComponent({
       id: addressToUse.id as string,
       name: addressToUse.id as string,
-      labelText: 'Use as default',
+      labelText: `Default ${addressType} address`,
+      disabled: isUsedAsDefault,
       isChecked: isUsedAsDefault,
-      onSelect: () => {},
+      onSelect: () => {
+        this.handleDefaultAddressSelection(
+          addressToUse,
+          addressType,
+          addressWrapper,
+          defaultCheckbox,
+        );
+      },
     });
-    addressWrapper.append([street, city, country, postalCode, defaultCheckbox]);
+    const deleteButton = new Button({
+      text: 'Delete',
+      size: 'small',
+      style: 'red',
+      onClick: () => {
+        addressWrapper.getElement().remove();
+        this.removeAddress(addressToUse.id as string);
+      },
+    });
+    addressControls.append([defaultCheckbox, deleteButton]);
+    addressWrapper.append([street, city, country, postalCode, addressControls]);
     return addressWrapper;
+  }
+
+  private removeAddress(addressId: string) {
+    this.updateUserProfile({
+      action: 'removeAddress',
+      addressId,
+    });
+  }
+
+  private handleDefaultAddressSelection(
+    addressToUse: BaseAddress,
+    addressType: AddressType,
+    addressWrapper: BaseComponent<'div'>,
+    defaultCheckbox: InputCheckboxComponent,
+  ): void {
+    if (addressType === 'billing') {
+      this.setBillingAddressAsDefault(addressToUse.id as string, addressWrapper, defaultCheckbox);
+    } else {
+      this.setShippingAddressAsDefault(addressToUse.id as string, addressWrapper, defaultCheckbox);
+    }
+  }
+
+  static handleRemoveDefaultAddressStyles(addressElement: Element): void {
+    addressElement.classList.remove('profile_address--default');
+    const checkbox = addressElement.querySelector('input[type=checkbox]');
+    checkbox?.removeAttribute('disabled');
+    (checkbox as HTMLInputElement).checked = false;
   }
 
   private updateFirstName(firstName: string): void {
@@ -251,18 +397,58 @@ export default class ProfileComponent extends BaseComponent<'div'> {
     });
   }
 
-  private async updateUserProfile(action: CustomerUpdateAction): Promise<void> {
+  private async setBillingAddressAsDefault(
+    addressId: string,
+    addressWrapper: BaseComponent<'div'>,
+    defaultCheckbox: InputCheckboxComponent,
+  ): Promise<void> {
+    await this.updateUserProfile({
+      action: 'setDefaultBillingAddress',
+      addressId,
+    });
+    const currentDefaultAddress = this.addressesWrappers.billing
+      .getElement()
+      .querySelector('.profile_address--default');
+    addressWrapper.addClass('profile_address--default');
+    defaultCheckbox.disable();
+    if (currentDefaultAddress) {
+      ProfileComponent.handleRemoveDefaultAddressStyles(currentDefaultAddress);
+    }
+  }
+
+  private async setShippingAddressAsDefault(
+    addressId: string,
+    addressWrapper: BaseComponent<'div'>,
+    defaultCheckbox: InputCheckboxComponent,
+  ): Promise<void> {
+    await this.updateUserProfile({
+      action: 'setDefaultShippingAddress',
+      addressId,
+    });
+    const currentDefaultAddress = this.addressesWrappers.shipping
+      .getElement()
+      .querySelector('.profile_address--default');
+    addressWrapper.addClass('profile_address--default');
+    defaultCheckbox.disable();
+    if (currentDefaultAddress) {
+      ProfileComponent.handleRemoveDefaultAddressStyles(currentDefaultAddress);
+    }
+  }
+
+  private async updateUserProfile(action: CustomerUpdateAction): Promise<void | Customer> {
     try {
-      const { version } = await this.profileService.updateUserProfile(this.customerVersion, action);
+      const customer = await this.profileService.updateUserProfile(this.customerVersion, action);
+      const { version } = customer;
       if (version) {
         this.customerVersion = version;
         this.notificationService.notify('Changes were saved');
-      } else {
-        this.notificationService.notify('Changes were not saved');
+        return customer;
       }
+      this.notificationService.notify('Changes were not saved');
     } catch (error) {
       this.notificationService.notify('Changes were not saved');
     }
+    return undefined;
   }
 
   private async updatePassword(newPassword: string, currentPassword?: string): Promise<void> {

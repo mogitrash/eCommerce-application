@@ -6,7 +6,7 @@
   flex-direction: row;
   justify-content: space-between;
   border-bottom: 1px solid $color-gray;
-  width: 400px;
+  width: 500px;
   height: 44px;
   gap: 5px;
   align-items: end;
@@ -27,7 +27,6 @@
   align-items: end;
   gap: 5px;
 }
-
 
 .editable-item_title {
   color: $color-gray;

@@ -1,7 +1,6 @@
 @import './../../sass/variables.scss';
 
 .button {
-  margin-top: 10px;
   padding: 10px;
   background-color: $color-primary;
   font-family: $font-primary;
@@ -32,4 +31,18 @@
   &.hidden {
     display: none;
   }
+}
+
+.button--small {
+  padding: 5px;
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+.button--green {
+  background-color: $color-green;
+}
+
+.button--red {
+  background-color: $color-red;
 }

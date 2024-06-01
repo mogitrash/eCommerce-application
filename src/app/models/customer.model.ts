@@ -21,30 +21,60 @@ export default interface Customer {
   authenticationMode: string;
 }
 
-export type UpdateFirstNameAction = {
+type UpdateFirstNameAction = {
   action: 'setFirstName';
   firstName: string;
 };
 
-export type UpdateLastNameAction = {
+type UpdateLastNameAction = {
   action: 'setLastName';
   lastName: string;
 };
 
-export type UpdateDateOfBirthAction = {
+type UpdateDateOfBirthAction = {
   action: 'setDateOfBirth';
   dateOfBirth: string;
 };
 
-export type UpdateEmailAction = {
+type UpdateEmailAction = {
   action: 'changeEmail';
   email: string;
 };
 
-export type UpdateAddressAction = {
+type UpdateAddressAction = {
   action: 'changeAddress';
   addressId: string;
   address: BaseAddress;
+};
+
+type UpdateDefaultShippingAddressAction = {
+  action: 'setDefaultShippingAddress';
+  addressId: string;
+};
+
+type UpdateDefaultBillingAddressAction = {
+  action: 'setDefaultBillingAddress';
+  addressId: string;
+};
+
+type AddAddressAction = {
+  action: 'addAddress';
+  address: BaseAddress;
+};
+
+type AddShippingAddressIdAction = {
+  action: 'addShippingAddressId';
+  addressKey: string;
+};
+
+type AddBillingAddressIdAction = {
+  action: 'addBillingAddressId';
+  addressKey: string;
+};
+
+type RemoveAddressAction = {
+  action: 'removeAddress';
+  addressId: string;
 };
 
 export type CustomerUpdateAction =
@@ -52,4 +82,10 @@ export type CustomerUpdateAction =
   | UpdateLastNameAction
   | UpdateDateOfBirthAction
   | UpdateEmailAction
-  | UpdateAddressAction;
+  | UpdateAddressAction
+  | UpdateDefaultBillingAddressAction
+  | UpdateDefaultShippingAddressAction
+  | AddAddressAction
+  | AddShippingAddressIdAction
+  | AddBillingAddressIdAction
+  | RemoveAddressAction;
