@@ -2,15 +2,17 @@ import './profile.scss';
 import BaseComponent from '../base/base.component';
 import ProfileService from '../../services/profile.service';
 import NotificationService from '../../services/notification.service';
+import authenticationService from '../../services/authentication.service';
 import BaseAddress from '../../models/base-address.model';
 import InputCheckboxComponent from '../input/input-checkbox.component';
 import EditableItemComponent from '../editable-item/editable-item.component';
-import { CustomerUpdateAction } from '../../models/customer.model';
+import Customer, { CustomerUpdateAction } from '../../models/customer.model';
 import Country from '../../models/country.model';
 import {
   CITY_REGEX,
   EMAIL_REGEX,
   NAME_REGEX,
+  PASSWORD_REGEX,
   STREET_REGEX,
 } from '../../models/constants/login-registration.constants';
 import {
@@ -21,6 +23,7 @@ import {
   validateInputEmail,
   validateInputPostalCode,
   validateInputStreet,
+  validateInputPassword,
 } from '../../utilities/input-validators';
 
 export default class ProfileComponent extends BaseComponent<'div'> {
@@ -28,7 +31,11 @@ export default class ProfileComponent extends BaseComponent<'div'> {
 
   private profileService = new ProfileService();
 
+  private authenticationService = authenticationService;
+
   private notificationService = new NotificationService();
+
+  private customer!: Customer;
 
   constructor() {
     super({ tag: 'div', classes: ['profile'] });
@@ -36,7 +43,7 @@ export default class ProfileComponent extends BaseComponent<'div'> {
   }
 
   private async createCustomerProfile(): Promise<void> {
-    const customer = await this.profileService.getUserProfile();
+    this.customer = await this.profileService.getUserProfile();
     const {
       firstName,
       lastName,
@@ -48,7 +55,7 @@ export default class ProfileComponent extends BaseComponent<'div'> {
       billingAddressIds,
       defaultBillingAddressId,
       version,
-    } = customer;
+    } = this.customer;
 
     this.customerVersion = version;
     this.createPersonalDetails(firstName, lastName, email, dateOfBirth);
@@ -103,12 +110,21 @@ export default class ProfileComponent extends BaseComponent<'div'> {
       pattern: EMAIL_REGEX,
       validator: validateInputEmail,
     });
+    const passwordItem = new EditableItemComponent({
+      title: 'Password',
+      value: '********',
+      type: 'password',
+      onSave: this.updatePassword.bind(this),
+      pattern: PASSWORD_REGEX,
+      validator: validateInputPassword,
+    });
     personalDetailsContainer.append([
       personalDetailsHeading,
       firstNameItem,
       lastNameItem,
       emailItem,
       dateOfBirthItem,
+      passwordItem,
     ]);
     this.append([personalDetailsContainer]);
   }
@@ -220,6 +236,7 @@ export default class ProfileComponent extends BaseComponent<'div'> {
   }
 
   private updateEmail(email: string): void {
+    this.customer.email = email;
     this.updateUserProfile({
       action: 'changeEmail',
       email,
@@ -245,6 +262,28 @@ export default class ProfileComponent extends BaseComponent<'div'> {
       }
     } catch (error) {
       this.notificationService.notify('Changes were not saved');
+    }
+  }
+
+  private async updatePassword(newPassword: string, currentPassword?: string): Promise<void> {
+    try {
+      const { version } = await this.profileService.updateUserPassword(
+        this.customerVersion,
+        currentPassword as string,
+        newPassword,
+      );
+      if (version) {
+        this.customerVersion = version;
+        await this.authenticationService.signInCustomer({
+          password: newPassword,
+          email: this.customer.email,
+        });
+        this.notificationService.notify('Password was saved');
+      } else {
+        this.notificationService.notify('Password was not saved');
+      }
+    } catch (error) {
+      this.notificationService.notify('Password was not saved');
     }
   }
 }
