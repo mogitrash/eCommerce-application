@@ -6,11 +6,14 @@
   justify-content: space-around;
 
   & .old {
+    font-size: 16px;
     text-decoration: line-through;
+    color: $color-gray;
   }
 
-  & .discount {
-    color: #ff0000;
+  & .price {
+    font-size: 20px;
+    font-weight: 800;
   }
 
   & .card_wrapper {
@@ -24,7 +27,7 @@
     border: 1px solid $color-dark;
   }
 
-  & .card_price{
+  & .card_price {
     display: flex;
     & * {
       margin: 0 5px;

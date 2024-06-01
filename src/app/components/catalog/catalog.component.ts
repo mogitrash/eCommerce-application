@@ -19,13 +19,13 @@ export default class CatalogComponent extends BaseComponent<'div'> {
     });
   }
 
-  private static convertPrice(cent: number) {
-    return `${Math.floor(cent / 100)}.${cent % 100}`;
-  }
-
   private makeCard(product: Product) {
     const discount = product.prices[0].discountedCentAmount;
     const price = product.prices[0].centAmount;
+    const priceFormat = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: product.prices[0].currencyCode,
+    });
     const cardWrapper = new BaseComponent({ tag: 'div', classes: ['card_wrapper'] });
     const imgWrapper = new BaseComponent({ tag: 'div', classes: ['img_wrapper'] });
     const cardIMG = new BaseComponent({ tag: 'img', classes: ['catalog_img'] });
@@ -45,30 +45,25 @@ export default class CatalogComponent extends BaseComponent<'div'> {
       tag: 'div',
       classes: ['card_price'],
     });
-    const code = new BaseComponent({
-      tag: 'div',
-      classes: ['code'],
-      textContent: `${product.prices[0].currencyCode}`,
-    });
     if (discount) {
       const oldPrice = new BaseComponent({
         tag: 'div',
         classes: ['old'],
-        textContent: `${CatalogComponent.convertPrice(price)}`,
+        textContent: `${priceFormat.format(price / 100)}`,
       });
-      const discountPrice = new BaseComponent({
+      const currentPrice = new BaseComponent({
         tag: 'div',
-        classes: ['discount'],
-        textContent: `${CatalogComponent.convertPrice(discount)}`,
+        classes: ['price'],
+        textContent: `${priceFormat.format(discount / 100)}`,
       });
-      cardPrice.append([oldPrice, discountPrice, code]);
+      cardPrice.append([oldPrice, currentPrice]);
     } else {
       const currentPrice = new BaseComponent({
         tag: 'div',
         classes: ['price'],
-        textContent: `${CatalogComponent.convertPrice(price)}`,
+        textContent: `${priceFormat.format(price / 100)}`,
       });
-      cardPrice.append([currentPrice, code]);
+      cardPrice.append([currentPrice]);
     }
     cardWrapper.append([imgWrapper, cardName, cardDescription, cardPrice]);
     this.append([cardWrapper]);
