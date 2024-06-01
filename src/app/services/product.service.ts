@@ -1,10 +1,13 @@
 import LocalStorageEndpoint from '../models/local-storage-endpoint.model';
-import { GetAllPublishedProductsResponseDTO } from '../models/product/product-DTO.model';
-import { GetAllPublishedProductsRequest, Product } from '../models/product/product.model';
+import {
+  GetAllPublishedProductsRequest,
+  GetAllPublishedProductsResponse,
+  Product,
+} from '../models/product/product.model';
 import getAllPublishedProductsRequestConverter from '../utilities/get-all-published-products-request-converter';
+import GetAllPublishedProductsDTOResponseConverter from '../utilities/get-all-published-products-response-DTO-converter';
 import productDTOConverter from '../utilities/product-DTO-converter';
 import authorizationService from './authorization.service';
-
 
 export default class ProductService {
   private projectKey = process.env.CTP_PROJECT_KEY;
@@ -15,7 +18,7 @@ export default class ProductService {
 
   async getAllPublishedProducts(
     parameters: GetAllPublishedProductsRequest = {},
-  ): Promise<GetAllPublishedProductsResponseDTO> {
+  ): Promise<GetAllPublishedProductsResponse> {
     let token = localStorage.getItem(LocalStorageEndpoint.userToken);
 
     // TODO: implement token refreshing
@@ -40,7 +43,9 @@ export default class ProductService {
         method: 'GET',
         headers,
       },
-    ).then((res) => res.json());
+    )
+      .then((res) => res.json())
+      .then(GetAllPublishedProductsDTOResponseConverter);
   }
 
   async getPublishedProductById(id: string): Promise<Product> {
@@ -63,6 +68,5 @@ export default class ProductService {
     })
       .then((res) => res.json())
       .then(productDTOConverter);
-
   }
 }

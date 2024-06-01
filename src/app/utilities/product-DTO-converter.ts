@@ -11,6 +11,7 @@ const productDTOConverter = ({ id, name, description, masterVariant }: ProductDT
     id: priceDTO.id,
     centAmount: priceDTO.value.centAmount,
     currencyCode: priceDTO.value.currencyCode,
+    discountedCentAmount: priceDTO.discounted?.value.centAmount || null,
   })),
 });
 

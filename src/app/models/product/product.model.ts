@@ -15,6 +15,7 @@ export interface ProductPrice {
   id: string;
   centAmount: number;
   currencyCode: string;
+  discountedCentAmount: number | null;
 }
 
 export interface GetAllPublishedProductsRequest {
