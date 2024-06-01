@@ -1,1 +1,65 @@
 @import './../../sass/variables.scss';
+
+.catalog {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+
+  & .old {
+    text-decoration: line-through;
+  }
+
+  & .discount {
+    color: #ff0000;
+  }
+
+  & .card_wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 200px;
+    overflow: hidden;
+    border-radius: 10px;
+    margin: 20px;
+    border: 1px solid $color-dark;
+  }
+
+  & .card_price{
+    display: flex;
+    & * {
+      margin: 0 5px;
+    }
+  }
+
+  & .img_wrapper {
+    height: 200px;
+  }
+
+  & .catalog_img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  & .card_name,
+  & .card_description,
+  & .card_price {
+    margin: 10px 5px;
+  }
+
+  & .card_description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+
+  & .card_name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+}
