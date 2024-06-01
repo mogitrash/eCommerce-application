@@ -1,25 +1,33 @@
-import { GetAllPublishedProductsResponseDTO } from '../models/product/product-DTO.model';
-import { GetAllPublishedProductsRequest, Product } from '../models/product/product.model';
+import {
+  GetAllProductsAttributesResponse,
+  GetAllPublishedProductsRequest,
+  GetAllPublishedProductsResponse,
+  Product,
+} from '../models/product/product.model';
+import getAllProductsAttributesResponseDTOConverter from '../utilities/get-all-products-attributes-response-DTO-converter';
 import getAllPublishedProductsRequestConverter from '../utilities/get-all-published-products-request-converter';
+import GetAllPublishedProductsDTOResponseConverter from '../utilities/get-all-published-products-response-DTO-converter';
 import getCurrentAccessToken from '../utilities/get-current-access-token';
 import productDTOConverter from '../utilities/product-DTO-converter';
-import authorizationService from './authorization.service';
 
 export default class ProductService {
   private projectKey = process.env.CTP_PROJECT_KEY;
 
   private clientAPIUrl = process.env.CTP_API_URL;
 
-  private authorizationService = authorizationService;
-
   async getAllPublishedProducts(
     parameters: GetAllPublishedProductsRequest = {},
-  ): Promise<GetAllPublishedProductsResponseDTO> {
+  ): Promise<GetAllPublishedProductsResponse> {
     const token = await getCurrentAccessToken();
 
     const queryParameters = new URLSearchParams(
       Object.entries(getAllPublishedProductsRequestConverter(parameters)),
     );
+
+    // NOTE: Filters need to be handled separately from other params
+    if (parameters.filter) {
+      parameters.filter.forEach((filterQuery) => queryParameters.append('filter', filterQuery));
+    }
 
     const headers = new Headers({
       Authorization: `Bearer ${token}`,
@@ -31,7 +39,9 @@ export default class ProductService {
         method: 'GET',
         headers,
       },
-    ).then((res) => res.json());
+    )
+      .then((res) => res.json())
+      .then(GetAllPublishedProductsDTOResponseConverter);
   }
 
   async getPublishedProductById(id: string): Promise<Product> {
@@ -47,5 +57,34 @@ export default class ProductService {
     })
       .then((res) => res.json())
       .then(productDTOConverter);
+  }
+
+  async getAllProductsAttributes(): Promise<GetAllProductsAttributesResponse> {
+    const token = await getCurrentAccessToken();
+
+    const headers = new Headers({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return fetch(`${this.clientAPIUrl}/${this.projectKey}/product-types`, {
+      method: 'GET',
+      headers,
+    })
+      .then((res) => res.json())
+      .then(getAllProductsAttributesResponseDTOConverter);
+  }
+
+  static generateBrandFilterQuery(brandKey: string) {
+    return `variants.attributes.brand.key:"${brandKey}"`;
+  }
+
+  static generateColorFilterQuery(colorKey: string) {
+    return `variants.attributes.color.key:"${colorKey}"`;
+  }
+
+  static generatePriceFilterQuery(from: number = 0, to?: number) {
+    const queryTo = to ?? '*';
+
+    return `variants.price.centAmount:range (${from} to ${queryTo})`;
   }
 }
