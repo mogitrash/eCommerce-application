@@ -47,7 +47,7 @@ export default class ProductComponent extends BaseComponent<'div'> {
 
     this.productCardInfoDescription = new BaseComponent({
       tag: 'div',
-      classes: ['product-card_info-descr'],
+      classes: ['product-card_info-description'],
       textContent: description,
     });
 
@@ -101,7 +101,7 @@ export default class ProductComponent extends BaseComponent<'div'> {
 
     this.productCardInfoPrice = new BaseComponent({
       tag: 'div',
-      classes: ['product-price-wrapper'],
+      classes: ['product-price_wrapper'],
     }).append([mainPriceComponent]);
 
     if (discountedCentAmount) {
