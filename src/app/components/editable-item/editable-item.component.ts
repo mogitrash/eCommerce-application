@@ -1,17 +1,24 @@
-import { SUPPORTED_COUNTRIES } from '../../models/constants/login-registration.constants';
+import {
+  PASSWORD_MINLENGTH,
+  PASSWORD_REGEX,
+  SUPPORTED_COUNTRIES,
+} from '../../models/constants/login-registration.constants';
 import Country from '../../models/country.model';
 import BaseComponent from '../base/base.component';
 import InputDateComponent from '../input/input-date.component';
+import InputPasswordComponent from '../input/input-password.component';
 import InputTextComponent from '../input/input-text.component';
 import SelectComponent from '../select/select.component';
 import './editable-item.scss';
 
 type EditableItemType = 'text' | 'date' | 'password' | 'countrySelect';
 
+type EditableItemInputType = InputTextComponent | InputDateComponent | SelectComponent;
+
 type EditableItemComponentConfig = {
   title: string;
   value: string;
-  onSave: (newValue: string | Country) => void;
+  onSave: (newValue: string | Country, currentValue?: string) => void;
   type?: EditableItemType;
   pattern?: string;
   validator?: (validity: Partial<ValidityState>, newValue?: string) => string;
@@ -20,15 +27,13 @@ type EditableItemComponentConfig = {
 export default class EditableItemComponent extends BaseComponent<'div'> {
   private itemValue: string | Country;
 
-  private editableInput!: InputTextComponent | InputDateComponent | SelectComponent;
-
   private type: EditableItemType;
 
   private pattern?: string;
 
   private validator?: (validity: Partial<ValidityState>, newValue?: string) => string;
 
-  private onSave: (newValue: string | Country) => void;
+  private onSave: (newValue: string | Country, currentValue?: string) => void;
 
   private saveButton!: BaseComponent<'button'>;
 
@@ -79,22 +84,62 @@ export default class EditableItemComponent extends BaseComponent<'div'> {
     this.itemWrapper.append([editableItemValue, editButton]);
   }
 
-  private createEditableItem(): void {
-    this.editableInput = this.createEditableInput();
-    this.saveButton = new BaseComponent({
-      tag: 'button',
-      classes: ['editable-item_button', 'editable-item_button--save'],
-    });
-    const cancelButton = new BaseComponent({
-      tag: 'button',
-      classes: ['editable-item_button', 'editable-item_button--cancel'],
-    });
-    this.saveButton.addListener('click', () => this.onSaveClick(this.editableInput.input));
-    cancelButton.addListener('click', this.onCancelClick.bind(this));
-    this.itemWrapper.append([this.editableInput, this.saveButton, cancelButton]);
+  private static createEditableControls(): BaseComponent<'button'>[] {
+    return [
+      new BaseComponent({
+        tag: 'button',
+        classes: ['editable-item_button', 'editable-item_button--save'],
+      }),
+      new BaseComponent({
+        tag: 'button',
+        classes: ['editable-item_button', 'editable-item_button--cancel'],
+      }),
+    ];
   }
 
-  private createEditableInput(): InputTextComponent | InputDateComponent | SelectComponent {
+  private createEditableItem(): void {
+    const editableInput = this.createEditableInput();
+    const [saveButton, cancelButton] = EditableItemComponent.createEditableControls();
+    this.saveButton = saveButton;
+    this.saveButton.addListener('click', () => this.onSaveClick(editableInput.input));
+    cancelButton.addListener('click', this.onCancelClick.bind(this));
+    this.itemWrapper.append([editableInput, this.saveButton, cancelButton]);
+  }
+
+  private createEditablePassword(): void {
+    this.addClass('editable-item--password');
+    const currentPassword = new InputPasswordComponent({
+      required: true,
+      labelText: 'Current',
+      pattern: PASSWORD_REGEX,
+      minlength: PASSWORD_MINLENGTH,
+    });
+    const newPassword = new InputPasswordComponent({
+      required: true,
+      labelText: 'New',
+      pattern: PASSWORD_REGEX,
+      minlength: PASSWORD_MINLENGTH,
+    });
+    const [saveButton, cancelButton] = EditableItemComponent.createEditableControls();
+    this.saveButton = saveButton;
+    currentPassword.input.addListener('input', (event: Event) => {
+      return this.onInputValue(event, currentPassword);
+    });
+    newPassword.input.addListener('input', (event: Event) => {
+      return this.onInputValue(event, newPassword);
+    });
+    this.saveButton.addListener('click', () => {
+      this.removeClass('editable-item--password');
+      this.onPasswordSaveClick(currentPassword.input, newPassword.input);
+    });
+    cancelButton.addListener('click', () => {
+      this.removeClass('editable-item--password');
+      this.onCancelClick();
+    });
+    this.itemWrapper.append([currentPassword, newPassword, this.saveButton, cancelButton]);
+  }
+
+  private createEditableInput(): EditableItemInputType {
     let editableInput;
     switch (this.type) {
       case 'date':
@@ -109,6 +154,7 @@ export default class EditableItemComponent extends BaseComponent<'div'> {
           options: [{ label: 'Please choose an option', value: '' }, ...SUPPORTED_COUNTRIES],
         });
         break;
+
       default:
         editableInput = new InputTextComponent({
           required: true,
@@ -117,18 +163,20 @@ export default class EditableItemComponent extends BaseComponent<'div'> {
     }
     editableInput.input.addClass('editable-item_value');
     editableInput.input.setAttribute('value', this.itemValue);
-    editableInput.input.addListener('input', this.onInputValue.bind(this));
+    editableInput.input.addListener('input', (event: Event) => {
+      return this.onInputValue(event, editableInput);
+    });
     return editableInput;
   }
 
-  private onInputValue(event: Event): void {
+  private onInputValue(event: Event, editableInput: EditableItemInputType): void {
     if (!this.validator) return;
     const error = this.validator(
-      this.editableInput.getValidity(),
+      editableInput.getValidity(),
       (event.target as HTMLInputElement).value,
     );
     if (error) {
-      this.editableInput.showError(error);
+      editableInput.showError(error);
       this.saveButton.setAttribute('disabled', '');
     } else {
       this.saveButton.removeAttribute('disabled');
@@ -137,7 +185,22 @@ export default class EditableItemComponent extends BaseComponent<'div'> {
 
   private onEditClick(): void {
     this.itemWrapper.getElement().innerHTML = '';
-    this.createEditableItem();
+    if (this.type === 'password') {
+      this.createEditablePassword();
+    } else {
+      this.createEditableItem();
+    }
+  }
+
+  private onPasswordSaveClick(
+    currentPasswordInput: BaseComponent<'input'>,
+    newPasswordInput: BaseComponent<'input'>,
+  ): void {
+    const newPasswordValue = newPasswordInput.getElement().value;
+    const currentPasswordValue = currentPasswordInput.getElement().value;
+    this.itemWrapper.getElement().innerHTML = '';
+    this.createStaticItem();
+    this.onSave(newPasswordValue, currentPasswordValue);
   }
 
   private onSaveClick(inputComponent: BaseComponent<'input'> | BaseComponent<'select'>): void {

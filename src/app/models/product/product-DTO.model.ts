@@ -17,9 +17,20 @@ export interface ProductLocaleInfoDTO {
 
 export interface ProductMasterVariantDTO {
   id: number;
+  attributes: ProductAttributeDTO[];
   images: ProductImageDTO[];
   key: string;
   prices: ProductPriceDTO[];
+}
+
+export interface ProductAttributeDTO {
+  name: string;
+  value: ProductAttributeValueDTO;
+}
+
+export interface ProductAttributeValueDTO {
+  key: string;
+  label: string;
 }
 
 export interface ProductPriceDTO {
@@ -46,6 +57,7 @@ export interface GetAllPublishedProductsRequestDTO {
   offset?: number;
   sort?: ProductSortDTO;
   'text.en-US'?: string;
+  filter?: string;
 }
 
 export interface GetAllPublishedProductsResponseDTO {
@@ -54,4 +66,33 @@ export interface GetAllPublishedProductsResponseDTO {
   count: number;
   total: number;
   results: ProductDTO[];
+}
+
+export interface GetAllProductsAttributesResponseDTO {
+  limit: number;
+  offset: number;
+  count: number;
+  total: number;
+  results: ProductTypeDTO[];
+}
+
+export interface ProductTypeDTO {
+  attributes: ProductTypeAttributeDTO[];
+}
+
+export interface ProductTypeAttributeDTO {
+  name: string;
+  label: {
+    en: string;
+  };
+  type: ProductTypeAttributeTypeDTO;
+}
+
+export interface ProductTypeAttributeTypeDTO {
+  values: ProductTypeAttributeTypeValueDTO[];
+}
+
+export interface ProductTypeAttributeTypeValueDTO {
+  key: string;
+  label: string;
 }
