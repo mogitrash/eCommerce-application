@@ -11,6 +11,7 @@ import CatalogComponent from './components/catalog/catalog.component';
 import ProductComponent from './components/product/product.component';
 import ProfileComponent from './components/profile/profile.component';
 import LocalStorageEndpoint from './models/local-storage-endpoint.model';
+import ProductService from './services/product.service';
 
 export default class App extends BaseComponent<'div'> implements Renderer {
   private routerService = new RouterService(this);
@@ -27,7 +28,7 @@ export default class App extends BaseComponent<'div'> implements Renderer {
 
   private catalogComponent = new CatalogComponent();
 
-  private productComponent = new ProductComponent();
+  private productComponent!: ProductComponent;
 
   private contentWrapper = new BaseComponent({
     tag: 'main',
@@ -38,7 +39,15 @@ export default class App extends BaseComponent<'div'> implements Renderer {
     super({ tag: 'div', classes: ['app'] });
   }
 
-  render(path: Routes): void {
+  async render(path: Routes) {
+    // NOTE: this made for test
+    const productService = new ProductService();
+
+    // NOTE: We need to pass Product to view it's detailed page
+    this.productComponent = new ProductComponent(
+      await productService.getPublishedProductById('0c31330f-d4c7-4224-92cb-57f6be0f7502'),
+    );
+
     const isLogined = localStorage.getItem(LocalStorageEndpoint.userToken);
     this.headerComponent.changeDisplay(Boolean(isLogined));
     this.contentWrapper.getElement().innerHTML = '';
