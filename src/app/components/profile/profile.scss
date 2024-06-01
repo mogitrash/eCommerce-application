@@ -15,17 +15,43 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: $color-primary;
+  text-transform: capitalize;
 }
 
 .profile_address {
   display: flex;
   flex-direction: column;
+  margin-bottom: 10px;
+
+  &.profile_address:not(:last-child) {
+    margin-bottom: 30px;
+  }
 }
 
 .profile_address--default {
   background-color: $color-primary-pale;
   border-radius: 10px;
   border: 1px solid $color-gray;
+}
+
+.prodfile_add-address {
+  height: 30px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  background: url('./../../assets/images/add.svg') center no-repeat;
+}
+
+.profile_address-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 5px 5px 0;
+}
+
+.profile_new-address-controls {
+  display: flex;
+  gap: 10px;
 }
 
 @media screen and (max-width: 600px) {
