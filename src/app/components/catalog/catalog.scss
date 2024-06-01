@@ -29,8 +29,9 @@
 
   & .card_price {
     display: flex;
+    align-items: center;
     & * {
-      margin: 0 5px;
+      gap: 10px;
     }
   }
 

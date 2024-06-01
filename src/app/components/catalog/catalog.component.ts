@@ -2,6 +2,7 @@ import './catalog.scss';
 import BaseComponent from '../base/base.component';
 import ProductService from '../../services/product.service';
 import { Product } from '../../models/product/product.model';
+import numberOfCards from '../../models/constants/catalog.constants';
 
 export default class CatalogComponent extends BaseComponent<'div'> {
   private productService = new ProductService();
@@ -12,7 +13,7 @@ export default class CatalogComponent extends BaseComponent<'div'> {
   }
 
   private viewAllProd() {
-    this.productService.getAllPublishedProducts({ limit: 40 }).then((res) => {
+    this.productService.getAllPublishedProducts({ limit: numberOfCards }).then((res) => {
       res.results.forEach((product: Product) => {
         this.makeCard(product);
       });
