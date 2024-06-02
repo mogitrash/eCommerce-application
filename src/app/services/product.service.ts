@@ -1,3 +1,5 @@
+import ErrorResponse from '../models/error-response.model';
+import { ProductDTO } from '../models/product/product-DTO.model';
 import {
   GetAllProductsAttributesResponse,
   GetAllPublishedProductsRequest,
@@ -44,19 +46,26 @@ export default class ProductService {
       .then(GetAllPublishedProductsDTOResponseConverter);
   }
 
-  async getPublishedProductById(id: string): Promise<Product> {
+  async getPublishedProductById(id: string): Promise<Product | ErrorResponse> {
     const token = await getCurrentAccessToken();
 
     const headers = new Headers({
       Authorization: `Bearer ${token}`,
     });
 
-    return fetch(`${this.clientAPIUrl}/${this.projectKey}/product-projections/${id}`, {
-      method: 'GET',
-      headers,
-    })
-      .then((res) => res.json())
-      .then(productDTOConverter);
+    const response: ProductDTO | ErrorResponse = await fetch(
+      `${this.clientAPIUrl}/${this.projectKey}/product-projections/${id}`,
+      {
+        method: 'GET',
+        headers,
+      },
+    ).then((res) => res.json());
+
+    if ('id' in response) {
+      return productDTOConverter(response);
+    }
+
+    return response;
   }
 
   async getAllProductsAttributes(): Promise<GetAllProductsAttributesResponse> {
