@@ -50,6 +50,7 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
+    "swiper": "^11.1.4",
     "uuid": "^9.0.1"
   },
   "lint-staged": {

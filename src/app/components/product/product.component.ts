@@ -1,6 +1,9 @@
+import Swiper from 'swiper/bundle';
+
+import 'swiper/css/bundle';
 import './product.scss';
 import BaseComponent from '../base/base.component';
-import { Product, ProductPrice } from '../../models/product/product.model';
+import { Product, ProductImage, ProductPrice } from '../../models/product/product.model';
 
 export default class ProductComponent extends BaseComponent<'div'> {
   private productCard: BaseComponent<'div'>;
@@ -13,7 +16,7 @@ export default class ProductComponent extends BaseComponent<'div'> {
 
   private productCardInfoDescription: BaseComponent<'div'>;
 
-  private productCardImage: BaseComponent<'img'>;
+  private productCardSliderWrapper: BaseComponent<'div'>;
 
   private productCardDetails: BaseComponent<'div'>;
 
@@ -28,14 +31,15 @@ export default class ProductComponent extends BaseComponent<'div'> {
     this.productCard = new BaseComponent({ tag: 'div', classes: ['product-card'] });
     this.productCardSlider = new BaseComponent({
       tag: 'div',
-      classes: ['product-card_slider'],
+      classes: ['swiper'],
     });
 
-    // NOTE: Image will be replaced by slider
-    this.productCardImage = new BaseComponent({
-      tag: 'img',
-      classes: ['product-card_image'],
-    }).setAttribute('src', images[0].url);
+    this.productCardSliderWrapper = new BaseComponent({
+      tag: 'div',
+      classes: ['swiper-wrapper'],
+    });
+
+    this.createSliderComponent(images);
 
     this.productCardInfo = new BaseComponent({ tag: 'div', classes: ['product-card_info'] });
 
@@ -119,8 +123,27 @@ export default class ProductComponent extends BaseComponent<'div'> {
     }
   }
 
+  private createSliderComponent(images: ProductImage[]) {
+    const slides = images.map(({ url, label }) => {
+      const slide = new BaseComponent({
+        tag: 'div',
+        classes: ['swiper-slide'],
+      });
+
+      slide.append([
+        new BaseComponent({ tag: 'img', classes: ['swiper-slide_image'] })
+          .setAttribute('src', url)
+          .setAttribute('alt', label),
+      ]);
+
+      return slide;
+    });
+
+    this.productCardSliderWrapper.append(slides);
+  }
+
   private render() {
-    this.productCardSlider.append([this.productCardImage]);
+    this.productCardSlider.append([this.productCardSliderWrapper]);
 
     this.productCardInfo.append([
       this.productCardInfoName,
@@ -132,5 +155,13 @@ export default class ProductComponent extends BaseComponent<'div'> {
     this.productCard.append([this.productCardSlider, this.productCardInfo]);
 
     this.append([this.productCard]);
+
+    const swiper = new Swiper(this.productCardSlider.getElement(), {
+      autoplay: { delay: 2500 },
+      centeredSlides: true,
+      spaceBetween: 30,
+    });
+
+    swiper.autoplay.start();
   }
 }
