@@ -16,6 +16,8 @@ import ProductService from './services/product.service';
 export default class App extends BaseComponent<'div'> implements Renderer {
   private routerService = new RouterService(this);
 
+  private productService = new ProductService();
+
   private loginComponent = new LoginComponent(this.routerService);
 
   private headerComponent = new HeaderComponent(this.routerService);
@@ -26,7 +28,7 @@ export default class App extends BaseComponent<'div'> implements Renderer {
 
   private notFoundComponent = new NotFoundComponent(this.routerService);
 
-  private catalogComponent = new CatalogComponent();
+  private catalogComponent = new CatalogComponent(this.routerService);
 
   private productComponent!: ProductComponent;
 
@@ -39,16 +41,8 @@ export default class App extends BaseComponent<'div'> implements Renderer {
     super({ tag: 'div', classes: ['app'] });
   }
 
-  async render(path: Routes) {
-    // NOTE: this made for test
-    const productService = new ProductService();
-
-    // NOTE: We need to pass Product to view it's detailed page
-    this.productComponent = new ProductComponent(
-      await productService.getPublishedProductById('1cea8610-5399-4831-b347-da0e69719c63'),
-    );
-
-    const isLogined = localStorage.getItem(LocalStorageEndpoint.userToken);
+  async render(path: Routes, id?: string) {
+    const isLogined = Boolean(localStorage.getItem(LocalStorageEndpoint.userToken));
     this.contentWrapper.getElement().innerHTML = '';
     switch (path) {
       case Routes.Login:
@@ -72,10 +66,22 @@ export default class App extends BaseComponent<'div'> implements Renderer {
         this.contentWrapper.append([this.catalogComponent]);
         break;
       case Routes.Profile:
-        this.contentWrapper.append([new ProfileComponent()]);
+        if (isLogined) {
+          this.contentWrapper.append([new ProfileComponent()]);
+        } else {
+          this.routerService.redirect(Routes.Login);
+        }
         break;
       case Routes.Product:
-        this.contentWrapper.append([this.productComponent]);
+        if (id) {
+          const card = await this.productService.getPublishedProductById(id.slice(4));
+          if ('id' in card) {
+            this.productComponent = new ProductComponent(card);
+            this.contentWrapper.append([this.productComponent]);
+            break;
+          }
+        }
+        this.contentWrapper.append([this.notFoundComponent]);
         break;
       case Routes.NotFound:
       default:
