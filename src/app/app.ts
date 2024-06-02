@@ -76,11 +76,13 @@ export default class App extends BaseComponent<'div'> implements Renderer {
       case Routes.Product:
         if (id) {
           const card = await this.productService.getPublishedProductById(id.slice(4));
-          this.productComponent = new ProductComponent(card);
-        } else {
-          this.routerService.redirect(Routes.NotFound);
+          if ('id' in card) {
+            this.productComponent = new ProductComponent(card);
+            this.contentWrapper.append([this.productComponent]);
+            break;
+          }
         }
-        this.contentWrapper.append([this.productComponent]);
+        this.contentWrapper.append([this.notFoundComponent]);
         break;
       case Routes.NotFound:
       default:
