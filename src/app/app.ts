@@ -69,6 +69,7 @@ export default class App extends BaseComponent<'div'> implements Renderer {
       case Routes.Profile:
         if (isLogined) {
           this.contentWrapper.append([new ProfileComponent()]);
+        } else {
           this.routerService.redirect(Routes.Login);
         }
         break;
