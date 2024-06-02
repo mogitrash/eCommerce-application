@@ -45,11 +45,10 @@ export default class App extends BaseComponent<'div'> implements Renderer {
 
     // NOTE: We need to pass Product to view it's detailed page
     this.productComponent = new ProductComponent(
-      await productService.getPublishedProductById('0c31330f-d4c7-4224-92cb-57f6be0f7502'),
+      await productService.getPublishedProductById('1cea8610-5399-4831-b347-da0e69719c63'),
     );
 
     const isLogined = localStorage.getItem(LocalStorageEndpoint.userToken);
-    this.headerComponent.changeDisplay(Boolean(isLogined));
     this.contentWrapper.getElement().innerHTML = '';
     switch (path) {
       case Routes.Login:

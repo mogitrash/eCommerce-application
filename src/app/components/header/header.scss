@@ -5,23 +5,37 @@
   padding: 10px 20px;
   display: flex;
   justify-content: space-between;
+}
 
-  & .control-wrapper {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    & button {
-      margin: 5px;
-    }
+.header_control-wrapper {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  button {
+    margin: 5px;
   }
+}
 
-  & .logo-wrapper {
-    & :hover {
-      cursor: pointer;
-    }
+.header_logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
 
-    & .logo {
-      width: 80px;
-    }
+.header_logo {
+  width: 80px;
+  &:hover {
+    cursor: pointer;
   }
+}
+
+.header_slogan {
+  font-size: 22px;
+  font-family: cursive;
+}
+
+.header_button-profile {
+  width: 41px;
+  height: 41px;
+  background: url('./../../assets/images/profile.svg') center no-repeat;
 }
