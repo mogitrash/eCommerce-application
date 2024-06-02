@@ -47,7 +47,7 @@ describe('RouterService', () => {
     test('valid should navigate on provided URL', () => {
       location.pathname = Routes.Login;
       service.init();
-      expect(renderSpy).toHaveBeenCalledWith(Routes.Login);
+      expect(renderSpy).toHaveBeenCalledWith(Routes.Login, undefined);
     });
 
     test('not valid should navigate on 404 page', () => {
@@ -61,8 +61,8 @@ describe('RouterService', () => {
     const renderSpy = jest.spyOn(mokedApp, 'render');
 
     test('valid should navigate on provided URL', () => {
-      service.navigate(Routes.Login);
-      expect(renderSpy).toHaveBeenCalledWith(Routes.Login);
+      service.navigate(Routes.Login, 'test');
+      expect(renderSpy).toHaveBeenCalledWith(Routes.Login, 'test');
     });
 
     test('not valid should navigate on 404 page', () => {
