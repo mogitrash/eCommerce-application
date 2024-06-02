@@ -91,9 +91,11 @@ export default class ProductService {
     return `variants.attributes.color.key:"${colorKey}"`;
   }
 
-  static generatePriceFilterQuery(from: number = 0, to?: number) {
-    const queryTo = to ?? '*';
+  static generateCategoryFilterQuery(colorKey: string) {
+    return `variants.attributes.color.key:"${colorKey}"`;
+  }
 
-    return `variants.price.centAmount:range (${from} to ${queryTo})`;
+  static generatePriceFilterQuery(id: string) {
+    return `categories.id:"${id}"`;
   }
 }
