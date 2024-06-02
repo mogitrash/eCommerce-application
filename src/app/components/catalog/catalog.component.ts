@@ -3,11 +3,12 @@ import BaseComponent from '../base/base.component';
 import ProductService from '../../services/product.service';
 import { Product } from '../../models/product/product.model';
 import numberOfCards from '../../models/constants/catalog.constants';
+import RouterService from '../../services/router/router.service';
 
 export default class CatalogComponent extends BaseComponent<'div'> {
   private productService = new ProductService();
 
-  constructor() {
+  constructor(private routerService: RouterService) {
     super({ tag: 'div', classes: ['catalog'] });
     this.viewAllProd();
   }
@@ -28,6 +29,9 @@ export default class CatalogComponent extends BaseComponent<'div'> {
       currency: product.prices[0].currencyCode,
     });
     const cardWrapper = new BaseComponent({ tag: 'div', classes: ['card_wrapper'] });
+    cardWrapper.addListener('click', () => {
+      this.routerService.navigate('/product', `?id=${product.id}`);
+    });
     const imgWrapper = new BaseComponent({ tag: 'div', classes: ['img_wrapper'] });
     const cardIMG = new BaseComponent({ tag: 'img', classes: ['catalog_img'] });
     cardIMG.setAttribute('src', `${product.images[0].url}`);
