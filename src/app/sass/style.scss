@@ -6,6 +6,10 @@
   font-family: $font-primary;
 }
 
+.disable-scrolling {
+  overflow: hidden;
+}
+
 .app {
   display: flex;
   flex-direction: column;

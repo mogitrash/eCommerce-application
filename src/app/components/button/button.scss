@@ -53,6 +53,7 @@
   color: $color-dark;
   color: #545454;
   background-color: transparent;
+  text-wrap: nowrap;
 
   &::after {
     content: '';

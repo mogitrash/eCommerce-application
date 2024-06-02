@@ -16,6 +16,12 @@ class HeaderComponent extends BaseComponent<'header'> {
 
   private profile!: Button;
 
+  private burgerMenu!: BaseComponent<'div'>;
+
+  private burgerButton!: BaseComponent<'div'>;
+
+  private isBurgerShown: boolean = false;
+
   private authenticationService = authenticationService;
 
   constructor(private router: RouterService) {
@@ -46,12 +52,21 @@ class HeaderComponent extends BaseComponent<'header'> {
     this.append([logoWrapper]);
   }
 
+  private createBurgerButton(): void {
+    this.burgerButton = new BaseComponent({ tag: 'div', classes: ['burger-button'] });
+    const burgerButtonCenter = new BaseComponent({ tag: 'div' });
+    this.burgerButton.append([burgerButtonCenter]);
+    this.burgerButton.addListener('click', this.toggleBurger.bind(this));
+  }
+
   private createControlPanel(): void {
     const wrapper = new BaseComponent({ tag: 'nav', classes: ['header_control-wrapper'] });
+    this.burgerMenu = new BaseComponent({ tag: 'div', classes: ['header_burger-menu'] });
     const product = new Button({
       text: 'Product',
       style: 'navigation',
       onClick: () => {
+        this.hideBurger();
         this.router.navigate('/product');
       },
     });
@@ -59,12 +74,14 @@ class HeaderComponent extends BaseComponent<'header'> {
       text: 'Catalog',
       style: 'navigation',
       onClick: () => {
+        this.hideBurger();
         this.router.navigate('/catalog');
       },
     });
     this.profile = new Button({
       style: 'navigation',
       onClick: () => {
+        this.hideBurger();
         this.router.navigate('/profile');
       },
     });
@@ -73,6 +90,7 @@ class HeaderComponent extends BaseComponent<'header'> {
       text: 'Log In',
       style: 'navigation',
       onClick: () => {
+        this.hideBurger();
         this.router.navigate('/login');
       },
     });
@@ -80,6 +98,7 @@ class HeaderComponent extends BaseComponent<'header'> {
       text: 'Registration',
       style: 'navigation',
       onClick: () => {
+        this.hideBurger();
         this.router.navigate('/registration');
       },
     });
@@ -87,18 +106,20 @@ class HeaderComponent extends BaseComponent<'header'> {
       text: 'Log Out',
       style: 'navigation',
       onClick: () => {
+        this.hideBurger();
         this.authenticationService.signOutCustomer();
         this.router.redirect(Routes.Login);
       },
     });
-    wrapper.append([
+    this.createBurgerButton();
+    this.burgerMenu.append([
       product,
       catalog,
       this.loginButton,
       this.registrationButton,
       this.logoutButton,
-      this.profile,
     ]);
+    wrapper.append([this.burgerMenu, this.profile, this.burgerButton]);
     this.append([wrapper]);
     this.handleUserStatus();
   }
@@ -129,6 +150,26 @@ class HeaderComponent extends BaseComponent<'header'> {
     this.loginButton.show();
     this.registrationButton.show();
     this.profile.hide();
+  }
+
+  private toggleBurger(): void {
+    if (this.isBurgerShown) {
+      this.hideBurger();
+    } else this.showBurger();
+  }
+
+  private showBurger(): void {
+    this.isBurgerShown = true;
+    document.body.classList.add('disable-scrolling');
+    this.burgerButton.addClass('burger-button--active');
+    this.burgerMenu.addClass('header_burger-menu--active');
+  }
+
+  private hideBurger(): void {
+    this.isBurgerShown = false;
+    document.body.classList.remove('disable-scrolling');
+    this.burgerButton.removeClass('burger-button--active');
+    this.burgerMenu.removeClass('header_burger-menu--active');
   }
 }
 

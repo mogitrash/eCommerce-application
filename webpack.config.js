@@ -44,7 +44,7 @@ const baseConfig = {
       filename: 'index.html',
     }),
     new Dotenv(),
-    new FaviconsWebpackPlugin('./src/app/assets/images/favicon.png'),
+    new FaviconsWebpackPlugin('./src/app/assets/images/favicon.ico'),
   ],
   devServer: {
     static: path.resolve(__dirname, './dist'),
