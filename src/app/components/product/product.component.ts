@@ -1,11 +1,11 @@
-import Swiper from 'swiper/bundle';
-
-import 'swiper/css/bundle';
 import './product.scss';
 import BaseComponent from '../base/base.component';
 import { Product, ProductImage, ProductPrice } from '../../models/product/product.model';
+import SwiperComponent from '../swiper/swiper.components';
 
 export default class ProductComponent extends BaseComponent<'div'> {
+  private images: ProductImage[];
+
   private productCard: BaseComponent<'div'>;
 
   private productCardInfo: BaseComponent<'div'>;
@@ -15,8 +15,6 @@ export default class ProductComponent extends BaseComponent<'div'> {
   private productCardInfoName: BaseComponent<'div'>;
 
   private productCardInfoDescription: BaseComponent<'div'>;
-
-  private productCardSliderWrapper: BaseComponent<'div'>;
 
   private productCardDetails: BaseComponent<'div'>;
 
@@ -28,18 +26,10 @@ export default class ProductComponent extends BaseComponent<'div'> {
       classes: ['product'],
     });
 
+    this.images = images;
+
     this.productCard = new BaseComponent({ tag: 'div', classes: ['product-card'] });
-    this.productCardSlider = new BaseComponent({
-      tag: 'div',
-      classes: ['swiper'],
-    });
-
-    this.productCardSliderWrapper = new BaseComponent({
-      tag: 'div',
-      classes: ['swiper-wrapper'],
-    });
-
-    this.createSliderComponent(images);
+    this.productCardSlider = new SwiperComponent(images);
 
     this.productCardInfo = new BaseComponent({ tag: 'div', classes: ['product-card_info'] });
 
@@ -86,6 +76,7 @@ export default class ProductComponent extends BaseComponent<'div'> {
       }),
     );
 
+    this.setListeners();
     this.render();
   }
 
@@ -123,28 +114,7 @@ export default class ProductComponent extends BaseComponent<'div'> {
     }
   }
 
-  private createSliderComponent(images: ProductImage[]) {
-    const slides = images.map(({ url, label }) => {
-      const slide = new BaseComponent({
-        tag: 'div',
-        classes: ['swiper-slide'],
-      });
-
-      slide.append([
-        new BaseComponent({ tag: 'img', classes: ['swiper-slide_image'] })
-          .setAttribute('src', url)
-          .setAttribute('alt', label),
-      ]);
-
-      return slide;
-    });
-
-    this.productCardSliderWrapper.append(slides);
-  }
-
   private render() {
-    this.productCardSlider.append([this.productCardSliderWrapper]);
-
     this.productCardInfo.append([
       this.productCardInfoName,
       this.productCardInfoDescription,
@@ -155,13 +125,25 @@ export default class ProductComponent extends BaseComponent<'div'> {
     this.productCard.append([this.productCardSlider, this.productCardInfo]);
 
     this.append([this.productCard]);
+  }
 
-    const swiper = new Swiper(this.productCardSlider.getElement(), {
-      autoplay: { delay: 2500 },
-      centeredSlides: true,
-      spaceBetween: 30,
+  private setListeners() {
+    this.productCardSlider.addListener('click', () => {
+      this.zoomInSlider(this.images);
+    });
+  }
+
+  private zoomInSlider(images: ProductImage[]) {
+    const zoomedSliderComponent = new SwiperComponent(images, ['slider__zoomed'], true);
+    const overlay = new BaseComponent({ tag: 'div', classes: ['overlay'] });
+    const closeIcon = new BaseComponent({ tag: 'div', textContent: '✕', classes: ['close-icon'] });
+
+    closeIcon.addListener('click', () => {
+      zoomedSliderComponent.getElement().remove();
+      overlay.getElement().remove();
     });
 
-    swiper.autoplay.start();
+    overlay.append([closeIcon]);
+    this.append([overlay, zoomedSliderComponent]);
   }
 }
