@@ -43,7 +43,6 @@ export default class App extends BaseComponent<'div'> implements Renderer {
 
   async render(path: Routes, id?: string) {
     const isLogined = Boolean(localStorage.getItem(LocalStorageEndpoint.userToken));
-    this.headerComponent.changeDisplay(isLogined);
     this.contentWrapper.getElement().innerHTML = '';
     switch (path) {
       case Routes.Login:
