@@ -1,9 +1,9 @@
 import './button.scss';
 import BaseComponent from '../base/base.component';
 
-type ButtonSize = 'small';
+type ButtonSize = 'small' | 'large';
 
-type ButtonStyle = 'positive' | 'negative' | 'navigation';
+type ButtonStyle = 'positive' | 'negative' | 'navigation' | 'info';
 
 type ButtonType = 'button' | 'submit';
 

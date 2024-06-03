@@ -39,12 +39,24 @@
   letter-spacing: 0;
 }
 
+.button--large {
+  padding: 15px;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: $color-dark;
+  font-weight: 600;
+}
+
 .button--positive {
   background-color: $color-green;
 }
 
 .button--negative {
   background-color: $color-red;
+}
+
+.button--info {
+  background-color: $color-primary-pale;
 }
 
 .button--navigation {
