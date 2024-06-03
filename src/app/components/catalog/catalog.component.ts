@@ -1,27 +1,42 @@
 import './catalog.scss';
 import BaseComponent from '../base/base.component';
-import ProductService from '../../services/product.service';
 import { Product } from '../../models/product/product.model';
-import numberOfCards from '../../models/constants/catalog.constants';
 import RouterService from '../../services/router/router.service';
+import ControlPanelComponent from '../control-panel/control-panel.component';
+import CardMaker from '../../models/card-maker';
+import NotFoundGif from '../../assets/images/not-found.gif';
 
-export default class CatalogComponent extends BaseComponent<'div'> {
-  private productService = new ProductService();
+export default class CatalogComponent extends BaseComponent<'div'> implements CardMaker {
+  private controlPanel = new ControlPanelComponent(this);
+
+  private content = new BaseComponent({ tag: 'div', classes: ['content'] });
 
   constructor(private routerService: RouterService) {
     super({ tag: 'div', classes: ['catalog'] });
-    this.viewAllProd();
+    this.append([this.controlPanel]);
+    this.append([this.content]);
   }
 
-  private viewAllProd() {
-    this.productService.getAllPublishedProducts({ limit: numberOfCards }).then((res) => {
-      res.results.forEach((product: Product) => {
-        this.makeCard(product);
-      });
+  clearAll() {
+    this.content.getElement().innerHTML = '';
+  }
+
+  makeEmptyCard() {
+    const cardWrapper = new BaseComponent({ tag: 'div', classes: ['card_wrapper'] });
+    this.content.append([cardWrapper]);
+    const imgWrapper = new BaseComponent({ tag: 'div', classes: ['img_wrapper'] });
+    const cardIMG = new BaseComponent({ tag: 'img', classes: ['catalog_img'] });
+    cardIMG.setAttribute('src', NotFoundGif);
+    imgWrapper.append([cardIMG]);
+    const cardDescription = new BaseComponent({
+      tag: 'p',
+      classes: ['card_description'],
+      textContent: 'No products found, try changing filter settings',
     });
+    cardWrapper.append([imgWrapper, cardDescription]);
   }
 
-  private makeCard(product: Product) {
+  makeCard(product: Product) {
     const discount = product.prices[0].discountedCentAmount;
     const price = product.prices[0].centAmount;
     const priceFormat = new Intl.NumberFormat('en-US', {
@@ -71,6 +86,6 @@ export default class CatalogComponent extends BaseComponent<'div'> {
       cardPrice.append([currentPrice]);
     }
     cardWrapper.append([imgWrapper, cardName, cardDescription, cardPrice]);
-    this.append([cardWrapper]);
+    this.content.append([cardWrapper]);
   }
 }
