@@ -62,14 +62,6 @@ class HeaderComponent extends BaseComponent<'header'> {
   private createControlPanel(): void {
     const wrapper = new BaseComponent({ tag: 'nav', classes: ['header_control-wrapper'] });
     this.burgerMenu = new BaseComponent({ tag: 'div', classes: ['header_burger-menu'] });
-    const product = new Button({
-      text: 'Product',
-      style: 'navigation',
-      onClick: () => {
-        this.hideBurger();
-        this.router.navigate('/product');
-      },
-    });
     const catalog = new Button({
       text: 'Catalog',
       style: 'navigation',
@@ -112,13 +104,7 @@ class HeaderComponent extends BaseComponent<'header'> {
       },
     });
     this.createBurgerButton();
-    this.burgerMenu.append([
-      product,
-      catalog,
-      this.loginButton,
-      this.registrationButton,
-      this.logoutButton,
-    ]);
+    this.burgerMenu.append([catalog, this.loginButton, this.registrationButton, this.logoutButton]);
     wrapper.append([this.burgerMenu, this.profile, this.burgerButton]);
     this.append([wrapper]);
     this.handleUserStatus();
