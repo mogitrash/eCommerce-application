@@ -27,6 +27,7 @@ class HeaderComponent extends BaseComponent<'header'> {
   constructor(private router: RouterService) {
     super({ tag: 'header', classes: ['header'] });
     this.createLogo();
+    this.createSaleHint();
     this.createControlPanel();
     this.setupCallbacks();
   }
@@ -108,6 +109,15 @@ class HeaderComponent extends BaseComponent<'header'> {
     wrapper.append([this.burgerMenu, this.profile, this.burgerButton]);
     this.append([wrapper]);
     this.handleUserStatus();
+  }
+
+  createSaleHint() {
+    const saleHint = new BaseComponent({
+      tag: 'p',
+      classes: ['header_sale-hint'],
+      textContent: '10% off sale on Good Boy goods',
+    });
+    this.append([saleHint]);
   }
 
   private handleUserStatus(): void {
