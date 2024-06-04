@@ -1,8 +1,11 @@
 import './product.scss';
 import BaseComponent from '../base/base.component';
-import { Product, ProductPrice } from '../../models/product/product.model';
+import { Product, ProductImage, ProductPrice } from '../../models/product/product.model';
+import SwiperComponent from '../swiper/swiper.components';
 
 export default class ProductComponent extends BaseComponent<'div'> {
+  private images: ProductImage[];
+
   private productCard: BaseComponent<'div'>;
 
   private productCardInfo: BaseComponent<'div'>;
@@ -12,8 +15,6 @@ export default class ProductComponent extends BaseComponent<'div'> {
   private productCardInfoName: BaseComponent<'div'>;
 
   private productCardInfoDescription: BaseComponent<'div'>;
-
-  private productCardImage: BaseComponent<'img'>;
 
   private productCardDetails: BaseComponent<'div'>;
 
@@ -25,17 +26,10 @@ export default class ProductComponent extends BaseComponent<'div'> {
       classes: ['product'],
     });
 
-    this.productCard = new BaseComponent({ tag: 'div', classes: ['product-card'] });
-    this.productCardSlider = new BaseComponent({
-      tag: 'div',
-      classes: ['product-card_slider'],
-    });
+    this.images = images;
 
-    // NOTE: Image will be replaced by slider
-    this.productCardImage = new BaseComponent({
-      tag: 'img',
-      classes: ['product-card_image'],
-    }).setAttribute('src', images[0].url);
+    this.productCard = new BaseComponent({ tag: 'div', classes: ['product-card'] });
+    this.productCardSlider = new SwiperComponent(images);
 
     this.productCardInfo = new BaseComponent({ tag: 'div', classes: ['product-card_info'] });
 
@@ -82,6 +76,7 @@ export default class ProductComponent extends BaseComponent<'div'> {
       }),
     );
 
+    this.setListeners();
     this.render();
   }
 
@@ -120,8 +115,6 @@ export default class ProductComponent extends BaseComponent<'div'> {
   }
 
   private render() {
-    this.productCardSlider.append([this.productCardImage]);
-
     this.productCardInfo.append([
       this.productCardInfoName,
       this.productCardInfoDescription,
@@ -132,5 +125,25 @@ export default class ProductComponent extends BaseComponent<'div'> {
     this.productCard.append([this.productCardSlider, this.productCardInfo]);
 
     this.append([this.productCard]);
+  }
+
+  private setListeners() {
+    this.productCardSlider.addListener('click', () => {
+      this.zoomInSlider(this.images);
+    });
+  }
+
+  private zoomInSlider(images: ProductImage[]) {
+    const zoomedSliderComponent = new SwiperComponent(images, ['slider__zoomed'], true);
+    const overlay = new BaseComponent({ tag: 'div', classes: ['overlay'] });
+    const closeIcon = new BaseComponent({ tag: 'div', textContent: '✕', classes: ['close-icon'] });
+
+    closeIcon.addListener('click', () => {
+      zoomedSliderComponent.getElement().remove();
+      overlay.getElement().remove();
+    });
+
+    overlay.append([closeIcon]);
+    this.append([overlay, zoomedSliderComponent]);
   }
 }

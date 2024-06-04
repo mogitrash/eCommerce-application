@@ -6,18 +6,38 @@
   font-family: $font-primary;
 }
 
+html {
+  background-color: #f6f6f6;
+}
+
+.disable-scrolling {
+  overflow: hidden;
+}
+
 .app {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: $color-light;
   font-family: $font-primary;
   color: $color-dark;
-  min-height: 100vh;
-  padding: 10px;
+  height: 100vh;
+}
+
+.app_content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 @font-face {
   font-family: 'manrope';
   src: url(./../assets/font/manrope-regular.ttf);
+}
+
+.app_content {
+  height: 100%;
 }

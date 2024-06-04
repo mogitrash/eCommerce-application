@@ -18,7 +18,7 @@ const baseConfig = {
         exclude: /node_modules/,
       },
       {
-        test: /\.s[ac]ss$/i,
+        test: /\.(s[ac]ss|css)$/i,
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
@@ -44,7 +44,7 @@ const baseConfig = {
       filename: 'index.html',
     }),
     new Dotenv(),
-    new FaviconsWebpackPlugin('./src/app/assets/images/favicon.png'),
+    new FaviconsWebpackPlugin('src/app/assets/images/favicon.ico'),
   ],
   devServer: {
     static: path.resolve(__dirname, './dist'),

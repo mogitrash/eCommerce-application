@@ -19,6 +19,10 @@ class AuthenticationService {
 
   private authorizationService = authorizationService;
 
+  private loginCallbacks: Array<() => void> = [];
+
+  private logoutCallbacks: Array<() => void> = [];
+
   constructor() {
     this.refreshToken = localStorage.getItem(LocalStorageEndpoint.refreshToken);
 
@@ -35,7 +39,7 @@ class AuthenticationService {
     return this.makeAuthRequest(customerSignIn, 'login');
   }
 
-  signOutCustomer() {
+  public signOutCustomer() {
     if (this.isLoggedIn) {
       this.isLoggedIn = false;
       localStorage.removeItem(LocalStorageEndpoint.userToken);
@@ -43,6 +47,7 @@ class AuthenticationService {
       if (this.tokenExpirationTimeoutId) {
         clearTimeout(this.tokenExpirationTimeoutId);
       }
+      this.logoutCallbacks.forEach((logoutCallback) => logoutCallback());
     } else {
       throw new Error('There is no logged in customer');
     }
@@ -82,14 +87,17 @@ class AuthenticationService {
       }
 
       const body = JSON.stringify(data);
-
       return fetch(`${this.clientAPIUrl}/${this.projectKey}/me/${endPoint}`, {
         method: 'POST',
         headers,
         body,
-      }).then((res) => res.json());
+      }).then((res) => {
+        if (isLogin) {
+          this.loginCallbacks.forEach((loginCallback) => loginCallback());
+        }
+        return res.json();
+      });
     }
-
     return authorizationResponse;
   }
 
@@ -110,6 +118,14 @@ class AuthenticationService {
     } else {
       throw new Error('There is no refreshToken item in localStorage');
     }
+  }
+
+  public onLogin(loginCallback: () => void): void {
+    this.loginCallbacks.push(loginCallback);
+  }
+
+  public onLogout(logoutCallback: () => void): void {
+    this.logoutCallbacks.push(logoutCallback);
   }
 }
 
