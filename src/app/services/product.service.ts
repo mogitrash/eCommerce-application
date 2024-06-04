@@ -100,12 +100,10 @@ export default class ProductService {
     return `variants.attributes.color.key:${result}`;
   }
 
-  static generateCategoryFilterQuery(colorKey: string) {
-    return `variants.attributes.color.key:"${colorKey}"`;
-  }
+  static generatePriceFilterQuery(from: number = 0, to?: number) {
+    const queryTo = to ?? '*';
 
-  static generatePriceFilterQuery(id: string) {
-    return `categories.id:"${id}"`;
+    return `variants.price.centAmount:range (${from} to ${queryTo})`;
   }
 
   static generateCategoryFilterQuery(id: string) {
