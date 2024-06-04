@@ -1,3 +1,3 @@
-const numberOfCards = 40;
+const NUMBER_OF_CARDS = 40;
 
-export default numberOfCards;
+export default NUMBER_OF_CARDS;

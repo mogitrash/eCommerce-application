@@ -1,10 +1,13 @@
 @import './../../sass/variables.scss';
 
 .catalog {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-
+  
+  .content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+  
   .old {
     font-size: 16px;
     text-decoration: line-through;

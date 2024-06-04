@@ -1,5 +1,8 @@
 import ErrorResponse from '../models/error-response.model';
-import { ProductDTO } from '../models/product/product-DTO.model';
+import {
+  GetAllPublishedProductsResponseDTO,
+  ProductDTO,
+} from '../models/product/product-DTO.model';
 import {
   GetAllProductsAttributesResponse,
   GetAllPublishedProductsRequest,
@@ -19,7 +22,7 @@ export default class ProductService {
 
   async getAllPublishedProducts(
     parameters: GetAllPublishedProductsRequest = {},
-  ): Promise<GetAllPublishedProductsResponse> {
+  ): Promise<GetAllPublishedProductsResponse | ErrorResponse> {
     const token = await getCurrentAccessToken();
 
     const queryParameters = new URLSearchParams(
@@ -35,15 +38,19 @@ export default class ProductService {
       Authorization: `Bearer ${token}`,
     });
 
-    return fetch(
+    const response: GetAllPublishedProductsResponseDTO | ErrorResponse = await fetch(
       `${this.clientAPIUrl}/${this.projectKey}/product-projections/search?${queryParameters}`,
       {
         method: 'GET',
         headers,
       },
-    )
-      .then((res) => res.json())
-      .then(GetAllPublishedProductsDTOResponseConverter);
+    ).then((res) => res.json());
+
+    if ('results' in response) {
+      return GetAllPublishedProductsDTOResponseConverter(response);
+    }
+
+    return response;
   }
 
   async getPublishedProductById(id: string): Promise<Product | ErrorResponse> {
@@ -83,12 +90,14 @@ export default class ProductService {
       .then(getAllProductsAttributesResponseDTOConverter);
   }
 
-  static generateBrandFilterQuery(brandKey: string) {
-    return `variants.attributes.brand.key:"${brandKey}"`;
+  static generateBrandFilterQuery(brandKey: string[]) {
+    const result = brandKey.map((el) => `"${el}"`).join(',');
+    return `variants.attributes.brand.key:${result}`;
   }
 
-  static generateColorFilterQuery(colorKey: string) {
-    return `variants.attributes.color.key:"${colorKey}"`;
+  static generateColorFilterQuery(colorKey: string[]) {
+    const result = colorKey.map((el) => `"${el}"`).join(',');
+    return `variants.attributes.color.key:${result}`;
   }
 
   static generateCategoryFilterQuery(colorKey: string) {
@@ -96,6 +105,10 @@ export default class ProductService {
   }
 
   static generatePriceFilterQuery(id: string) {
+    return `categories.id:"${id}"`;
+  }
+
+  static generateCategoryFilterQuery(id: string) {
     return `categories.id:"${id}"`;
   }
 }
