@@ -12,6 +12,8 @@ import ProductComponent from './components/product/product.component';
 import ProfileComponent from './components/profile/profile.component';
 import LocalStorageEndpoint from './models/local-storage-endpoint.model';
 import ProductService from './services/product.service';
+import AboutUsComponent from './components/about-us/about-us.component';
+import BasketComponent from './components/basket/basket.component';
 
 export default class App extends BaseComponent<'div'> implements Renderer {
   private routerService = new RouterService(this);
@@ -29,6 +31,8 @@ export default class App extends BaseComponent<'div'> implements Renderer {
   private notFoundComponent = new NotFoundComponent(this.routerService);
 
   private catalogComponent = new CatalogComponent(this.routerService);
+
+  private aboutUsComponent = new AboutUsComponent();
 
   private productComponent!: ProductComponent;
 
@@ -82,6 +86,12 @@ export default class App extends BaseComponent<'div'> implements Renderer {
           }
         }
         this.contentWrapper.append([this.notFoundComponent]);
+        break;
+      case Routes.AboutUs:
+        this.contentWrapper.append([this.aboutUsComponent]);
+        break;
+      case Routes.Basket:
+        this.contentWrapper.append([new BasketComponent()]);
         break;
       case Routes.NotFound:
       default:

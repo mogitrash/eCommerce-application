@@ -6,6 +6,8 @@ enum Routes {
   Profile = '/profile',
   Product = '/product',
   NotFound = '/404',
+  AboutUs = '/about-us',
+  Basket = '/basket',
 }
 
 export default Routes;
