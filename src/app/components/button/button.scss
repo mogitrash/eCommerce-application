@@ -12,6 +12,7 @@
   border-radius: 10px;
   transition: all 235ms ease-in-out;
   cursor: pointer;
+  text-transform: capitalize;
 
   &:disabled {
     color: black;
