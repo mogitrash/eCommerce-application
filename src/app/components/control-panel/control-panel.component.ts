@@ -187,7 +187,7 @@ export default class ControlPanelComponent extends BaseComponent<'div'> {
   }
 
   private makeSearchAndSort() {
-    const searchAndSort = new BaseComponent({ tag: 'div', classes: ['search_and_sort'] });
+    const searchAndSort = new BaseComponent({ tag: 'div', classes: ['search-sort'] });
     const sortSelect = new BaseComponent({ tag: 'select', classes: ['sort'] });
     sortSelect.append([
       ControlPanelComponent.makeOption('sort by alphabetically ascending', 'nameAsc'),
@@ -199,11 +199,11 @@ export default class ControlPanelComponent extends BaseComponent<'div'> {
       this.sort = sortSelect.getElement().value as ProductSort;
       this.viewAllProd();
     });
-    const form = new BaseComponent({ tag: 'form', classes: ['control_form'] });
-    const input = new BaseComponent({ tag: 'input', classes: ['control_form_input'] });
+    const form = new BaseComponent({ tag: 'form', classes: ['search-form'] });
+    const input = new BaseComponent({ tag: 'input', classes: ['search-form_input'] });
     const button = new BaseComponent({
       tag: 'button',
-      classes: ['form_button'],
+      classes: ['button'],
       textContent: 'Search',
     });
     form.addListener('submit', (e: Event) => {
