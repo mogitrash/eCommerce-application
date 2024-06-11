@@ -8,6 +8,7 @@ const getCurrentAccessToken = async () => {
     const authorizationResponse = await authorizationService.getAnonymousSessionToken();
     if ('access_token' in authorizationResponse) {
       token = authorizationResponse.access_token;
+      localStorage.setItem(LocalStorageEndpoint.userToken, token);
     }
   }
 

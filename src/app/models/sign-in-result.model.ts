@@ -1,4 +1,4 @@
-import Cart from './cart.model';
+import { Cart } from './cart/cart.model';
 import Customer from './customer.model';
 
 export default interface SignInResult {
