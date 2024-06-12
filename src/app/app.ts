@@ -99,7 +99,7 @@ export default class App extends BaseComponent<'div'> implements Renderer {
     }
   }
 
-  start() {
+  start(): void {
     this.root.append(this.element);
     this.append([this.headerComponent, this.contentWrapper]);
     this.routerService.init();

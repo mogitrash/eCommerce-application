@@ -1,12 +1,6 @@
 import { CreateCartResponseDTO } from '../models/cart/cart-DTO.model';
-import {
-  Cart,
-  CreateCartRequest,
-  LineItemDraft,
-  LocalStorageCart,
-} from '../models/cart/cart.model';
+import { Cart, CreateCartRequest, LineItemDraft } from '../models/cart/cart.model';
 import ErrorResponse from '../models/error-response.model';
-import LocalStorageEndpoint from '../models/local-storage-endpoint.model';
 import createCartRequestConverter from '../utilities/create-cart-request-converter';
 import createCartResponseDTOConverter from '../utilities/create-cart-response-DTO-converter';
 import getCurrentAccessToken from '../utilities/get-current-access-token';
@@ -37,13 +31,27 @@ export default class CartService {
     ).then((res) => res.json());
 
     if ('id' in response) {
-      localStorage.setItem(
-        LocalStorageEndpoint.cart,
-        JSON.stringify({
-          id: response.id,
-          version: response.version,
-        }),
-      );
+      return createCartResponseDTOConverter(response);
+    }
+
+    return response;
+  }
+
+  async getActiveCustomerCart(): Promise<Cart | ErrorResponse> {
+    const token = await getCurrentAccessToken();
+
+    const headers = new Headers({
+      Authorization: `Bearer ${token}`,
+    });
+
+    const response: CreateCartResponseDTO | ErrorResponse = await fetch(
+      `${this.clientAPIUrl}/${this.projectKey}/me/active-cart`,
+      {
+        headers,
+      },
+    ).then((res) => res.json());
+
+    if ('id' in response) {
       return createCartResponseDTOConverter(response);
     }
 
@@ -51,20 +59,17 @@ export default class CartService {
   }
 
   async addCartItems(items: LineItemDraft[]): Promise<Cart | ErrorResponse> {
-    const cartString = localStorage.getItem(LocalStorageEndpoint.cart);
+    const activeCart = await this.getActiveCustomerCart();
 
-    // NOTE: creating cart if customer doesn't have one
-    if (!cartString) {
+    if ('message' in activeCart) {
       return this.createCart({
         currency: 'EUR',
         lineItems: items,
       });
     }
 
-    const cart: LocalStorageCart = JSON.parse(cartString);
-
     const body = JSON.stringify({
-      version: cart.version,
+      version: activeCart.version,
       actions: [
         ...items.map((item) => ({
           action: 'addLineItem',
@@ -82,23 +87,13 @@ export default class CartService {
     });
 
     const response: Cart | ErrorResponse = await fetch(
-      `${this.clientAPIUrl}/${this.projectKey}/me/carts/${cart.id}`,
+      `${this.clientAPIUrl}/${this.projectKey}/me/carts/${activeCart.id}`,
       {
         method: 'POST',
         headers,
         body,
       },
     ).then((res) => res.json());
-
-    if ('id' in response) {
-      localStorage.setItem(
-        LocalStorageEndpoint.cart,
-        JSON.stringify({
-          id: response.id,
-          version: response.version,
-        }),
-      );
-    }
 
     return response;
   }
