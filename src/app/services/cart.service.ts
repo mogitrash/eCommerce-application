@@ -98,6 +98,43 @@ export default class CartService {
     return response;
   }
 
+  // NOTE: if quantity is absence remove whole item from cart
+  async removeCartItem(productId: string, quantity?: number) {
+    const activeCart = await this.getActiveCustomerCart();
+
+    if ('message' in activeCart) {
+      return activeCart;
+    }
+
+    const body = JSON.stringify({
+      version: activeCart.version,
+      actions: [
+        {
+          action: 'removeLineItem',
+          lineItemId: activeCart.lineItems.find((item) => item.productId === productId)?.id,
+          quantity,
+        },
+      ],
+    });
+
+    const token = await getCurrentAccessToken();
+
+    const headers = new Headers({
+      Authorization: `Bearer ${token}`,
+    });
+
+    const response: Cart | ErrorResponse = await fetch(
+      `${this.clientAPIUrl}/${this.projectKey}/me/carts/${activeCart.id}`,
+      {
+        method: 'POST',
+        headers,
+        body,
+      },
+    ).then((res) => res.json());
+
+    return response;
+  }
+
   async isProductInActiveCart(productId: string) {
     const activeCart = await this.getActiveCustomerCart();
 

@@ -1,3 +1,5 @@
+import { ProductImage } from '../product/product.model';
+
 export interface Cart {
   id: string;
   version: number;
@@ -22,6 +24,7 @@ export interface LineItem {
   price: LineItemPrice;
   quantity: number;
   totalPrice: LineItemPrice;
+  images: ProductImage[];
 }
 
 export interface LineItemPrice {
