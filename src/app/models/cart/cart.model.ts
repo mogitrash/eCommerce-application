@@ -17,6 +17,7 @@ export interface CartPrice {
 
 export interface LineItem {
   id: string; // NOTE: line item ID, not product ID
+  productId: string;
   name: string;
   price: LineItemPrice;
   quantity: number;

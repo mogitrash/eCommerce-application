@@ -6,9 +6,11 @@ const lineItemDTOConverter = ({
   name,
   price,
   quantity,
+  productId,
   totalPrice,
 }: LineItemDTO): LineItem => ({
   id,
+  productId,
   name: name['en-US'],
   quantity,
   price: {

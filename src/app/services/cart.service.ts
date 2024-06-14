@@ -97,4 +97,14 @@ export default class CartService {
 
     return response;
   }
+
+  async isProductInActiveCart(productId: string) {
+    const activeCart = await this.getActiveCustomerCart();
+
+    if ('id' in activeCart) {
+      return activeCart.lineItems.some((item) => item.productId === productId);
+    }
+
+    return activeCart;
+  }
 }

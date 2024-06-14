@@ -20,6 +20,7 @@ export interface CartPriceDTO {
 
 export interface LineItemDTO {
   id: string; // NOTE: line item ID, not product ID
+  productId: string;
   name: LineItemNameDTO;
   price: LineItemPriceDTO;
   quantity: number;
