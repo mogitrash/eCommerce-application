@@ -99,7 +99,7 @@ export default class CartService {
   }
 
   // NOTE: if quantity is absence remove whole item from cart
-  async removeCartItem(productId: string, quantity?: number) {
+  async removeLineItem(productId: string, quantity?: number) {
     const activeCart = await this.getActiveCustomerCart();
 
     if ('message' in activeCart) {
