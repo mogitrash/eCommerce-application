@@ -6,6 +6,7 @@ const lineItemDTOConverter = ({
   name,
   price,
   quantity,
+  variant,
   productId,
   totalPrice,
 }: LineItemDTO): LineItem => ({
@@ -23,6 +24,7 @@ const lineItemDTOConverter = ({
     currencyCode: totalPrice.currencyCode,
     discountedCentAmount: null,
   },
+  images: variant.images,
 });
 
 export default lineItemDTOConverter;
