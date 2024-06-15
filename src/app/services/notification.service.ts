@@ -3,7 +3,7 @@ import NotificationComponent from '../components/notification/notification.compo
 export default class NotificationService {
   private notificationComponent = new NotificationComponent();
 
-  notify(text: string) {
-    this.notificationComponent.render(document.body, text);
+  notify(text: string, style?: 'success' | 'error') {
+    this.notificationComponent.render(document.body, text, style);
   }
 }

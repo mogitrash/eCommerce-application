@@ -2,8 +2,15 @@ import './product.scss';
 import BaseComponent from '../base/base.component';
 import { Product, ProductImage, ProductPrice } from '../../models/product/product.model';
 import SwiperComponent from '../swiper/swiper.components';
+import Button from '../button/button.component';
+import CartService from '../../services/cart.service';
+import NotificationService from '../../services/notification.service';
 
 export default class ProductComponent extends BaseComponent<'div'> {
+  private cartService: CartService = new CartService();
+
+  private notificationService = new NotificationService();
+
   private images: ProductImage[];
 
   private productCard: BaseComponent<'div'>;
@@ -20,7 +27,12 @@ export default class ProductComponent extends BaseComponent<'div'> {
 
   private productCardInfoPrice!: BaseComponent<'div'>;
 
-  constructor({ name, description, attributes, images, prices }: Product) {
+  private productAddToCart!: Button;
+
+  constructor(
+    { name, description, attributes, images, prices, id }: Product,
+    isProductInTheCart: boolean,
+  ) {
     super({
       tag: 'div',
       classes: ['product'],
@@ -75,6 +87,11 @@ export default class ProductComponent extends BaseComponent<'div'> {
         return attributeWrapper;
       }),
     );
+    this.productAddToCart = new Button({
+      text: isProductInTheCart ? 'In the cart' : 'Add to cart',
+      disabled: isProductInTheCart,
+      onClick: () => this.handleAddToCart(id),
+    });
 
     this.setListeners();
     this.render();
@@ -120,11 +137,24 @@ export default class ProductComponent extends BaseComponent<'div'> {
       this.productCardInfoDescription,
       this.productCardInfoPrice,
       this.productCardDetails,
+      this.productAddToCart,
     ]);
 
     this.productCard.append([this.productCardSlider, this.productCardInfo]);
 
     this.append([this.productCard]);
+  }
+
+  private async handleAddToCart(id: string): Promise<void> {
+    this.productAddToCart.disable();
+    this.productAddToCart.setTextContent('In the cart');
+    this.notificationService.notify('Adding product to the cart...');
+    const addToCartResponse = await this.cartService.addCartItems([{ productId: id }]);
+    this.notificationService.notify('Product have been added!', 'success');
+    if ('error' in addToCartResponse) {
+      this.productAddToCart.enable();
+      this.productAddToCart.setTextContent('Add to cart');
+    }
   }
 
   private setListeners() {
