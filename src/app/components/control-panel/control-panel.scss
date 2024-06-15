@@ -7,6 +7,22 @@
   align-items: center;
   gap: 20px;
 
+  .paginator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .previous,
+    .next {
+      width: 92px;
+    }
+
+    .current{
+      font-size: 20px;
+      font-weight: bold;
+    }
+  }
+
   .button_wrapper {
     .button {
       margin: 5px;
