@@ -91,7 +91,7 @@ export default class App extends BaseComponent<'div'> implements Renderer {
         this.contentWrapper.append([this.aboutUsComponent]);
         break;
       case Routes.Basket:
-        this.contentWrapper.append([new BasketComponent()]);
+        this.contentWrapper.append([new BasketComponent(this.routerService)]);
         break;
       case Routes.NotFound:
       default:
