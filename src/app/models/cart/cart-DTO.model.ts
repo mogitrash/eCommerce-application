@@ -1,3 +1,4 @@
+import { ProductMasterVariantDTO } from '../product/product-DTO.model';
 import { LineItemDraft } from './cart.model';
 
 export interface CreateCartResponseDTO {
@@ -20,10 +21,12 @@ export interface CartPriceDTO {
 
 export interface LineItemDTO {
   id: string; // NOTE: line item ID, not product ID
+  productId: string;
   name: LineItemNameDTO;
   price: LineItemPriceDTO;
   quantity: number;
   totalPrice: LineItemPriceValueDTO;
+  variant: ProductMasterVariantDTO;
 }
 
 export interface LineItemNameDTO {
@@ -54,6 +57,10 @@ export interface AddLineItemActionDTO extends UpdateCartAction {
   productId: string;
   variantId?: number;
   quantity?: number;
+}
+
+export interface RemoveLineItemActionDTO {
+  lineItemId: string;
 }
 
 export interface UpdateCartAction {
