@@ -34,12 +34,20 @@ export default class ControlPanelComponent extends BaseComponent<'div'> {
 
   private priceTo: number | null = null;
 
+  private currentPage: number = 1;
+
+  private prevButton!: BaseComponent<'button'>;
+
+  private nextButton!: BaseComponent<'button'>;
+
+  private pageDisplay!: BaseComponent<'div'>;
+
   constructor(private catalog: CardMaker) {
     super({ tag: 'div', classes: ['control_panel'] });
     this.makeSearchAndSort();
     this.append([this.filterWrapper]);
     this.makeFilter();
-    this.makeCategory();
+    this.makePagination();
     this.viewAllProd();
   }
 
@@ -49,21 +57,65 @@ export default class ControlPanelComponent extends BaseComponent<'div'> {
       this.catalog.clearAll();
       if ('results' in res) {
         if (res.results.length === 0) {
+          this.prevButton.setAttribute('disabled', 'disabled');
+          this.nextButton.setAttribute('disabled', 'disabled');
           this.catalog.makeEmptyCard();
         } else {
+          if (res.total <= this.currentPage * this.limit) {
+            this.nextButton.setAttribute('disabled', 'disabled');
+          } else {
+            this.nextButton.removeAttribute('disabled');
+          }
+          if (this.currentPage === 1) {
+            this.prevButton.setAttribute('disabled', 'disabled');
+          } else {
+            this.prevButton.removeAttribute('disabled');
+          }
           res.results.forEach((product: Product) => {
             this.catalog.makeCard(product);
           });
         }
       } else {
+        this.prevButton.setAttribute('disabled', 'disabled');
+        this.nextButton.setAttribute('disabled', 'disabled');
         this.catalog.makeEmptyCard();
       }
     });
   }
 
-  private makeCategory() {
-    const category = new BaseComponent({ tag: 'div', classes: ['category'] });
-    this.append([category]);
+  private makePagination() {
+    const paginator = new BaseComponent({ tag: 'div', classes: ['paginator'] });
+    this.prevButton = new BaseComponent({
+      tag: 'button',
+      classes: ['button', 'previous'],
+      textContent: 'previous',
+    });
+    this.prevButton.setAttribute('disabled', 'disabled');
+    this.prevButton.addListener('click', () => {
+      this.currentPage -= 1;
+      this.pageDisplay.setTextContent(`${this.currentPage}`);
+      this.viewAllProd();
+    });
+    this.pageDisplay = new BaseComponent({ tag: 'div', classes: ['current'], textContent: '1' });
+    this.nextButton = new BaseComponent({
+      tag: 'button',
+      classes: ['button', 'next'],
+      textContent: 'next',
+    });
+    this.nextButton.addListener('click', () => {
+      this.currentPage += 1;
+      this.pageDisplay.setTextContent(`${this.currentPage}`);
+      this.viewAllProd();
+    });
+    paginator.append([this.prevButton, this.pageDisplay, this.nextButton]);
+    this.append([paginator]);
+  }
+
+  private resetPaginator() {
+    this.currentPage = 1;
+    this.pageDisplay.setTextContent(`${this.currentPage}`);
+    this.prevButton.setAttribute('disabled', 'disabled');
+    this.nextButton.removeAttribute('disabled');
   }
 
   private makeFilter() {
@@ -148,6 +200,7 @@ export default class ControlPanelComponent extends BaseComponent<'div'> {
       } else {
         this.priceTo = toNumber;
       }
+      this.resetPaginator();
       this.viewAllProd();
     });
     filter.addListener('submit', (e: Event) => {
@@ -164,6 +217,7 @@ export default class ControlPanelComponent extends BaseComponent<'div'> {
       this.filterColor = [];
       this.priceFrom = 0;
       this.priceTo = 0;
+      this.resetPaginator();
       this.viewAllProd();
       this.makeFilter();
     });
@@ -197,6 +251,7 @@ export default class ControlPanelComponent extends BaseComponent<'div'> {
     ]);
     sortSelect.addListener('change', () => {
       this.sort = sortSelect.getElement().value as ProductSort;
+      this.resetPaginator();
       this.viewAllProd();
     });
     const form = new BaseComponent({ tag: 'form', classes: ['search-form'] });
@@ -209,6 +264,7 @@ export default class ControlPanelComponent extends BaseComponent<'div'> {
     form.addListener('submit', (e: Event) => {
       e.preventDefault();
       this.text = input.getElement().value;
+      this.resetPaginator();
       this.viewAllProd();
     });
     form.append([input, button]);
@@ -219,6 +275,7 @@ export default class ControlPanelComponent extends BaseComponent<'div'> {
   private makeReqestObject() {
     this.reqestObject.limit = this.limit;
     this.reqestObject.sort = this.sort;
+    this.reqestObject.offset = (this.currentPage - 1) * this.limit;
     if (this.text) {
       this.reqestObject.text = this.text;
     } else {
