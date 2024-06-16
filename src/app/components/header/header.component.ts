@@ -14,6 +14,10 @@ class HeaderComponent extends BaseComponent<'header'> {
 
   private registrationButton!: Button;
 
+  private aboutUsButton!: Button;
+
+  private catalogButton!: Button;
+
   private profile!: Button;
 
   private burgerMenu!: BaseComponent<'div'>;
@@ -63,19 +67,19 @@ class HeaderComponent extends BaseComponent<'header'> {
   private createControlPanel(): void {
     const wrapper = new BaseComponent({ tag: 'nav', classes: ['header_control-wrapper'] });
     this.burgerMenu = new BaseComponent({ tag: 'div', classes: ['header_burger-menu'] });
-    const catalog = new Button({
+    this.catalogButton = new Button({
       text: 'Catalog',
       style: 'navigation',
       onClick: () => {
         this.hideBurger();
-        this.router.navigate('/catalog');
+        this.router.navigate(Routes.Catalog);
       },
     });
     this.profile = new Button({
       style: 'navigation',
       onClick: () => {
         this.hideBurger();
-        this.router.navigate('/profile');
+        this.router.navigate(Routes.Profile);
       },
     });
     this.profile.addClass('header_button-profile');
@@ -84,7 +88,7 @@ class HeaderComponent extends BaseComponent<'header'> {
       style: 'navigation',
       onClick: () => {
         this.hideBurger();
-        this.router.navigate('/login');
+        this.router.navigate(Routes.Login);
       },
     });
     this.registrationButton = new Button({
@@ -92,7 +96,7 @@ class HeaderComponent extends BaseComponent<'header'> {
       style: 'navigation',
       onClick: () => {
         this.hideBurger();
-        this.router.navigate('/registration');
+        this.router.navigate(Routes.Registration);
       },
     });
     this.logoutButton = new Button({
@@ -104,8 +108,22 @@ class HeaderComponent extends BaseComponent<'header'> {
         this.router.redirect(Routes.Login);
       },
     });
+    this.aboutUsButton = new Button({
+      text: 'About Us',
+      style: 'navigation',
+      onClick: () => {
+        this.hideBurger();
+        this.router.redirect(Routes.AboutUs);
+      },
+    });
     this.createBurgerButton();
-    this.burgerMenu.append([catalog, this.loginButton, this.registrationButton, this.logoutButton]);
+    this.burgerMenu.append([
+      this.aboutUsButton,
+      this.catalogButton,
+      this.loginButton,
+      this.registrationButton,
+      this.logoutButton,
+    ]);
     wrapper.append([this.burgerMenu, this.profile, this.burgerButton]);
     this.append([wrapper]);
     this.handleUserStatus();
