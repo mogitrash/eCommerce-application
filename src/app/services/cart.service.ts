@@ -135,6 +135,18 @@ export default class CartService {
     return response;
   }
 
+  async clearActiveCart() {
+    const activeCart = await this.getActiveCustomerCart();
+
+    if ('id' in activeCart) {
+      activeCart.lineItems.forEach((item) => this.removeLineItem(item.productId));
+      activeCart.lineItems.length = 0;
+      return activeCart;
+    }
+
+    return activeCart;
+  }
+
   async isProductInActiveCart(productId: string) {
     const activeCart = await this.getActiveCustomerCart();
 
