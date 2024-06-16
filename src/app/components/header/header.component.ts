@@ -18,7 +18,9 @@ class HeaderComponent extends BaseComponent<'header'> {
 
   private catalogButton!: Button;
 
-  private profile!: Button;
+  private profileButton!: Button;
+
+  private basketButton!: Button;
 
   private burgerMenu!: BaseComponent<'div'>;
 
@@ -75,14 +77,20 @@ class HeaderComponent extends BaseComponent<'header'> {
         this.router.navigate(Routes.Catalog);
       },
     });
-    this.profile = new Button({
+    this.profileButton = new Button({
       style: 'navigation',
       onClick: () => {
         this.hideBurger();
         this.router.navigate(Routes.Profile);
       },
-    });
-    this.profile.addClass('header_button-profile');
+    }).addClass('header_button-profile');
+    this.basketButton = new Button({
+      style: 'navigation',
+      onClick: () => {
+        this.hideBurger();
+        this.router.navigate(Routes.Basket);
+      },
+    }).addClass('header_button-basket');
     this.loginButton = new Button({
       text: 'Log In',
       style: 'navigation',
@@ -124,7 +132,7 @@ class HeaderComponent extends BaseComponent<'header'> {
       this.registrationButton,
       this.logoutButton,
     ]);
-    wrapper.append([this.burgerMenu, this.profile, this.burgerButton]);
+    wrapper.append([this.burgerMenu, this.profileButton, this.basketButton, this.burgerButton]);
     this.append([wrapper]);
     this.handleUserStatus();
   }
@@ -156,14 +164,14 @@ class HeaderComponent extends BaseComponent<'header'> {
     this.logoutButton.show();
     this.loginButton.hide();
     this.registrationButton.hide();
-    this.profile.show();
+    this.profileButton.show();
   }
 
   private handleLoggedout(): void {
     this.logoutButton.hide();
     this.loginButton.show();
     this.registrationButton.show();
-    this.profile.hide();
+    this.profileButton.hide();
   }
 
   private toggleBurger(): void {
