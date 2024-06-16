@@ -29,6 +29,8 @@ export default class ProductComponent extends BaseComponent<'div'> {
 
   private productAddToCart!: Button;
 
+  private productRemoveFromCart!: Button;
+
   constructor(
     { name, description, attributes, images, prices, id }: Product,
     isProductInTheCart: boolean,
@@ -92,6 +94,13 @@ export default class ProductComponent extends BaseComponent<'div'> {
       disabled: isProductInTheCart,
       onClick: () => this.handleAddToCart(id),
     });
+    this.productRemoveFromCart = new Button({
+      text: 'Remove from cart',
+      style: 'negative',
+      onClick: () => {
+        this.handleRemoveFromCart(id);
+      },
+    });
 
     this.setListeners();
     this.render();
@@ -138,6 +147,7 @@ export default class ProductComponent extends BaseComponent<'div'> {
       this.productCardInfoPrice,
       this.productCardDetails,
       this.productAddToCart,
+      this.productRemoveFromCart,
     ]);
 
     this.productCard.append([this.productCardSlider, this.productCardInfo]);
@@ -150,10 +160,27 @@ export default class ProductComponent extends BaseComponent<'div'> {
     this.productAddToCart.setTextContent('In the cart');
     this.notificationService.notify('Adding product to the cart...');
     const addToCartResponse = await this.cartService.addCartItems([{ productId: id }]);
-    this.notificationService.notify('Product have been added!', 'success');
-    if ('error' in addToCartResponse) {
+    if ('errors' in addToCartResponse) {
       this.productAddToCart.enable();
       this.productAddToCart.setTextContent('Add to cart');
+      this.notificationService.notify('Product has not been added', 'error');
+    } else {
+      this.notificationService.notify('Product has been added!', 'success');
+      this.productRemoveFromCart.show();
+    }
+  }
+
+  private async handleRemoveFromCart(id: string): Promise<void> {
+    this.productRemoveFromCart.hide();
+    this.notificationService.notify('Removing product from the cart...');
+    const removeFromCartResponse = await this.cartService.removeLineItem(id);
+    if ('errors' in removeFromCartResponse) {
+      this.productRemoveFromCart.show();
+      this.notificationService.notify('Product has not been removed', 'error');
+    } else {
+      this.productAddToCart.setTextContent('Add to cart');
+      this.productAddToCart.enable();
+      this.notificationService.notify('Product has been removed!', 'success');
     }
   }
 
