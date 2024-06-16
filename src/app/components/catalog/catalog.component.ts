@@ -5,8 +5,15 @@ import RouterService from '../../services/router/router.service';
 import ControlPanelComponent from '../control-panel/control-panel.component';
 import CardMaker from '../../models/card-maker';
 import NotFoundGif from '../../assets/images/not-found.gif';
+import Button from '../button/button.component';
+import CartService from '../../services/cart.service';
+import NotificationService from '../../services/notification.service';
 
 export default class CatalogComponent extends BaseComponent<'div'> implements CardMaker {
+  private cartService: CartService = new CartService();
+
+  private notificationService = new NotificationService();
+
   private controlPanel = new ControlPanelComponent(this);
 
   private content = new BaseComponent({ tag: 'div', classes: ['content'] });
@@ -36,7 +43,7 @@ export default class CatalogComponent extends BaseComponent<'div'> implements Ca
     cardWrapper.append([imgWrapper, cardDescription]);
   }
 
-  makeCard(product: Product) {
+  makeCard(product: Product, isProductInTheCart: boolean) {
     const discount = product.prices[0].discountedCentAmount;
     const price = product.prices[0].centAmount;
     const priceFormat = new Intl.NumberFormat('en-US', {
@@ -85,7 +92,28 @@ export default class CatalogComponent extends BaseComponent<'div'> implements Ca
       });
       cardPrice.append([currentPrice]);
     }
-    cardWrapper.append([imgWrapper, cardName, cardDescription, cardPrice]);
+    const addToCart = new Button({
+      text: isProductInTheCart ? 'In the cart' : 'Add to cart',
+      size: 'small',
+      disabled: isProductInTheCart,
+      onClick: (event: Event) => {
+        event.stopPropagation();
+        this.handleAddToCart(product.id, addToCart);
+      },
+    });
+    cardWrapper.append([imgWrapper, cardName, cardDescription, cardPrice, addToCart]);
     this.content.append([cardWrapper]);
+  }
+
+  private async handleAddToCart(id: string, button: Button): Promise<void> {
+    button.disable();
+    button.setTextContent('In the cart');
+    this.notificationService.notify('Adding product to the cart...');
+    const addToCartResponse = await this.cartService.addCartItems([{ productId: id }]);
+    this.notificationService.notify('Product have been added!', 'success');
+    if ('error' in addToCartResponse) {
+      button.enable();
+      button.setTextContent('Add to cart');
+    }
   }
 }

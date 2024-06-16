@@ -2,6 +2,10 @@
 
 .basket {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
 .empty-basket {
@@ -15,4 +19,36 @@
 
 .empty-basket_description {
   font-size: 24px;
+}
+
+.basket-item {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  border-radius: 15px;
+  padding: 5px;
+  border: 1px solid #b2b2b2;
+  background-color: white;
+}
+
+.basket-item_image {
+  width: 30%;
+  max-height: 140px;
+  object-fit: contain;
+}
+
+.basket-item_info {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.basket-item_price {
+  display: flex;
+  justify-content: space-between;
+}
+
+.basket-item_total-price {
+  font-weight: 600;
 }
