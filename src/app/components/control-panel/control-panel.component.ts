@@ -8,9 +8,14 @@ import {
   Product,
   ProductSort,
 } from '../../models/product/product.model';
+import CartService from '../../services/cart.service';
+import { Cart } from '../../models/cart/cart.model';
+import ErrorResponse from '../../models/error-response.model';
 
 export default class ControlPanelComponent extends BaseComponent<'div'> {
   private productService = new ProductService();
+
+  private cartService: CartService = new CartService();
 
   private reqestObject: GetAllPublishedProductsRequest = {};
 
@@ -53,15 +58,18 @@ export default class ControlPanelComponent extends BaseComponent<'div'> {
 
   private viewAllProd() {
     this.makeReqestObject();
-    this.productService.getAllPublishedProducts(this.reqestObject).then((res) => {
+    Promise.all([
+      this.productService.getAllPublishedProducts(this.reqestObject),
+      this.cartService.getActiveCustomerCart(),
+    ]).then(([productsResponse, cartResponse]) => {
       this.catalog.clearAll();
-      if ('results' in res) {
-        if (res.results.length === 0) {
+      if ('results' in productsResponse) {
+        if (productsResponse.results.length === 0) {
           this.prevButton.setAttribute('disabled', 'disabled');
           this.nextButton.setAttribute('disabled', 'disabled');
           this.catalog.makeEmptyCard();
         } else {
-          if (res.total <= this.currentPage * this.limit) {
+          if (productsResponse.total <= this.currentPage * this.limit) {
             this.nextButton.setAttribute('disabled', 'disabled');
           } else {
             this.nextButton.removeAttribute('disabled');
@@ -71,15 +79,21 @@ export default class ControlPanelComponent extends BaseComponent<'div'> {
           } else {
             this.prevButton.removeAttribute('disabled');
           }
-          res.results.forEach((product: Product) => {
-            this.catalog.makeCard(product);
-          });
+          this.makeCards(productsResponse.results, cartResponse);
         }
       } else {
         this.prevButton.setAttribute('disabled', 'disabled');
         this.nextButton.setAttribute('disabled', 'disabled');
         this.catalog.makeEmptyCard();
       }
+    });
+  }
+
+  private makeCards(products: Product[], cartResponse: Cart | ErrorResponse) {
+    const cartItems = 'id' in cartResponse ? cartResponse.lineItems : [];
+    products.forEach((product: Product) => {
+      const isProductInTheCart = cartItems.some((cartItem) => product.id === cartItem.productId);
+      this.catalog.makeCard(product, isProductInTheCart);
     });
   }
 

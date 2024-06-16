@@ -1,7 +1,7 @@
 import { Product } from './product/product.model';
 
 interface CardMaker {
-  makeCard(product: Product): void;
+  makeCard(product: Product, isProductInTheCart: boolean): void;
   makeEmptyCard(): void;
   clearAll(): void;
 }
