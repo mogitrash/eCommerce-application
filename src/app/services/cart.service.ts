@@ -135,7 +135,7 @@ export default class CartService {
     return response;
   }
 
-  async clearActiveCart() {
+  async clearActiveCustomerCart() {
     const activeCart = await this.getActiveCustomerCart();
 
     if ('id' in activeCart) {
@@ -155,5 +155,40 @@ export default class CartService {
     }
 
     return activeCart;
+  }
+
+  async applyDiscountCodeToActiveCustomerCart(code: string) {
+    const activeCart = await this.getActiveCustomerCart();
+
+    if ('message' in activeCart) {
+      return activeCart;
+    }
+
+    const body = JSON.stringify({
+      version: activeCart.version,
+      actions: [
+        {
+          action: 'addDiscountCode',
+          code,
+        },
+      ],
+    });
+
+    const token = await getCurrentAccessToken();
+
+    const headers = new Headers({
+      Authorization: `Bearer ${token}`,
+    });
+
+    const response: Cart | ErrorResponse = await fetch(
+      `${this.clientAPIUrl}/${this.projectKey}/me/carts/${activeCart.id}`,
+      {
+        method: 'POST',
+        headers,
+        body,
+      },
+    ).then((res) => res.json());
+
+    return response;
   }
 }
