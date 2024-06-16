@@ -17,7 +17,6 @@ export default class BasketComponent extends BaseComponent<'div'> {
 
   private async getBasktetItems(): Promise<BaseComponent<'div'>[]> {
     const customerCart = await this.cartService.getActiveCustomerCart();
-    console.log(customerCart);
     if ('id' in customerCart) {
       this.changeTotalPrice(customerCart.totalPrice.centAmount);
       return customerCart.lineItems.map((lineItem) => {
@@ -131,8 +130,15 @@ export default class BasketComponent extends BaseComponent<'div'> {
       textContent: `Total price: ${priceFormat.format(totalPrice.discountedCentAmount || totalPrice.centAmount / 100)}`,
       classes: ['basket-item_total-price'],
     });
+    const removeButton = new Button({
+      text: 'Remove',
+      onClick: async () => {
+        await this.cartService.removeLineItem(productId);
+        this.render();
+      },
+    });
     basketItemPrice.append([basketItemSinglePrice, basketItemTotalPrice]);
-    basketItemInfo.append([basketItemName, basketItemQuantity, basketItemPrice]);
+    basketItemInfo.append([basketItemName, basketItemQuantity, basketItemPrice, removeButton]);
     basketItem.append([basketItemImage, basketItemInfo]);
     return basketItem;
   }
