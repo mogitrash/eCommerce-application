@@ -17,6 +17,7 @@ export default class BasketComponent extends BaseComponent<'div'> {
 
   private async getBasktetItems(): Promise<BaseComponent<'div'>[]> {
     const customerCart = await this.cartService.getActiveCustomerCart();
+    console.log(customerCart);
     if ('id' in customerCart) {
       this.changeTotalPrice(customerCart.totalPrice.centAmount);
       return customerCart.lineItems.map((lineItem) => {
@@ -37,8 +38,15 @@ export default class BasketComponent extends BaseComponent<'div'> {
   private async render(): Promise<void> {
     this.getElement().innerHTML = '';
     const basketHeader = new BaseComponent({ tag: 'h2', textContent: 'Shopping cart' });
+    const clearButton = new Button({
+      text: 'Clear Shopping Cart',
+      onClick: async () => {
+        await this.cartService.clearActiveCustomerCart();
+        this.render();
+      },
+    });
     this.totalPrice = new BaseComponent({ tag: 'p', textContent: 'Total price:' });
-    this.append([basketHeader, this.totalPrice]);
+    this.append([basketHeader, clearButton, this.totalPrice]);
     const basketItems = await this.getBasktetItems();
     if (basketItems.length) {
       this.append(basketItems);
@@ -98,7 +106,7 @@ export default class BasketComponent extends BaseComponent<'div'> {
     const basketItemSinglePrice = new BaseComponent({
       tag: 'p',
       textContent: `Price: ${priceFormat.format(
-        price.discountedCentAmount || price.centAmount / 100,
+        (price.discountedCentAmount || price.centAmount) / 100,
       )}`,
       classes: ['basket-item_single-price'],
     });
