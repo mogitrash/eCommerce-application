@@ -8,6 +8,8 @@ import './basket.scss';
 export default class BasketComponent extends BaseComponent<'div'> {
   private cartService: CartService = new CartService();
 
+  private totalPrice!: BaseComponent<'p'>;
+
   constructor(private router: RouterService) {
     super({ tag: 'div', classes: ['basket'] });
     this.render();
@@ -15,17 +17,29 @@ export default class BasketComponent extends BaseComponent<'div'> {
 
   private async getBasktetItems(): Promise<BaseComponent<'div'>[]> {
     const customerCart = await this.cartService.getActiveCustomerCart();
+    console.log(customerCart);
     if ('id' in customerCart) {
+      this.changeTotalPrice(customerCart.totalPrice.centAmount);
       return customerCart.lineItems.map((lineItem) => {
-        return BasketComponent.makeBasketItem(lineItem);
+        return this.makeBasketItem(lineItem);
       });
     }
     return [];
   }
 
+  private changeTotalPrice(price: number) {
+    const priceFormat = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'EUR',
+    });
+    this.totalPrice.setTextContent(`Total price: ${priceFormat.format(price / 100)}`);
+  }
+
   private async render(): Promise<void> {
+    this.getElement().innerHTML = '';
     const basketHeader = new BaseComponent({ tag: 'h2', textContent: 'Shopping cart' });
-    this.append([basketHeader]);
+    this.totalPrice = new BaseComponent({ tag: 'p', textContent: 'Total price:' });
+    this.append([basketHeader, this.totalPrice]);
     const basketItems = await this.getBasktetItems();
     if (basketItems.length) {
       this.append(basketItems);
@@ -56,8 +70,8 @@ export default class BasketComponent extends BaseComponent<'div'> {
     this.append([emptyBasket]);
   }
 
-  private static makeBasketItem(lineItem: LineItem): BaseComponent<'div'> {
-    const { price, totalPrice, images, quantity, name } = lineItem;
+  private makeBasketItem(lineItem: LineItem): BaseComponent<'div'> {
+    const { price, totalPrice, images, quantity, name, productId } = lineItem;
     const priceFormat = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: price.currencyCode,
@@ -90,10 +104,28 @@ export default class BasketComponent extends BaseComponent<'div'> {
       classes: ['basket-item_single-price'],
     });
     const basketItemQuantity = new BaseComponent({
-      tag: 'p',
+      tag: 'div',
       textContent: `Quantity: ${quantity}`,
       classes: ['basket-item_quantity'],
     });
+    const downButton = new Button({
+      text: '-',
+      disabled: quantity === 1,
+      size: 'small',
+      onClick: async () => {
+        await this.cartService.removeLineItem(productId, 1);
+        this.render();
+      },
+    });
+    const upButton = new Button({
+      text: '+',
+      size: 'small',
+      onClick: async () => {
+        await this.cartService.addCartItems([{ productId, quantity: 1 }]);
+        this.render();
+      },
+    });
+    basketItemQuantity.append([downButton, upButton]);
     const basketItemTotalPrice = new BaseComponent({
       tag: 'p',
       textContent: `Total price: ${priceFormat.format(totalPrice.discountedCentAmount || totalPrice.centAmount / 100)}`,
