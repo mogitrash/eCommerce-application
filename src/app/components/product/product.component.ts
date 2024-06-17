@@ -101,7 +101,9 @@ export default class ProductComponent extends BaseComponent<'div'> {
         this.handleRemoveFromCart(id);
       },
     });
-
+    if (!isProductInTheCart) {
+      this.productRemoveFromCart.hide();
+    }
     this.setListeners();
     this.render();
   }
