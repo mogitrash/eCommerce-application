@@ -26,6 +26,11 @@ export default class MainComponent extends BaseComponent<'section'> {
       textContent:
         'We offer a vast selection of products to meet the needs of all pet owners, including nutritious food, fun toys, cozy bedding and stylish accessories. Shop with us for all your pet goods needs!',
     });
+    const promoHint = new BaseComponent({
+      tag: 'p',
+      classes: ['hero_hint', 'promo'],
+      textContent: 'To receive a 10% discount on all products, use code: SAVE10',
+    });
     const heroImage = new BaseComponent({
       tag: 'img',
       classes: ['hero_image'],
@@ -39,7 +44,7 @@ export default class MainComponent extends BaseComponent<'section'> {
       },
     });
     heroImage.setAttribute('src', HeroImage);
-    heroInfo.append([heroHint, catalogButton]);
+    heroInfo.append([heroHint, promoHint, catalogButton]);
     this.append([heroDescription, heroInfo, heroImage]);
   }
 }

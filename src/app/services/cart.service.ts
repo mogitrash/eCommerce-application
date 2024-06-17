@@ -137,9 +137,13 @@ export default class CartService {
 
   async clearActiveCustomerCart() {
     const activeCart = await this.getActiveCustomerCart();
-
     if ('id' in activeCart) {
-      activeCart.lineItems.forEach((item) => this.removeLineItem(item.productId));
+      await activeCart.lineItems.reduce(async (acc, item) => {
+        if (await acc) {
+          await this.removeLineItem(item.productId);
+        }
+        return Promise.resolve(1);
+      }, Promise.resolve(1));
       activeCart.lineItems.length = 0;
       return activeCart;
     }
