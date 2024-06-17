@@ -6,10 +6,24 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
+
+  .basket_total-price {
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .crossed {
+    text-decoration: line-through;
+    font-weight: normal;
+  }
 }
 
-.promo{
-  .promo_input{
+.promo {
+  .promo_input {
     height: 26px;
     margin-right: 5px;
   }
