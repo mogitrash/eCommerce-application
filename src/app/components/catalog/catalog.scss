@@ -1,10 +1,12 @@
 @import './../../sass/variables.scss';
 
 .catalog {
+  padding: 20px;
+
   .content {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: center;
   }
 
   .old {
