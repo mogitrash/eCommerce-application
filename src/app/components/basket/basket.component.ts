@@ -77,6 +77,7 @@ export default class BasketComponent extends BaseComponent<'div'> {
     const clearButton = new Button({
       text: 'Clear Shopping Cart',
       onClick: async () => {
+        this.notificationService.notify('The cart is being emptied', 'success');
         await this.cartService.clearActiveCustomerCart();
         this.render();
       },
