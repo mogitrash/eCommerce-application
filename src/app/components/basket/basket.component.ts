@@ -38,6 +38,17 @@ export default class BasketComponent extends BaseComponent<'div'> {
   private async render(): Promise<void> {
     this.getElement().innerHTML = '';
     const basketHeader = new BaseComponent({ tag: 'h2', textContent: 'Shopping cart' });
+    const promoForm = new BaseComponent({ tag: 'form', classes: ['promo'] });
+    const input = new BaseComponent({ tag: 'input', classes: ['promo_input'] });
+    input.setAttribute('placeholder', 'Enter promo code here');
+    const button = new Button({ text: 'Apply', size: 'small', type: 'submit' });
+    promoForm.append([input, button]);
+    promoForm.addListener('submit', async (e: Event) => {
+      e.preventDefault();
+      const response = await this.cartService.applyDiscountCodeToActiveCustomerCart('ff');
+      console.log(response);
+      this.render();
+    });
     const clearButton = new Button({
       text: 'Clear Shopping Cart',
       onClick: async () => {
@@ -46,7 +57,7 @@ export default class BasketComponent extends BaseComponent<'div'> {
       },
     });
     this.totalPrice = new BaseComponent({ tag: 'p', textContent: 'Total price:' });
-    this.append([basketHeader, clearButton, this.totalPrice]);
+    this.append([basketHeader, promoForm, clearButton, this.totalPrice]);
     const basketItems = await this.getBasktetItems();
     if (basketItems.length) {
       this.append(basketItems);
