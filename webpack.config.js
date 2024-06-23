@@ -1,8 +1,10 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 const prodConfig = require('./webpack.prod.config');
 const devConfig = require('./webpack.dev.config');
 const { merge } = require('webpack-merge');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 const baseConfig = {
   entry: path.resolve(__dirname, './src/index.ts'),
@@ -16,11 +18,15 @@ const baseConfig = {
         exclude: /node_modules/,
       },
       {
-        test: /\.s[ac]ss$/i,
+        test: /\.(s[ac]ss|css)$/i,
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
         test: /\.(jpg|png|svg|gif|mp3)$/,
+        type: 'asset/resource',
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
         type: 'asset/resource',
       },
     ],
@@ -34,9 +40,11 @@ const baseConfig = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, './src/index.html'),
+      template: path.resolve(__dirname, 'src/index.html'),
       filename: 'index.html',
     }),
+    new Dotenv(),
+    new FaviconsWebpackPlugin('src/app/assets/images/favicon.ico'),
   ],
   devServer: {
     static: path.resolve(__dirname, './dist'),

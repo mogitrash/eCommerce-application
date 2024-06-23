@@ -1,0 +1,21 @@
+@import '../../sass/variables.scss';
+
+.swiper {
+  transition: 0.5s all;
+  width: 300px;
+  height: 300px;
+
+  .swiper-slide {
+    .swiper-slide_image {
+      object-fit: contain;
+      border-radius: 16px;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .swiper-button-prev,
+  .swiper-button-next {
+    color: #000;
+  }
+}

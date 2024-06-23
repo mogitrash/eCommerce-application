@@ -1,0 +1,77 @@
+@import './../../sass/variables.scss';
+
+.about-us {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  max-width: 1000px;
+  padding: 20px 20px 40px;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.member_name {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.member_container {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+
+  &:nth-child(even) {
+    flex-direction: row-reverse;
+  }
+}
+
+.member_description-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.member_image {
+  border-radius: 50%;
+  width: 200px;
+}
+
+.member_value {
+  letter-spacing: 1px;
+  line-height: normal;
+  text-align: justify;
+}
+
+.member_info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.member_title {
+  font-weight: 600;
+}
+
+.member_list-item {
+  list-style-type: square;
+  line-height: 20px;
+}
+
+.member_list {
+  margin-left: 17px;
+}
+
+.school-logo,
+.school-link {
+  width: 200px;
+}
+
+@media screen and (max-width: 600px) {
+  .member_container {
+    flex-direction: column;
+
+    &:nth-child(even) {
+      flex-direction: column;
+    }
+  }
+}

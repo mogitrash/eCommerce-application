@@ -1,0 +1,81 @@
+@import './../../sass/variables.scss';
+
+.login_modal {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  letter-spacing: 0.6px;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  width: 300px;
+  margin: auto;
+}
+
+.modal_form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal_input {
+  width: 100%;
+  height: 25px;
+}
+
+.modal_input-label {
+  font-size: 15px;
+  font-family: $font-primary;
+}
+
+.modal_visibility {
+  font-size: 12px;
+}
+
+.modal_error {
+  display: none;
+  width: 100%;
+  font-size: 65%;
+  border-radius: 5px;
+  box-sizing: border-box;
+  position: absolute;
+  top: 48px;
+  background: $color-red;
+  padding: 5px;
+  box-shadow: 1px 1px 1px #aaaaaa;
+  margin-top: 10px;
+  color: #fff;
+  z-index: 1;
+
+  &:before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid $color-red;
+    position: absolute;
+    top: -9px;
+    right: 20%;
+  }
+}
+
+.modal_error--shown {
+  display: block;
+}
+
+.modal_input-wrapper {
+  position: relative;
+  min-height: 40px;
+}
+
+.visibility_wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.modal_hint {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $color-primary;
+}

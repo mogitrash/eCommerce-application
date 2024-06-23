@@ -1,0 +1,69 @@
+@import './../../sass/variables.scss';
+
+.input {
+  width: 100%;
+  height: 25px;
+}
+
+.input-container {
+  position: relative;
+}
+
+.label {
+  font-family: $font-primary;
+  font-size: 15px;
+}
+
+.error {
+  display: none;
+  width: 100%;
+  font-size: 65%;
+  border-radius: 5px;
+  box-sizing: border-box;
+  position: absolute;
+  top: 48px;
+  background: $color-red;
+  padding: 5px;
+  box-shadow: 1px 1px 1px #aaaaaa;
+  margin-top: 10px;
+  color: #fff;
+  z-index: 1;
+
+  &:before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid $color-red;
+    position: absolute;
+    top: -9px;
+    right: 20%;
+  }
+}
+
+.error--shown {
+  display: block;
+}
+
+.visibility_wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.visibility_label {
+  font-size: 12px;
+}
+
+.input_checkbox {
+  display: flex;
+  align-items: center;
+
+  .input {
+    width: auto;
+  }
+}
+
+.input_checkbox--hidden {
+  display: none;
+}

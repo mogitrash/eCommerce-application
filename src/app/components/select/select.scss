@@ -1,0 +1,16 @@
+@import './../../sass/variables.scss';
+
+.select {
+  margin-bottom: 5px;
+  width: 100%;
+  height: 25px;
+}
+
+.label {
+  font-family: $font-primary;
+  font-size: 15px;
+}
+
+.input-container {
+  position: relative;
+}
