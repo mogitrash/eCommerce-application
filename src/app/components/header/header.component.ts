@@ -14,7 +14,13 @@ class HeaderComponent extends BaseComponent<'header'> {
 
   private registrationButton!: Button;
 
-  private profile!: Button;
+  private aboutUsButton!: Button;
+
+  private catalogButton!: Button;
+
+  private profileButton!: Button;
+
+  private basketButton!: Button;
 
   private burgerMenu!: BaseComponent<'div'>;
 
@@ -63,28 +69,34 @@ class HeaderComponent extends BaseComponent<'header'> {
   private createControlPanel(): void {
     const wrapper = new BaseComponent({ tag: 'nav', classes: ['header_control-wrapper'] });
     this.burgerMenu = new BaseComponent({ tag: 'div', classes: ['header_burger-menu'] });
-    const catalog = new Button({
+    this.catalogButton = new Button({
       text: 'Catalog',
       style: 'navigation',
       onClick: () => {
         this.hideBurger();
-        this.router.navigate('/catalog');
+        this.router.navigate(Routes.Catalog);
       },
     });
-    this.profile = new Button({
+    this.profileButton = new Button({
       style: 'navigation',
       onClick: () => {
         this.hideBurger();
-        this.router.navigate('/profile');
+        this.router.navigate(Routes.Profile);
       },
-    });
-    this.profile.addClass('header_button-profile');
+    }).addClass('header_button-profile');
+    this.basketButton = new Button({
+      style: 'navigation',
+      onClick: () => {
+        this.hideBurger();
+        this.router.navigate(Routes.Basket);
+      },
+    }).addClass('header_button-basket');
     this.loginButton = new Button({
       text: 'Log In',
       style: 'navigation',
       onClick: () => {
         this.hideBurger();
-        this.router.navigate('/login');
+        this.router.navigate(Routes.Login);
       },
     });
     this.registrationButton = new Button({
@@ -92,7 +104,7 @@ class HeaderComponent extends BaseComponent<'header'> {
       style: 'navigation',
       onClick: () => {
         this.hideBurger();
-        this.router.navigate('/registration');
+        this.router.navigate(Routes.Registration);
       },
     });
     this.logoutButton = new Button({
@@ -104,9 +116,23 @@ class HeaderComponent extends BaseComponent<'header'> {
         this.router.redirect(Routes.Login);
       },
     });
+    this.aboutUsButton = new Button({
+      text: 'About Us',
+      style: 'navigation',
+      onClick: () => {
+        this.hideBurger();
+        this.router.redirect(Routes.AboutUs);
+      },
+    });
     this.createBurgerButton();
-    this.burgerMenu.append([catalog, this.loginButton, this.registrationButton, this.logoutButton]);
-    wrapper.append([this.burgerMenu, this.profile, this.burgerButton]);
+    this.burgerMenu.append([
+      this.aboutUsButton,
+      this.catalogButton,
+      this.loginButton,
+      this.registrationButton,
+      this.logoutButton,
+    ]);
+    wrapper.append([this.burgerMenu, this.profileButton, this.basketButton, this.burgerButton]);
     this.append([wrapper]);
     this.handleUserStatus();
   }
@@ -138,14 +164,14 @@ class HeaderComponent extends BaseComponent<'header'> {
     this.logoutButton.show();
     this.loginButton.hide();
     this.registrationButton.hide();
-    this.profile.show();
+    this.profileButton.show();
   }
 
   private handleLoggedout(): void {
     this.logoutButton.hide();
     this.loginButton.show();
     this.registrationButton.show();
-    this.profile.hide();
+    this.profileButton.hide();
   }
 
   private toggleBurger(): void {

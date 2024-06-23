@@ -1,32 +1,28 @@
 @import './../../sass/variables.scss';
 
 .catalog {
-  
+  padding: 20px;
+
   .content {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: center;
   }
-  
+
   .old {
     font-size: 16px;
     text-decoration: line-through;
     color: $color-gray;
   }
 
-  .price {
-    font-size: 20px;
-    font-weight: 800;
-  }
-
   .card_wrapper {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     width: 220px;
     overflow: hidden;
-    border-radius: 20px;
+    border-radius: 15px;
     margin: 20px;
+    padding: 5px;
     border: 1px solid $color-gray;
     transition: transform 0.2s;
     cursor: pointer;
@@ -50,6 +46,7 @@
   }
 
   .catalog_img {
+    object-fit: contain;
     width: 100%;
     height: 100%;
   }
@@ -74,5 +71,17 @@
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
+  }
+
+  .card_controls-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 5px;
+    flex-grow: 1;
+
+    .button:not(:disabled):not(.button--negative) {
+      margin-top: 34px;
+    }
   }
 }
