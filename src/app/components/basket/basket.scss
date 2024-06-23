@@ -1,0 +1,82 @@
+@import './../../sass/variables.scss';
+
+.basket {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 0;
+
+  .basket_total-price {
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .crossed {
+    text-decoration: line-through;
+    font-weight: normal;
+  }
+}
+
+.promo {
+  .promo_input {
+    height: 26px;
+    margin-right: 5px;
+  }
+}
+
+.empty-basket {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 40px;
+}
+
+.empty-basket_description {
+  font-size: 24px;
+}
+
+.basket-item {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  border-radius: 15px;
+  padding: 5px;
+  border: 1px solid #b2b2b2;
+  background-color: white;
+}
+
+.basket-item_image {
+  width: 30%;
+  max-height: 140px;
+  object-fit: contain;
+}
+
+.basket-item_info {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.basket-item_price {
+  display: flex;
+  justify-content: space-between;
+}
+
+.basket-item_total-price {
+  font-weight: 600;
+}
+
+.basket-item_quantity {
+  button {
+    margin: 0 3px;
+  }
+}

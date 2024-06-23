@@ -2,8 +2,8 @@ import './input.scss';
 import BaseComponent from '../base/base.component';
 
 type InputPasswordComponentConfig = {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
   required: boolean;
   labelText: string;
   pattern: string;
@@ -24,7 +24,7 @@ export default class InputPasswordComponent extends BaseComponent<'div'> {
   visibilityLabel: BaseComponent<'label'>;
 
   constructor(config: InputPasswordComponentConfig) {
-    super({ tag: 'div' });
+    super({ tag: 'div', classes: ['input-container'] });
     this.label = new BaseComponent({ tag: 'label', classes: ['label'] });
     this.input = new BaseComponent({ tag: 'input', classes: ['input'] });
     this.error = new BaseComponent({ tag: 'span', classes: ['error'] });
@@ -40,16 +40,20 @@ export default class InputPasswordComponent extends BaseComponent<'div'> {
   setupElements(config: InputPasswordComponentConfig) {
     const { id, name, required, labelText, pattern, minlength } = config;
     this.input.setAttribute('type', 'password');
-    this.input.setAttribute('id', id);
+    if (id) {
+      this.input.setAttribute('id', id);
+      this.label.setAttribute('for', id);
+    }
+    if (name) {
+      this.input.setAttribute('name', name);
+    }
     if (required) {
       this.input.setAttribute('required', '');
     }
     this.input.setAttribute('pattern', pattern);
     this.input.setAttribute('minlength', minlength);
-    this.input.setAttribute('name', name);
-    this.label.setAttribute('for', id);
     this.label.setTextContent(labelText);
-    this.visibilityLabel.setTextContent('Show Password');
+    this.visibilityLabel.setTextContent('Show');
 
     this.visibilityInput.setAttribute('type', 'checkbox');
     this.visibilityInput.setAttribute('id', 'visibilityId');

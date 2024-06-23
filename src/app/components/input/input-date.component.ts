@@ -2,10 +2,10 @@ import './input.scss';
 import BaseComponent from '../base/base.component';
 
 type InputDateComponentConfig = {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
   required: boolean;
-  labelText: string;
+  labelText?: string;
   minYearDelta: number;
 };
 
@@ -19,7 +19,7 @@ export default class InputDateComponent extends BaseComponent<'div'> {
   minYearDelta: number;
 
   constructor(config: InputDateComponentConfig) {
-    super({ tag: 'div' });
+    super({ tag: 'div', classes: ['input-container'] });
     this.label = new BaseComponent({ tag: 'label', classes: ['label'] });
     this.input = new BaseComponent({ tag: 'input', classes: ['input'] });
     this.error = new BaseComponent({ tag: 'span', classes: ['error'] });
@@ -57,17 +57,25 @@ export default class InputDateComponent extends BaseComponent<'div'> {
   setupElements(config: InputDateComponentConfig) {
     const { id, name, required, labelText } = config;
     this.input.setAttribute('type', 'date');
-    this.input.setAttribute('id', id);
+    if (id) {
+      this.input.setAttribute('id', id);
+      this.label.setAttribute('for', id);
+    }
     if (required) {
       this.input.setAttribute('required', '');
     }
-    this.input.setAttribute('name', name);
-    this.label.setAttribute('for', id);
-    this.label.setTextContent(labelText);
+    if (name) {
+      this.input.setAttribute('name', name);
+    }
+    if (labelText) {
+      this.label.setTextContent(labelText);
+    }
   }
 
-  getValidity() {
-    return this.input.getElement().validity;
+  getValidity(): Partial<ValidityState> {
+    return {
+      valid: this.handleDateValidity(),
+    };
   }
 
   showError(errorText: string) {

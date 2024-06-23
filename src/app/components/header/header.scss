@@ -5,23 +5,122 @@
   padding: 10px 20px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
 
-  & .control-wrapper {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    & button {
-      margin: 5px;
-    }
+.header_control-wrapper {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  button {
+    margin: 5px;
+  }
+}
+
+.header_logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header_logo {
+  width: 80px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.header_slogan {
+  font-size: 22px;
+  font-family: cursive;
+}
+
+.header_sale-hint {
+  font-size: 18px;
+}
+
+.header_button-profile {
+  width: 41px;
+  height: 41px;
+  background: url('./../../assets/images/profile.svg') center no-repeat;
+}
+
+.header_button-basket {
+  width: 41px;
+  height: 41px;
+  background: url('../../assets/images/basket.svg') center no-repeat;
+}
+
+.burger-button {
+  display: none;
+  width: 30px;
+  cursor: pointer;
+
+  &::after,
+  &::before,
+  div {
+    background: $color-dark;
+    content: '';
+    display: block;
+    height: 4px;
+    border-radius: 3px;
+    margin: 7px 0;
+    transition: 0.5s;
+  }
+}
+
+.burger-button--active {
+  &:before {
+    transform: translateY(10px) rotate(135deg);
+  }
+  &:after {
+    transform: translateY(-12px) rotate(-135deg);
+  }
+  & div {
+    transform: scale(0);
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .header_logo {
+    width: 50px;
   }
 
-  & .logo-wrapper {
-    & :hover {
-      cursor: pointer;
-    }
+  .burger-button {
+    display: block;
+  }
 
-    & .logo {
-      width: 80px;
-    }
+  .header_burger-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    position: absolute;
+    top: 70px;
+    width: 0;
+    height: calc(100% - 70px);
+    right: 0;
+    background: $color-light;
+    list-style-type: none;
+    transition: all 0.5s cubic-bezier(0.77, 0.2, 0.05, 1);
+    z-index: 2;
+    padding: 30px 0;
+    overflow: hidden;
+  }
+
+  .header_burger-menu--active {
+    width: 100vw;
+  }
+}
+
+@media screen and (max-width: 1060px) {
+  .header_sale-hint {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .header_slogan {
+    display: none;
   }
 }

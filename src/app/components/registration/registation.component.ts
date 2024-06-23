@@ -11,7 +11,6 @@ import InputTextComponent from '../input/input-text.component';
 import InputPasswordComponent from '../input/input-password.component';
 import InputDateComponent from '../input/input-date.component';
 
-import AuthenticationService from '../../services/authentication.service';
 import NotificationService from '../../services/notification.service';
 import CustomerDraft from '../../models/customer-draft.model';
 import Country from '../../models/country.model';
@@ -20,6 +19,13 @@ import InputCheckboxComponent from '../input/input-checkbox.component';
 import RouterService from '../../services/router/router.service';
 import CustomerSignIn from '../../models/customer-sign-in.model';
 import Routes from '../../models/routes.model';
+import {
+  validateInputDate,
+  validateInputEmail,
+  validateInputName,
+  validateInputPassword,
+} from '../../utilities/input-validators';
+import authenticationService from '../../services/authentication.service';
 
 export default class RegistrationComponent extends BaseComponent<'div'> {
   private personalDetails: BaseComponent<'p'>;
@@ -40,7 +46,11 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
 
   private shippingAddressForm: AddressFormComponent;
 
+  private defaultShippingCheckbox: InputCheckboxComponent;
+
   private defaultBillingCheckbox: InputCheckboxComponent;
+
+  private defaultShippingAsBillingCheckbox: InputCheckboxComponent;
 
   private billingAddressForm: AddressFormComponent;
 
@@ -48,9 +58,13 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
 
   private registrationButton: Button;
 
-  private isShippingAddressUsedAsBilling: boolean = false;
+  private isBillingAddressUsedAsDefault: boolean = false;
 
-  private authenticationService = new AuthenticationService();
+  private isShippingAddressUsedAsDefault: boolean = false;
+
+  private isShippingUsedAsDefaultBilling: boolean = false;
+
+  private authenticationService = authenticationService;
 
   private notificationService = new NotificationService();
 
@@ -106,15 +120,27 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       formName: 'Shipping Address',
       inputPrefix: 'shipping',
     });
+    this.defaultShippingCheckbox = new InputCheckboxComponent({
+      id: 'defaultShippingId',
+      name: 'defaultShipping',
+      labelText: 'Use as default shipping address',
+      onSelect: this.handleDefaultShippingCheckboxClick.bind(this),
+    });
+    this.billingAddressForm = new AddressFormComponent({
+      formName: 'Billing Address',
+      inputPrefix: 'billing',
+    });
     this.defaultBillingCheckbox = new InputCheckboxComponent({
       id: 'defaultBillingId',
       name: 'defaultBilling',
       labelText: 'Use as default billing address',
       onSelect: this.handleDefaultBillingCheckboxClick.bind(this),
     });
-    this.billingAddressForm = new AddressFormComponent({
-      formName: 'Billing Address',
-      inputPrefix: 'billing',
+    this.defaultShippingAsBillingCheckbox = new InputCheckboxComponent({
+      id: 'defaultShippingAsBillingId',
+      name: 'defaultShippingAsBilling',
+      labelText: 'Use shipping address as default billing address',
+      onSelect: this.handleDefaultShippingAsBillingCheckboxClick.bind(this),
     });
     this.loginButton = new Button({
       text: 'Log In',
@@ -139,33 +165,40 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       email: formData.get('email') as string,
       password: formData.get('password') as string,
     };
+    const customerShippingAddress = {
+      streetName: formData.get('shippingStreet') as string,
+      city: formData.get('shippingCity') as string,
+      postalCode: formData.get('shippingPostalCode') as string,
+      country: formData.get('shippingCountry') as Country,
+    };
     const customerDraft: CustomerDraft = {
       email: formData.get('email') as string,
       password: formData.get('password') as string,
       firstName: formData.get('firstName') as string,
       lastName: formData.get('lastName') as string,
       dateOfBirth: formData.get('dateOfBirth') as string,
-      addresses: [
-        {
-          streetName: formData.get('shippingStreet') as string,
-          city: formData.get('shippingCity') as string,
-          postalCode: formData.get('shippingPostalCode') as string,
-          country: formData.get('shippingCountry') as Country,
-        },
-      ],
-      defaultShippingAddress: 0,
+      addresses: [customerShippingAddress],
+      shippingAddresses: [0],
     };
 
-    if (this.isShippingAddressUsedAsBilling) {
+    if (this.isShippingAddressUsedAsDefault) {
+      customerDraft.defaultShippingAddress = 0;
+    }
+
+    if (this.isShippingUsedAsDefaultBilling) {
       customerDraft.defaultBillingAddress = 0;
     } else {
-      customerDraft.addresses.push({
+      const customerBillingAddress = {
         streetName: formData.get('billingStreet') as string,
         city: formData.get('billingCity') as string,
         postalCode: formData.get('billingPostalCode') as string,
         country: formData.get('billingCountry') as Country,
-      });
-      customerDraft.defaultBillingAddress = 1;
+      };
+      customerDraft.addresses.push(customerBillingAddress);
+      customerDraft.billingAddresses = [1];
+      if (this.isBillingAddressUsedAsDefault) {
+        customerDraft.defaultBillingAddress = 1;
+      }
     }
     const response = await this.authenticationService.signUpCustomer(customerDraft);
 
@@ -193,17 +226,11 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
   }
 
   private validateForm() {
-    const emailErrorText = RegistrationComponent.validateInputEmail(this.emailInput.getValidity());
-    const passwordErrorText = RegistrationComponent.validateInputPassword(
-      this.passwordInput.getValidity(),
-    );
-    const firstNameErrorText = RegistrationComponent.validateInputName(
-      this.firstNameInput.getValidity(),
-    );
-    const lastNameErrorText = RegistrationComponent.validateInputName(
-      this.lastNameInput.getValidity(),
-    );
-    const dateErrorText = this.validateInputDate();
+    const emailErrorText = validateInputEmail(this.emailInput.getValidity());
+    const passwordErrorText = validateInputPassword(this.passwordInput.getValidity());
+    const firstNameErrorText = validateInputName(this.firstNameInput.getValidity());
+    const lastNameErrorText = validateInputName(this.lastNameInput.getValidity());
+    const dateErrorText = validateInputDate(this.dateInput.getValidity());
 
     if (emailErrorText) {
       this.emailInput.showError(emailErrorText);
@@ -238,60 +265,40 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       this.registrationButton.disable();
       return;
     }
-    if (!this.isShippingAddressUsedAsBilling && !isBillingAddressFormValid) {
+    if (!this.isShippingUsedAsDefaultBilling && !isBillingAddressFormValid) {
       this.registrationButton.disable();
       return;
     }
     this.registrationButton.enable();
   }
 
-  private validateInputDate(): string {
-    if (this.dateInput.handleDateValidity()) {
-      return '';
+  private handleDefaultShippingCheckboxClick(isChecked: boolean) {
+    if (isChecked) {
+      this.isShippingAddressUsedAsDefault = true;
+    } else {
+      this.isShippingAddressUsedAsDefault = false;
     }
-    return 'Minors need parential guidance to use this website.';
-  }
-
-  private static validateInputPassword(validity: ValidityState): string {
-    if (validity.tooShort) {
-      return 'The password should be a minimum of 8 characters in length.';
-    }
-    if (validity.patternMismatch) {
-      return 'Enter at least one uppercase, one lowercase letter, one digit. Whitespaces are not allowed.';
-    }
-    if (validity.valueMissing) {
-      return 'Please enter value.';
-    }
-    return '';
-  }
-
-  private static validateInputEmail(validity: ValidityState): string {
-    if (validity.patternMismatch) {
-      return 'Email address must be properly formatted (e.g., user@example.com). Whitespaces are not allowed.';
-    }
-    if (validity.valueMissing) {
-      return 'Please enter value.';
-    }
-    return '';
-  }
-
-  private static validateInputName(validity: ValidityState): string {
-    if (validity.patternMismatch) {
-      return 'Must contain at least one character and no special characters or numbers.';
-    }
-    if (validity.valueMissing) {
-      return 'Please enter value.';
-    }
-    return '';
+    this.validateForm();
   }
 
   private handleDefaultBillingCheckboxClick(isChecked: boolean) {
     if (isChecked) {
-      this.isShippingAddressUsedAsBilling = true;
-      this.billingAddressForm.hideForm();
+      this.isBillingAddressUsedAsDefault = true;
     } else {
-      this.isShippingAddressUsedAsBilling = false;
+      this.isBillingAddressUsedAsDefault = false;
+    }
+    this.validateForm();
+  }
+
+  private handleDefaultShippingAsBillingCheckboxClick(isChecked: boolean) {
+    if (isChecked) {
+      this.isShippingUsedAsDefaultBilling = true;
+      this.billingAddressForm.hideForm();
+      this.defaultBillingCheckbox.hide();
+    } else {
+      this.isShippingUsedAsDefaultBilling = false;
       this.billingAddressForm.showForm();
+      this.defaultBillingCheckbox.show();
     }
     this.validateForm();
   }
@@ -318,8 +325,10 @@ export default class RegistrationComponent extends BaseComponent<'div'> {
       this.personalDetails,
       this.personalDetailsWrapper,
       this.shippingAddressForm,
-      this.defaultBillingCheckbox,
+      this.defaultShippingCheckbox,
       this.billingAddressForm,
+      this.defaultBillingCheckbox,
+      this.defaultShippingAsBillingCheckbox,
       this.registrationButton,
       this.loginButton,
     ]);
